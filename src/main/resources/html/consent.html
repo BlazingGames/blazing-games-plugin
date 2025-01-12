@@ -1,0 +1,126 @@
+<!--
+Copyright 2025 The Blazing Games Maintainers
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!--
+consent.html
+
+code: 8-digit code
+token: verification token
+username: the player username
+uuid: the player UUID
+appname: claimed app name
+appcontact: claimed app dev contact
+apppurpose: what the app says it does
+permissions: map of string:string of permissions to risk level
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link to ${appname}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.orange.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <strong>Logged in as ${username}</strong>
+            </ul>
+            <ul>
+                <img src="https://crafatar.com/renders/head/${uuid}?default=MHF_Steve&overlay" alt="Your Skin">
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1 style="text-align: center;">Link to ${appname}</h1>
+        <p style="text-align: center;">${apppurpose} - by ${appcontact}</p>
+
+        <hr>
+
+        <span>This will allow the developers of this application to:</span>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Permission</th>
+                    <th scope="col">Risk level</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td scope="row">View your Minecraft Username, UUID and skin</td>
+                    <td>None</td>
+                </tr>
+                <#list permissions as permission, risk>
+                    <tr>
+                        <td scope="row">${permission}</td>
+                        <td>${risk}</td>
+                    </tr>
+                </#list>
+            </tbody>
+        </table>
+
+        <form action="/auth/consent" method="post" id="consent" name="consent">
+            <label>
+                <input type="checkbox" required>
+                I agknowledge the above (required)
+            </label>
+            <input type="hidden"   name="code"    value="${code}">
+            <input type="hidden"   name="token"   value="${token}">
+            <input type="hidden"   id="verdict"   name="verdict"     value="null">
+            <input type="submit"   id="link"      value="Link"       disabled     onclick="submitForm(true);    return false;">
+            <input type="reset"    id="cancel"    value="Cancel"     disabled     onclick="submitForm(false);   return false;">
+        </form>
+        <p style="text-align: center;">
+            This access will expire in 6 hours automatically. If you want to revoke access before that, you can visit <a href="/auth/link">/auth/link</a>, which has instructions for revoking access.
+        </p>
+
+        <hr>
+
+        <details>
+            <summary>Debugging information</summary>
+            <ul>
+                <li>Link code: ${code}</li>
+                <li>Verification token: ${token}</li>
+            </ul>
+            <p>Do not share the details above!</p>
+        </details>
+
+        <small>Thank you to <a href="https://crafatar.com">Crafatar</a> for the player head renders.</small>
+    </main>
+    <script defer>
+        const buttonYes = document.getElementById("link");
+        const buttonNo = document.getElementById("cancel");
+
+        buttonNo.disabled = false;
+        setTimeout(() => {
+            buttonYes.disabled = false;
+        }, 5000);
+
+        function submitForm(result) {
+            const button = result ? buttonYes : buttonNo;
+            if (button.disabled) return;
+
+            buttonYes.disabled = true;
+            buttonNo.disabled = true;
+
+            document.consent.verdict.value = result ? "true" : "false";
+            setTimeout(() => {
+                document.consent.submit();
+            }, 500);
+        }
+    </script>
+</body>
+</html>

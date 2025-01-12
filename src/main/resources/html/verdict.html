@@ -1,0 +1,51 @@
+<!--
+Copyright 2025 The Blazing Games Maintainers
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!--
+verdict.html
+
+title: header
+body: more info
+username: the player username
+uuid: the player UUID
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You can now close this window or tab</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.orange.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <strong>Logged in as ${username}</strong>
+            </ul>
+            <ul>
+                <img src="https://crafatar.com/renders/head/${uuid}?default=MHF_Steve&overlay" alt="Your Skin">
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1 style="text-align: center;">${title}</h1>
+        <p>${body}</p>
+        <hr>
+        <p>It is now safe to close the window or tab.</p>
+        <input type="button" value="Close this window" onclick="window.close(); return false;">
+    </main>
+</body>
+</html>

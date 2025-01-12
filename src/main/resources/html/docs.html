@@ -1,0 +1,526 @@
+<!--
+Copyright 2025 The Blazing Games Maintainers
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!--
+docs.html
+
+notice:
+    show: boolean
+    title: string
+    description: string
+    button: string
+    url: string
+
+instance, playerurls (array), devurls (array):
+    label: string
+    url: string
+
+endpointcategories (map):
+    key/category: string
+    value/endpoints (array):
+        title: string
+        description: string
+        path: string
+        method: string
+        hrefid: string
+        paramstitle: string
+        incoming (map array):
+            key/id: string
+            value/description: string
+        outgoing (map array):
+            key/id: string
+            value/description: string
+        responsecodes (map array):
+            key/code: int
+            value/description: string
+        permissions (map array):
+            key/id: string
+            value/description: string
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blazing API</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Inter:700|Inter:400');
+
+        /* :root[data-theme="light"] {
+            --text: #0c0216;
+            --background: #f9f4fe;
+            --primary: #9316ed;
+            --secondary: #f077f5;
+            --accent: #f145c8;
+        } */
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        :root {
+            --text: #f2e8fd;
+            --background: #050109;
+            --primary: #8f11e8;
+            --secondary: #850a8a;
+            --accent: #b90e91;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter';
+            font-weight: 400;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-family: 'Inter';
+            font-weight: 700;
+        }
+
+        html {font-size: 100%;} /* 16px */
+
+        h1 {font-size: 4.210rem; /* 67.36px */}
+
+        h2 {font-size: 3.158rem; /* 50.56px */}
+
+        h3 {font-size: 2.369rem; /* 37.92px */}
+
+        h4 {font-size: 1.777rem; /* 28.48px */}
+
+        h5 {font-size: 1.333rem; /* 21.28px */}
+
+        small {font-size: 0.750rem; /* 12px */}
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+        }
+
+        .button.outlined {
+            color: var(--text);
+            border: 1px solid var(--text);
+        }
+
+        .button.filled {
+            color: var(--text);
+            background-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div id="home">
+        <!-- Full-screen home -->
+
+        <div id="home-card-outer" class="home-content">
+            <div id="home-card-inner">
+                <h1>Welcome to the Blazing API website!</h1>
+                <p>You're probably looking for one of these:</p>
+                <div class="button-group">
+                    <a class="button outlined" href="${instance.url}">${instance.label}</a>
+                    <a class="button outlined" href="/auth/link">Link an application</a>
+                    <a class="button outlined" href="/auth/link">Unlink applications</a>
+                    <#list playerurls as playerurl>
+                        <a class="button outlined" href="${playerurl.url}">${playerurl.label}</a>
+                    </#list>
+                </div>
+            </div>
+        </div>
+
+        <div id="home-links-outer" class="home-content">
+            <div id="home-links-inner">
+                <h2>For developers</h2>
+                <div class="button-group">
+                    <a class="button outlined" href="#docs">API Documentation</a>
+                    <#list devurls as devurl>
+                        <a class="button outlined" href="${devurl.url}">${devurl.label}</a>
+                    </#list>
+                </div>
+            </div>
+            <#if notice.show>
+                <div id="notice">
+                    <div class="left">
+                        <h3>${notice.title}</h3>
+                        <p>${notice.description}</p>
+                    </div>
+                    <div class="right">
+                        <a class="button filled" href="${notice.url}">${notice.button}</a>
+                    </div>
+                </div>
+            </#if>
+        </div>
+    </div>
+    <style>
+        #home {
+            height: 100vh;
+        }
+
+        .home-content {
+            height: 50vh;
+            width: 100%;
+        }
+
+        #home-card-outer, #home-card-inner {
+            display: flex;
+            width: 100%;
+        }
+
+        #home-card-inner {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            text-align: center;
+            margin: 3rem;
+            
+            background-color: var(--primary);
+            border-radius: 0.5rem;
+        }
+
+        #home-links-outer {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: stretch;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        #home-links-inner {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        #notice {
+            flex-shrink: 1;
+            display: flex;
+            margin: 2rem;
+            background-color: var(--secondary);
+            border-radius: 0.5rem;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #notice > .left {
+            display: flex;
+            flex-direction: column;
+            justify-content: left;
+            align-items: left;
+            gap: 1rem;
+            text-align: left;
+            margin: 1rem;
+        }
+
+        #notice > .right {
+            display: flex;
+            flex-direction: row;
+            justify-content: right;
+            align-items: center;
+            align-content: center;
+            gap: 1rem;
+            text-align: right;
+            margin: 1rem;
+        }
+    </style>
+
+    <div id="docs">
+        <!-- Full-screen docs -->
+         <div id="docs-container">
+            <div id="docs-sidebar">
+                <div id="search">
+                    <input id="search-box" type="text" placeholder="Filter"/>
+                    <noscript>
+                        Search box requires JavaScript.
+                        You can still use browser search (Ctrl + F)
+                        to find things.
+                    </noscript>
+                    <script>
+                        const input = document.getElementById("search-box");
+                        const links = document.querySelectorAll(".sidebar-link");
+                        input.addEventListener("input", (event) => {
+                            const value = event.target.value;
+                            for (const link of links) {
+                                if (
+                                    link.dataset.name.toLowerCase().includes(value.toLowerCase()) ||
+                                    link.dataset.url.toLowerCase().includes(value.toLowerCase())
+                                ) {
+                                    link.setAttribute("data-active", "true");
+                                } else {
+                                    link.setAttribute("data-active", "false");
+                                }
+                            }
+                        });
+                    </script>
+                </div>
+                <#list endpointcategories as listcategory, listendpoints>
+                    <h4>${listcategory}</h4>
+                    <ul>
+                        <#list listendpoints as listendpoint>
+                            <li class="sidebar-link" data-active="true" data-name="${listendpoint.title}" data-url="${listendpoint.path}">
+                                <a href="#${listendpoint.hrefid}">${listendpoint.title}</a>
+                            </li>
+                        </#list>
+                    </ul>
+                </#list>                
+
+                <!-- <h4>Examples</h4>
+                <ul>
+                    <li class="sidebar-link" data-active="true" data-name="Example 1" data-url="/example1">
+                        <a href="#docs-example-1">Example 1</a>
+                    </li>
+                    <li class="sidebar-link" data-active="true" data-name="Example 2" data-url="/example2">
+                        <a href="#docs-example-2">Example 2</a>
+                    </li>
+                </ul> -->
+            </div>
+            <div id="docs-body">
+                <#list endpointcategories as bodycategory, bodyendpoints>
+                    <h1>${bodycategory}</h1>
+                    <#list bodyendpoints as bodyendpoint>
+                        <div>
+                            <h3 id="${bodyendpoint.hrefid}"><span class="http">${bodyendpoint.method}</span> <code>${bodyendpoint.path}</code> (${bodyendpoint.title})</h3>
+                            <p>${bodyendpoint.description}</p>
+                            <h5>${bodyendpoint.paramstitle}</h5>
+                            <ul>
+                                <#list bodyendpoint.incoming as incomingid, incomingdescription>
+                                    <li><code>${incomingid}</code>: ${incomingdescription}</li>
+                                <#else>
+                                    <li>None</li>
+                                </#list>
+                            </ul>
+                            <h5>Response Body</h5>
+                            <ul>
+                                <#list bodyendpoint.outgoing as outgoingid, outgoingdescription>
+                                    <li><code>${outgoingid}</code>: ${outgoingdescription}</li>
+                                <#else>
+                                    <li>None</li>
+                                </#list>
+                            </ul>
+                            <h5>Response Codes</h5>
+                            <ul>
+                                <#list bodyendpoint.responsecodes as responsecodeid, responsecodedescription>
+                                    <li><code>${responsecodeid}</code>: ${responsecodedescription}</li>
+                                <#else>
+                                    <li>None?</li>
+                                </#list>
+                            </ul>
+                            <h5>Required Permissions</h5>
+                            <ul>
+                                <#list bodyendpoint.permissions as permissionid, permissiondescription>
+                                    <li><code>${permissionid}</code>: ${permissiondescription}</li>
+                                <#else>
+                                    <li>None</li>
+                                </#list>
+                            </ul>
+                        </div>
+                        <hr>
+                    </#list>
+                </#list>
+                <p>You've reached the bottom. <a href="#docs">Back to top?</a></p>
+
+                <!-- <h1>Examples</h1>
+                <div>
+                    <h3 id="docs-example-1"><span class="http">GET</span> <code>/example1</code> (Example 1)</h3>
+                    <p>
+                        Sample body text...
+                    </p>
+                    <h5>Query Parameters</h5>
+                    <ul>
+                        <li><code>param1</code> - Sample parameter</li>
+                        <li><code>param2</code> - Sample parameter</li>
+                    </ul>
+                    <h5>Response Body</h5>
+                    <ul>
+                        <li><code>param1</code> - Sample parameter</li>
+                        <li><code>param2</code> - Sample parameter</li>
+                    </ul>
+                    <h5>Response Codes</h5>
+                    <ul>
+                        <li><code>200</code> - Success</li>
+                    </ul>
+                    <h5>Required Permissions</h5>
+                    <ul>
+                        <li>None</li>
+                    </ul>
+                </div>
+                <hr>
+                <div>
+                    <h3 id="docs-example-2"><span class="http">POST</span> <code>/example2</code> (Example 2)</h3>
+                    <p>
+                        Sample body text...
+                    </p>
+                    <h5>Request Body</h5>
+                    <ul>
+                        <li><code>param1</code> - Sample parameter</li>
+                        <li><code>param2</code> - Sample parameter</li>
+                    </ul>
+                    <h5>Response Body</h5>
+                    <ul>
+                        <li><code>param1</code> - Sample parameter</li>
+                        <li><code>param2</code> - Sample parameter</li>
+                    </ul>
+                    <h5>Response Codes</h5>
+                    <ul>
+                        <li><code>200</code> - Success</li>
+                    </ul>
+                    <h5>Required Permissions</h5>
+                    <ul>
+                        <li>None</li>
+                    </ul>
+                </div> -->
+            </div>
+         </div>
+    </div>
+    <style>
+        #docs {
+            height: 100vh;
+            display: flex;
+        }
+
+        #docs-container {
+            width: 100%;
+            display: flex;
+            height: 100%;
+            flex-direction: row;
+        }
+
+        #docs-sidebar {
+            flex-shrink: 0;
+            flex-grow: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1rem;
+            background-color: var(--primary);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            overflow-y: auto;
+            scrollbar-color: var(--accent) var(--primary);
+            scrollbar-width: thin;
+            scroll-behavior: smooth;
+            word-break: break-all;
+            overflow-wrap: break-word;
+            max-width: 20%;
+        }
+
+        #docs-sidebar > ul {
+            list-style-type: disc;
+            list-style-position: inside;
+            padding: 0;
+        }
+
+        #docs-sidebar > ul > li {
+            margin-bottom: 0.5rem;
+            display: flex;
+        }
+
+        #docs-sidebar > ul > li[data-active="true"] {
+            display: block;
+        }
+
+        #docs-sidebar > ul > li[data-active="false"] {
+            display: none;
+        }
+
+        #docs-sidebar > ul > li > a {
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        #docs-sidebar > ul > li > a:hover {
+            text-decoration: underline;
+        }
+
+        #search > input {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            background-color: var(--background);
+            color: var(--text);
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #docs-body {
+            padding-top: 1rem;
+            flex-shrink: 0;
+            flex-grow: 8;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1rem;
+            overflow-y: auto;
+            scrollbar-color: var(--text) var(--background);
+            scrollbar-width: thin;
+            scroll-behavior: smooth;
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+
+        #docs-body > div {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        #docs-body > p > a {
+            color: var(--text);
+        }
+
+        .http {
+            display: inline-block;
+            background-color: var(--accent);
+            border-radius: 0.5rem;
+            margin-right: 0.5rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        #docs-body > hr {
+            margin: 1.5rem;
+        }
+
+        #docs-body > div > ul {
+            list-style: disc;
+            list-style-position: inside;
+            padding: 0;
+        }
+    </style>
+</body>
+</html>

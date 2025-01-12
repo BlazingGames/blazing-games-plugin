@@ -1,0 +1,85 @@
+<!--
+Copyright 2025 The Blazing Games Maintainers
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!--
+codeinput.html
+
+error: boolean, if the code is invalid
+offline: boolean, if testing mode is enabled
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link with BlazingGames</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.orange.min.css">
+</head>
+<body>
+    <main>
+        <#if error>
+            <article>
+                <p style="text-align: center;">
+                    The code you entered was invalid or expired.
+                </p>
+                <hr>
+            </article>
+        </#if>
+        <h1 style="text-align: center;">Link an application to BlazingGames</h1>
+        <form action="/auth/link" method="get">
+            <input type="text" name="code" placeholder="Your eight-character code">
+            <#if offline>
+                <input type="text" name="mcname" placeholder="Minecraft username (test mode enabled)">
+                <input type="text" name="mcuuid" placeholder="Minecraft UUID (test mode enabled)">
+            </#if>
+            <input type="submit" value="Link">
+        </form>
+        <p style="text-align: center;">
+            Enter the code the application gave you above.
+        </p>
+        <details>
+            <summary>How it works</summary>
+            <p>
+                After entering a code above, if it is valid, you'll be redirected
+                to the Microsoft sign in page. Select your account and make sure
+                it has a Minecraft account linked to it. You'll be asked if you want
+                to authorize the application, and it will be linked. Linking lasts
+                for 6 hours and gives the application access to your in game computers
+                and turtles, where they can update code, start and stop, and more.
+                <br><br>
+                You can also add collaborators and transfer ownership, but both of these
+                actions require confirmation from you in game, which can be disabled when
+                linking the application.
+            </p>
+        </details>
+        <details>
+            <summary>Unlink applications</summary>
+            <p>
+                If you want to remove an application, you can unlink every currently linked
+                application at once. If you're interested, click the button below:
+            </p>
+            <form action="/auth/unlink" method="get">
+                <input type="submit" value="Unlink all">
+            </form>
+        </details>
+        <details>
+            <summary>Get help</summary>
+            <p>
+                Visit the Discord server if you need help.
+            </p>
+        </details>
+    </main>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!--
+Copyright 2025 The Blazing Games Maintainers
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!--
+unlink.html
+
+token: verification token
+username: the player username
+uuid: the player UUID
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unlink applications</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.orange.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <strong>Logged in as ${username}</strong>
+            </ul>
+            <ul>
+                <img src="https://crafatar.com/renders/head/${uuid}?default=MHF_Steve&overlay" alt="Your Skin">
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1 style="text-align: center;">Unlink All Applications</h1>
+        <p style="text-align: center;">
+            This will revoke all applications linked to your account.
+            This can be undone by linking the application again.
+        </p>
+        <form action="/auth/unlink-confirm" method="post" id="consent" name="consent">
+            <input type="hidden" name="token" value="${token}">
+            <input type="hidden" name="verdict" value="null">
+            <input type="submit" id="unlink" value="Unlink Everything" disabled onclick="submitForm(true);  return true;">
+            <input type="reset"  id="cancel" value="Nevermind"         disabled onclick="submitForm(false); return false;">
+        </form>
+    </main>
+    <script defer>
+        const buttonYes = document.getElementById("unlink");
+        const buttonNo  = document.getElementById("cancel");
+
+        buttonNo.disabled = false;
+        setTimeout(() => {
+            buttonYes.disabled = false;
+        }, 3000);
+
+        function submitForm(result) {
+            const button = result ? buttonYes : buttonNo;
+            if (button.disabled) return;
+
+            buttonYes.disabled = true;
+            buttonNo.disabled = true;
+
+            document.consent.verdict.value = result ? "true" : "false";
+            setTimeout(() => {
+                document.consent.submit();
+            }, 500);
+        }
+    </script>
+</body>
+</html>

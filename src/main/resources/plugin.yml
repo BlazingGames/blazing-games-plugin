@@ -1,0 +1,59 @@
+name: blazinggames
+version: '${version}'
+main: de.blazemcworld.blazinggames.BlazingGames
+api-version: '1.21'
+prefix: BlazingGames
+authors: [BlazeMCworld, sbot50, 'Ivy Collective (ivyc.)', XTerPL]
+description: funny block game javascript computers
+website: https://blazingsite.surge.sh/
+
+permissions:
+  blazinggames.customenchant:
+    description: "Allows using the /customenchant command"
+    default: op
+  blazinggames.customgive:
+    description: "Allows using the /customgive command"
+    default: op
+  blazinggames.setaltar:
+    description: "Allows using the /setalatar command"
+    default: op
+
+libraries: ##  see build.gradle
+  - io.azam.ulidj:ulidj:1.0.4
+  - net.dv8tion:JDA:5.0.0-beta.23
+  - club.minnced:discord-webhooks:0.8.4
+  - com.zaxxer:HikariCP:5.1.0
+  - org.xerial:sqlite-jdbc:3.45.3.0
+  - com.mysql:mysql-connector-j:8.4.0
+  - org.postgresql:postgresql:42.7.3
+  - com.caoccao.javet:javet:3.1.2
+  - com.github.ben-manes.caffeine:caffeine:3.1.8
+  - io.jsonwebtoken:jjwt-api:0.12.6
+  - io.jsonwebtoken:jjwt-impl:0.12.6
+  - io.jsonwebtoken:jjwt-gson:0.12.6
+  - org.freemarker:freemarker:2.3.33
+  - org.java-websocket:Java-WebSocket:1.5.7
+
+commands:
+  customenchant:
+    description: "Enchants the main hand item with a specific custom enchantment"
+    usage: /customenchant <custom enchantment> [level]
+    permission: blazinggames.customenchant
+  customgive:
+    description: "Gives you a specific custom item with a specified count"
+    usage: /customgive <custom item> [count]
+    permission: blazinggames.customgive
+  killme:
+    description: "Kills you. Painfully."
+    usage: /killme
+    aliases: [suicide]
+  playtime:
+    description: "See how much time you and your friends have wasted on this stupid server."
+    usage: /playtime [player]
+  config:
+    description: "Change display settings for your player. Tab complete for available options."
+    usage: /config <param> [...value]
+  setaltar:
+    description: "Set altar with specific level at current location"
+    usage: /setaltar <level>
+    permission: blazinggames.setmultiblock
