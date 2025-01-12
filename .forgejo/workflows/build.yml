@@ -15,7 +15,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-          cache: gradle
       
       - name: Setup Gradle
         uses: actions/gradle/setup-gradle@v4
@@ -23,10 +22,7 @@ jobs:
           gradle-version: '8.11'
 
       - name: Build with Gradle
-        run: gradle -Pversion=v${{ github.run_number }} build
-
-      - name: Move JARs
-        run: mkdir staging && cp build/libs/*.jar staging
+        run: gradle -Pversion=${{ github.run_number }} build
 
       - name: Create Release
         uses: "actions/gitea-release-action@v1"
@@ -35,9 +31,9 @@ jobs:
           prerelease: false
           tag_name: "v${{ github.run_number }}"
           files: |-
-            staging/blazinggames-v${{ github.run_number }}.jar
+            build/libs/blazinggames-${{ github.run_number }}.jar
       
-      - name: Upload Server Files
+      - name: Upload Plugin to Pterodactyl
         uses: "actions/pterodactyl-upload-action@v2.4"
         with:
           panel-host: ${{ secrets.PANEL_HOST }}
@@ -47,7 +43,7 @@ jobs:
           target: "./plugins/blazinggames-latest-ci-cd.jar"
           restart: true
 
-      - name: Send Webhook Message
+      - name: Send Discord Notification
         uses: actions/discord-webhook@v6.0.0
         with:
           webhook-url: ${{ secrets.WEBHOOK_URL }}
@@ -55,4 +51,4 @@ jobs:
           embed-title: "Build v${{ github.run_number }} sucessful"
           embed-description: "${{ github.event.head_commit.message }}"
           embed-footer-text: "Pushed by ${{ github.event.pusher.username || 'missing username' }} <${{ github.event.pusher.email || 'missing email' }}>"
-          embed-color: 5560444 #54d87c
+          embed-color: 5560444 #54D87C
