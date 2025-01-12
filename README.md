@@ -4,7 +4,7 @@ The plugin powering the Blazing Games minecraft server, with computers, enchanti
 
 ## Usage
 
-Releases of prebuilt jars are [available here](https://git.ivycollective.dev/ivycollective/blazing-games-plugin/releases). Otherwise, please build the plugin yourself (see the Development section).
+Releases of prebuilt jars are [available here](https://git.ivycollective.dev/BlazingGames/blazing-games-plugin/releases). Otherwise, please build the plugin yourself (see the Development section).
 
 Instructions: Place the plugin's jar file inside your `plugins` folder and restart your server.
 
