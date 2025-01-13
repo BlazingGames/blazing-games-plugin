@@ -118,8 +118,8 @@ public final class BlazingGames extends JavaPlugin {
         }
 
         // Recipes
-        ComputerRegistry.registerAllRecipes();
-        if (computersEnabled) CustomRecipes.loadRecipes();
+        if (computersEnabled) ComputerRegistry.registerAllRecipes();
+        CustomRecipes.loadRecipes();
 
         // Computers
         if (!config.getBoolean("computing.local.disable-computers") && (
