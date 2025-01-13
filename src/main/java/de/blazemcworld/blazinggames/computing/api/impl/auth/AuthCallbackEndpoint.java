@@ -78,13 +78,11 @@ public class AuthCallbackEndpoint implements Endpoint {
                 return EndpointResponse.of400("Invalid state argument");
             } else {
                 boolean isUnlinkRequest = (state.equals(AuthUnlinkEndpoint.MAGIC_UNLINK_STATE));
-                if (!isUnlinkRequest) {
-                    if (!TokenManager.isCodeUserLoggingIn(state)) {
-                        return EndpointResponse.authError("Token (state) is invalid or expired", "The token might've expired after 10 minutes of inactivity");
-                    }
-
-                    TokenManager.updateCodeAuthState(state, new TokenManager.WaitingForMicrosoft());
+                if (!TokenManager.isCodeUserLoggingIn(state)) {
+                    return EndpointResponse.authError("Token (state) is invalid or expired", "The token might've expired after 10 minutes of inactivity");
                 }
+
+                TokenManager.updateCodeAuthState(state, new TokenManager.WaitingForMicrosoft());
 
                 TokenManager.Profile profile = this.microsoftAuthenticationDance(msCode);
                 if (profile == null) {
@@ -102,6 +100,7 @@ public class AuthCallbackEndpoint implements Endpoint {
                 } else {
                     String confirmationToken = TokenManager.generateRandomString(32);
                     if (isUnlinkRequest) {
+                        TokenManager.invalidateCode(state);
                         TokenManager.storeUnlinkRequest(confirmationToken, profile);
                         return EndpointResponse.redirect("/auth/unlink-confirm?token=" + confirmationToken);
                     } else {

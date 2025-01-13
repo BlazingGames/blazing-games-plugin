@@ -151,6 +151,10 @@ public class TokenManager {
         return state == null ? false : state instanceof TokenManager.UserApproved;
     }
 
+    public static void invalidateCode(String code) {
+        preAuthKeys.invalidate(code);
+    }
+
     public static LinkedUser invalidateAndReturnLinkedUser(String code) {
         TokenManager.AuthState state = _getAuthState(code);
         if (state != null && state instanceof TokenManager.UserApproved approved) {
@@ -194,11 +198,12 @@ public class TokenManager {
     public static interface AuthState {}
     public static record Errored() implements TokenManager.AuthState {}
     public static record NotStarted() implements TokenManager.AuthState {}
-    public static record Profile(String username, UUID uuid) {}
-    public static record UserApproved(LinkedUser linked) implements TokenManager.AuthState {}
-    public static record UserDeciding(TokenManager.Profile profile, String confirmationToken) implements TokenManager.AuthState {}
-    public static record UserDeclined() implements TokenManager.AuthState {}
     public static record UserLoggingIn() implements TokenManager.AuthState {}
-    public static record UserRedirectingToDeciding(TokenManager.Profile profile, String confirmationToken) implements TokenManager.AuthState {}
     public static record WaitingForMicrosoft() implements TokenManager.AuthState {}
+    public static record UserRedirectingToDeciding(TokenManager.Profile profile, String confirmationToken) implements TokenManager.AuthState {}
+    public static record UserDeciding(TokenManager.Profile profile, String confirmationToken) implements TokenManager.AuthState {}
+    public static record UserApproved(LinkedUser linked) implements TokenManager.AuthState {}
+    public static record UserDeclined() implements TokenManager.AuthState {}
+
+    public static record Profile(String username, UUID uuid) {}
 }
