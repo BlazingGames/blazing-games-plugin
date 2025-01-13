@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.items;
+package de.blazemcworld.blazinggames.crates;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,33 +23,26 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.items.CustomItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 
-public class ToGoBoxItem extends CustomItem {
+public class SkeletonKey extends CustomItem {
     @Override
     public NamespacedKey getKey() {
-        return BlazingGames.get().key("to_go_box");
+        return BlazingGames.get().key("skeleton_key");
     }
 
     @Override
     protected ItemStack material() {
-        ItemStack item = new ItemStack(Material.NETHERITE_SHOVEL);
+        ItemStack item = new ItemStack(Material.SKELETON_SKULL);
         ItemMeta meta = item.getItemMeta();
-
-        meta.displayName(Component.text("To-Go Box").color(NamedTextColor.GOLD)
-            .decoration(TextDecoration.ITALIC, false));
-        
-        meta.lore(List.of(
-            Component.text("Right-click a crate to open it and store it inside of a bundle, for transportation.")
-                .color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true)
-        ));
-
+        meta.itemName(Component.text("Skeleton Key").color(NamedTextColor.DARK_PURPLE).decoration(TextDecoration.ITALIC, false));
+        meta.lore(List.of(Component.text("Used to open any crate that you've lost the key to.").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true)));
         item.setItemMeta(meta);
         return item;
     }
@@ -58,22 +50,9 @@ public class ToGoBoxItem extends CustomItem {
     @Override
     public Map<NamespacedKey, Recipe> getRecipes() {
         ShapedRecipe recipe = new ShapedRecipe(getKey(), create());
-        recipe.shape(
-                "DBD",
-                "DED",
-                " D "
-        );
-        recipe.setIngredient('D', new ItemStack(Material.DIAMOND));
-        recipe.setIngredient('E', new ItemStack(Material.ENDER_CHEST));
-        recipe.setIngredient('B', new ItemStack(Material.BUNDLE));
-
-        ShapelessRecipe bundleRecipe = new ShapelessRecipe(BlazingGames.get().key("bundle"), new ItemStack(Material.BUNDLE));
-        bundleRecipe.addIngredient(new ItemStack(Material.LEATHER));
-        bundleRecipe.addIngredient(new ItemStack(Material.STRING));
-
-        var out = new HashMap<NamespacedKey, Recipe>();
-        out.put(getKey(), recipe);
-        out.put(BlazingGames.get().key("bundle"), bundleRecipe);
-        return out;
+        recipe.shape(" D ", " B ", " B ");
+        recipe.setIngredient('D', Material.DIAMOND);
+        recipe.setIngredient('B', Material.BONE);
+        return Map.of(getKey(), recipe);
     }
 }

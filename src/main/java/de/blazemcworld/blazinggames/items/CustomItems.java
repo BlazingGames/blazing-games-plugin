@@ -17,6 +17,8 @@ package de.blazemcworld.blazinggames.items;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.builderwand.BuilderWand;
+import de.blazemcworld.blazinggames.crates.SkeletonKey;
+import de.blazemcworld.blazinggames.crates.ToGoBoxItem;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentTome;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrappers;
