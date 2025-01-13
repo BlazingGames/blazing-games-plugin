@@ -24,13 +24,11 @@ import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
 import de.blazemcworld.blazinggames.computing.api.LinkedUser;
 import de.blazemcworld.blazinggames.computing.api.RequestContext;
 import de.blazemcworld.blazinggames.computing.api.RequestMethod;
-import de.blazemcworld.blazinggames.utils.GetGson;
 
 public class AuthRedeemEndpoint implements Endpoint {
     @Override
     public EndpointResponse POST(RequestContext context) throws EarlyResponse {
-        JsonObject body = GetGson.getAsObject(context.requireBody(), EarlyResponse.of(EndpointResponse.of400("Missing body or something ,idk")));
-        String key = context.requireCleanLong("key", GetGson.getString(body, "key", EarlyResponse.of(EndpointResponse.of400("Missing key argument"))));
+        String key = context.requireCleanLong("key", context.useBodyWrapper().getString("key"));
         String code = TokenManager.getCodeFromJWT(key);
         if (code == null) {
             return EndpointResponse.of400("Invalid key");

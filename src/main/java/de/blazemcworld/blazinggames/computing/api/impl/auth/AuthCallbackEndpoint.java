@@ -52,61 +52,43 @@ public class AuthCallbackEndpoint implements Endpoint {
 
     @Override
     public EndpointResponse GET(RequestContext context) throws EarlyResponse {
-        JsonObject body = GetGson.getAsObject(context.requireBody(), EarlyResponse.of(EndpointResponse.of400("Missing query parameters")));
-        if (body.has("error") && body.has("error_description")) {
-            JsonElement errorElem = body.get("error");
-            String error;
-            if (errorElem.isJsonPrimitive() && errorElem.getAsJsonPrimitive().isString()) {
-                error = context.requireClean("error", errorElem.getAsJsonPrimitive().getAsString());
-            } else {
-                error = "Invalid error code provided";
-            }
-
-            JsonElement errorDescriptionElem = body.get("error_description");
-            String errorDescription;
-            if (errorDescriptionElem.isJsonPrimitive() && errorDescriptionElem.getAsJsonPrimitive().isString()) {
-                errorDescription = context.requireClean("error_description", errorDescriptionElem.getAsJsonPrimitive().getAsString());
-            } else {
-                errorDescription = "Invalid error code provided";
-            }
-
-            return EndpointResponse.authError(error, errorDescription);
+        var body = context.useBodyWrapper();
+        if (body.hasValue("error") && body.hasValue("error_description")) {
+            return EndpointResponse.authError(body.getString("error"), body.getString("error_description"));
         } else {
-            String msCode = context.requireClean("code", GetGson.getString(body, "code", EarlyResponse.of(EndpointResponse.of400("Missing code argument"))));
-            String state = GetGson.getString(body, "state", EarlyResponse.of(EndpointResponse.of400("Missing state argument")));
-            if (state.length() != 8) {
-                return EndpointResponse.of400("Invalid state argument");
-            } else {
-                boolean isUnlinkRequest = (state.equals(AuthUnlinkEndpoint.MAGIC_UNLINK_STATE));
+            String msCode = context.requireClean("code", body.getString("code"));
+            String state = context.requireCleanCustom("state", body.getString("state"), 8, 8);
+
+            boolean isUnlinkRequest = (state.equals(AuthUnlinkEndpoint.MAGIC_UNLINK_STATE));
+            if (!isUnlinkRequest) {
                 if (!TokenManager.isCodeUserLoggingIn(state)) {
-                    return EndpointResponse.authError("Token (state) is invalid or expired", "The token might've expired after 10 minutes of inactivity");
+                    return EndpointResponse.authError("Token (state) is invalid or expired", "The token might've expired");
+                }
+                TokenManager.updateCodeAuthState(state, new TokenManager.WaitingForMicrosoft());
+            }
+
+            TokenManager.Profile profile = this.microsoftAuthenticationDance(msCode);
+            if (profile == null) {
+                if (!isUnlinkRequest) {
+                    TokenManager.updateCodeAuthState(state, new TokenManager.Errored());
                 }
 
-                TokenManager.updateCodeAuthState(state, new TokenManager.WaitingForMicrosoft());
+                if (ComputingAPI.getConfig().spoofMicrosoftServer()) {
+                    return EndpointResponse.authError("Bad username/UUID", "Or you didn't provide any.");
+                }
 
-                TokenManager.Profile profile = this.microsoftAuthenticationDance(msCode);
-                if (profile == null) {
-                    if (!isUnlinkRequest) {
-                        TokenManager.updateCodeAuthState(state, new TokenManager.Errored());
-                    }
-
-                    if (ComputingAPI.getConfig().spoofMicrosoftServer()) {
-                        return EndpointResponse.authError("Bad username/UUID", "Or you didn't provide any.");
-                    }
-
-                    return EndpointResponse.authError(
-                        "An error with Microsoft authenthication occurred", "Make sure that you own Minecraft and have picked a username."
-                    );
+                return EndpointResponse.authError(
+                    "An error with Microsoft authenthication occurred", "Make sure that you own Minecraft and have picked a username."
+                );
+            } else {
+                String confirmationToken = TokenManager.generateRandomString(32);
+                if (isUnlinkRequest) {
+                    TokenManager.invalidateCode(state);
+                    TokenManager.storeUnlinkRequest(confirmationToken, profile);
+                    return EndpointResponse.redirect("/auth/unlink-confirm?token=" + confirmationToken);
                 } else {
-                    String confirmationToken = TokenManager.generateRandomString(32);
-                    if (isUnlinkRequest) {
-                        TokenManager.invalidateCode(state);
-                        TokenManager.storeUnlinkRequest(confirmationToken, profile);
-                        return EndpointResponse.redirect("/auth/unlink-confirm?token=" + confirmationToken);
-                    } else {
-                        TokenManager.updateCodeAuthState(state, new TokenManager.UserRedirectingToDeciding(profile, confirmationToken));
-                        return EndpointResponse.redirect("/auth/consent?code=" + state + "&token=" + confirmationToken);
-                    }
+                    TokenManager.updateCodeAuthState(state, new TokenManager.UserRedirectingToDeciding(profile, confirmationToken));
+                    return EndpointResponse.redirect("/auth/consent?code=" + state + "&token=" + confirmationToken);
                 }
             }
         }

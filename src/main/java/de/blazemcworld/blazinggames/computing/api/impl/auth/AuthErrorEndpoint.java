@@ -15,13 +15,11 @@
  */
 package de.blazemcworld.blazinggames.computing.api.impl.auth;
 
-import com.google.gson.JsonObject;
 import de.blazemcworld.blazinggames.computing.api.APIDocs;
 import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
 import de.blazemcworld.blazinggames.computing.api.Endpoint;
 import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
 import de.blazemcworld.blazinggames.computing.api.RequestContext;
-import de.blazemcworld.blazinggames.utils.GetGson;
 import java.util.HashMap;
 
 public class AuthErrorEndpoint implements Endpoint {
@@ -32,9 +30,9 @@ public class AuthErrorEndpoint implements Endpoint {
 
     @Override
     public EndpointResponse GET(RequestContext context) throws EarlyResponse {
-        JsonObject body = GetGson.getAsObject(context.requireBody(), EarlyResponse.of(EndpointResponse.of400("Missing query parameters")));
-        String error = context.requireClean("error", GetGson.getString(body, "error", EarlyResponse.of(EndpointResponse.of400("Missing error argument"))));
-        String desc = context.requireClean("desc", GetGson.getString(body, "desc", EarlyResponse.of(EndpointResponse.of400("Missing desc argument"))));
+        var body = context.useBodyWrapper();
+        String error = context.requireClean("error", body.getString("error"));
+        String desc = context.requireClean("desc", body.getString("desc"));
         HashMap<String, Object> params = new HashMap<>();
         params.put("error", error);
         params.put("desc", desc);

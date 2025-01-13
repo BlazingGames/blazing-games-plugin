@@ -16,6 +16,9 @@
 package de.blazemcworld.blazinggames.computing.api;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import de.blazemcworld.blazinggames.utils.GetGson;
 
 import java.net.URI;
 import java.util.List;
@@ -42,6 +45,11 @@ public record RequestContext(JsonElement body, Map<String, List<String>> headers
         } else {
             return this.body();
         }
+    }
+
+    public BodyWrapper<EarlyResponse> useBodyWrapper() throws EarlyResponse {
+        JsonObject body = GetGson.getAsObject(this.requireBody(), EarlyResponse.of(EndpointResponse.of400("Request body is not an object")));
+        return new BodyWrapper<EarlyResponse>(body, key -> new EarlyResponse(EndpointResponse.of400("Missing " + key)));
     }
 
     public LinkedUser getAuthentication() {

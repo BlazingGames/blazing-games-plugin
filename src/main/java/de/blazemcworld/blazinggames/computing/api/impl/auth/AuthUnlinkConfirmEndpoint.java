@@ -15,14 +15,12 @@
  */
 package de.blazemcworld.blazinggames.computing.api.impl.auth;
 
-import com.google.gson.JsonObject;
 import de.blazemcworld.blazinggames.computing.api.APIDocs;
 import de.blazemcworld.blazinggames.computing.api.TokenManager;
 import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
 import de.blazemcworld.blazinggames.computing.api.Endpoint;
 import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
 import de.blazemcworld.blazinggames.computing.api.RequestContext;
-import de.blazemcworld.blazinggames.utils.GetGson;
 import java.util.HashMap;
 
 public class AuthUnlinkConfirmEndpoint implements Endpoint {
@@ -38,8 +36,7 @@ public class AuthUnlinkConfirmEndpoint implements Endpoint {
 
     @Override
     public EndpointResponse GET(RequestContext context) throws EarlyResponse {
-        JsonObject body = GetGson.getAsObject(context.requireBody(), EarlyResponse.of(EndpointResponse.of400("Missing query parameters")));
-        String token = context.requireClean("token", GetGson.getString(body, "token", EarlyResponse.of(EndpointResponse.of400("Missing token argument"))));
+        String token = context.requireClean("token", context.useBodyWrapper().getString("token"));
         TokenManager.Profile profile = TokenManager.getUnlinkRequest(token);
         if (profile == null) {
             return EndpointResponse.authError("Token is invalid or expired", "Tokens expire after 10 minutes. If you want to start over, visit /auth/link.");
@@ -54,11 +51,9 @@ public class AuthUnlinkConfirmEndpoint implements Endpoint {
 
     @Override
     public EndpointResponse POST(RequestContext context) throws EarlyResponse {
-        JsonObject body = GetGson.getAsObject(context.requireBody(), EarlyResponse.of(EndpointResponse.of400("Missing body")));
-        String token = context.requireClean("token", GetGson.getString(body, "token", EarlyResponse.of(EndpointResponse.of400("Missing token argument"))));
-        boolean verdict = context.requireClean(
-                "verdict", GetGson.getString(body, "verdict", EarlyResponse.of(EndpointResponse.of400("Missing verdict argument")))
-            ).equals("true");
+        var body = context.useBodyWrapper();
+        String token = context.requireClean("token", body.getString("token"));
+        boolean verdict = body.getBoolean("verdict");
         TokenManager.Profile profile = TokenManager.getUnlinkRequest(token);
         if (profile == null) {
             return EndpointResponse.authError("Token is invalid or expired", "Tokens expire after 10 minutes.");

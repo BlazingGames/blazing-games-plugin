@@ -40,27 +40,21 @@ public class AuthPrepareEndpoint implements Endpoint {
 
     @Override
     public EndpointResponse POST(RequestContext context) throws EarlyResponse {
-        JsonObject body = GetGson.getAsObject(context.requireBody(), EarlyResponse.of(EndpointResponse.of400("Missing body")));
-        String name = context.requireClean("name", GetGson.getString(body, "name", EarlyResponse.of(EndpointResponse.of400("Missing name argument"))));
-        String contact = context.requireClean(
-            "contact", GetGson.getString(body, "contact", EarlyResponse.of(EndpointResponse.of400("Missing contact argument")))
-        );
-        String purpose = context.requireClean(
-            "purpose", GetGson.getString(body, "purpose", EarlyResponse.of(EndpointResponse.of400("Missing purpose argument")))
-        );
-        JsonArray rawPermissions = GetGson.getArray(body, "permissions", EarlyResponse.of(EndpointResponse.of400("Missing permissions argument")));
+        var body = context.useBodyWrapper();
+        String name = context.requireClean("name", body.getString("name"));
+        String contact = context.requireClean("contact", body.getString("contact"));
+        String purpose = context.requireClean("purpose", body.getString("purpose"));
+        JsonArray rawPermissions = GetGson.getArray(body.body, "permissions", EarlyResponse.of(EndpointResponse.of400("Missing permissions array")));
         ArrayList<Permission> permissions = new ArrayList<>();
 
         for (JsonElement elem : rawPermissions) {
             try {
-                permissions.add(
-                    Permission.valueOf(
-                        context.requireClean("permission", GetGson.getAsString(elem, EarlyResponse.of(EndpointResponse.of400("Permission is not a string"))))
-                    )
-                );
+                permissions.add(Permission.valueOf(
+                    context.requireClean("permission", GetGson.getAsString(elem, EarlyResponse.of(EndpointResponse.of400("Permission is not a string"))))
+                ));
             } catch (IllegalArgumentException e) {
                 BlazingGames.get().debugLog(e);
-                return EndpointResponse.of400("Unrecognised permission");
+                return EndpointResponse.of400("Unrecognised permission (is is null? check for trailing commas)");
             }
         }
 

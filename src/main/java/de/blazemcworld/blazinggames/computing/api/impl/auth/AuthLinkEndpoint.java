@@ -15,7 +15,6 @@
  */
 package de.blazemcworld.blazinggames.computing.api.impl.auth;
 
-import com.google.gson.JsonObject;
 import de.blazemcworld.blazinggames.computing.api.APIDocs;
 import de.blazemcworld.blazinggames.computing.api.TokenManager;
 import de.blazemcworld.blazinggames.computing.api.ComputingAPI;
@@ -24,7 +23,6 @@ import de.blazemcworld.blazinggames.computing.api.Endpoint;
 import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
 import de.blazemcworld.blazinggames.computing.api.RequestContext;
 import de.blazemcworld.blazinggames.computing.api.RequestMethod;
-import de.blazemcworld.blazinggames.utils.GetGson;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -52,10 +50,11 @@ public class AuthLinkEndpoint implements Endpoint {
     @Override
     public EndpointResponse GET(RequestContext context) throws EarlyResponse {
         boolean invalidCode = false;
+
         if (context.hasBody()) {
-            JsonObject body = GetGson.getAsObject(context.requireBody(), new IllegalStateException());
-            if (body.has("code") && body.get("code").isJsonPrimitive() && body.get("code").getAsJsonPrimitive().isString()) {
-                String code = body.get("code").getAsString();
+            var body = context.useBodyWrapper();
+            if (body.hasValue("code")) {
+                String code = body.getString("code");
                 if (code.length() != 8) {
                     invalidCode = true;
                 } else {
@@ -64,8 +63,8 @@ public class AuthLinkEndpoint implements Endpoint {
 
                         var config = ComputingAPI.getConfig();
                         if (config.spoofMicrosoftServer()) {
-                            String username = GetGson.getString(body, "mcname", EarlyResponse.of(EndpointResponse.of400("Missing mcname argument")));
-                            String uuid = GetGson.getString(body, "mcuuid", EarlyResponse.of(EndpointResponse.of400("Missing mcuuid argument")));
+                            String username = context.requireCleanCustom("mcname", body.getString("mcname"), 2, 16);
+                            String uuid = context.requireCleanCustom("mcuuid", body.getString("mcuuid"), 36, 36);
 
                             return EndpointResponse.redirect(config.apiConfig().findAt() + AuthCallbackEndpoint.PATH + "?code=" + username + "." + uuid + "&state=" + code);
                         }
