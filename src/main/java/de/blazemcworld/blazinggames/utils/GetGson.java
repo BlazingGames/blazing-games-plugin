@@ -45,12 +45,7 @@ public class GetGson {
     }
 
     public static <T extends Throwable> String getAsString(JsonElement element, T t) throws T {
-        JsonPrimitive primitive = _getAsPrimitive(element, t);
-        if (!primitive.isString()) {
-            throw t;
-        } else {
-            return primitive.getAsString();
-        }
+        return _getAsPrimitive(element, t).getAsString();
     }
 
     public static <T extends Throwable> Number getNumber(JsonObject object, String key, T t) throws T {
@@ -84,6 +79,11 @@ public class GetGson {
 
     public static <T extends Throwable> Boolean getAsBoolean(JsonElement element, T t) throws T {
         JsonPrimitive primitive = _getAsPrimitive(element, t);
+
+        if (primitive.isString()) {
+            return Boolean.parseBoolean(primitive.getAsString());
+        }
+
         if (!primitive.isBoolean()) {
             throw t;
         } else {
