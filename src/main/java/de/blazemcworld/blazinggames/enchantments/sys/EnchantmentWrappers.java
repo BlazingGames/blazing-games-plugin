@@ -16,9 +16,7 @@
 package de.blazemcworld.blazinggames.enchantments.sys;
 
 import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarRecipe;
-import de.blazemcworld.blazinggames.items.ColorlessItemPredicate;
-import de.blazemcworld.blazinggames.items.MaterialItemPredicate;
-import de.blazemcworld.blazinggames.items.PotionItemPredicate;
+import de.blazemcworld.blazinggames.items.*;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -121,7 +119,7 @@ public class EnchantmentWrappers {
     public static VanillaEnchantmentWrapper MENDING =
             new VanillaEnchantmentWrapper(Enchantment.MENDING, () -> new ItemStack(Material.SHULKER_SHELL),
                     0, 0, 0,
-                    new AltarRecipe(10, 15, new MaterialItemPredicate(Material.NETHER_STAR))
+                    new AltarRecipe(10, 15, CustomItems.NETHER_STAR_CHUNK)
             );
     public static VanillaEnchantmentWrapper LOYALTY =
             new VanillaEnchantmentWrapper(Enchantment.LOYALTY, () -> new ItemStack(Material.STICK),
