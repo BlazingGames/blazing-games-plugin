@@ -18,6 +18,7 @@ package de.blazemcworld.blazinggames.items;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.utils.NamespacedKeyDataType;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;

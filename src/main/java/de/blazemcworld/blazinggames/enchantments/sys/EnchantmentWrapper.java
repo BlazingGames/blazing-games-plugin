@@ -84,7 +84,7 @@ public interface EnchantmentWrapper {
 
                 AltarRecipe recipe = getRecipe(level + 1);
 
-                Component name = recipe.itemRequirement().getDescription().color(NamedTextColor.RED);
+                Component name = recipe.itemRequirement().getDescription();
 
                 lore.add(Component.text(recipe.expAmount() + " Experience Levels")
                         .color(NamedTextColor.YELLOW)
@@ -94,7 +94,7 @@ public interface EnchantmentWrapper {
                         .decoration(TextDecoration.ITALIC, false));
                 assert name != null;
                 lore.add(Component.text(recipe.itemAmount() + "x ")
-                        .append(name)
+                        .append(name.color(recipe.matchMaterial(material) ? NamedTextColor.GREEN : NamedTextColor.RED))
                         .color(recipe.matchMaterial(material) ? NamedTextColor.GREEN : NamedTextColor.RED)
                         .decoration(TextDecoration.ITALIC, false));
             }
