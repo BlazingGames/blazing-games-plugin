@@ -94,7 +94,7 @@ public interface EnchantmentWrapper {
                         .decoration(TextDecoration.ITALIC, false));
                 assert name != null;
                 lore.add(Component.text(recipe.itemAmount() + "x ")
-                        .append(name)
+                        .append(name.color(recipe.matchMaterial(material) ? NamedTextColor.GREEN : NamedTextColor.RED))
                         .color(recipe.matchMaterial(material) ? NamedTextColor.GREEN : NamedTextColor.RED)
                         .decoration(TextDecoration.ITALIC, false));
             }
