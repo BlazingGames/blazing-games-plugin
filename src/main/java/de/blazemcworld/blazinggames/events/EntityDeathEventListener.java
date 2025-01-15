@@ -30,6 +30,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EntityDeathEventListener implements Listener {
+    private static final List<Material> EGG_BLACKLIST = List.of(
+        Material.ENDER_DRAGON_SPAWN_EGG,
+        Material.WITHER_SPAWN_EGG,
+        Material.ELDER_GUARDIAN_SPAWN_EGG,
+        Material.WARDEN_SPAWN_EGG
+    );
+
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         LivingEntity victim = event.getEntity();
@@ -46,7 +53,7 @@ public class EntityDeathEventListener implements Listener {
         if(Math.random() < capturing*0.05) {
             Material spawnEgg = Material.getMaterial(victim.getType().getKey().getKey().toUpperCase() + "_SPAWN_EGG");
 
-            if(spawnEgg != null) {
+            if(spawnEgg != null && !EGG_BLACKLIST.contains(spawnEgg)) {
                 victim.getWorld().playSound(victim, Sound.ENTITY_ITEM_PICKUP, 1, 0.75f);
                 event.getDrops().add(new ItemStack(spawnEgg));
             }
