@@ -39,7 +39,7 @@ jobs:
           panel-host: ${{ secrets.PANEL_HOST }}
           api-key: ${{ secrets.PANEL_API_KEY }}
           server-id: ${{ secrets.PANEL_SERVER_ID }}
-          source: build/libs/blazinggames-v${{ github.run_number }}.jar
+          source: build/libs/blazinggames-${{ github.run_number }}.jar
           target: "./plugins/blazinggames-latest-ci-cd.jar"
           restart: true
 
