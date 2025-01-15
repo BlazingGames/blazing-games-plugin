@@ -38,6 +38,7 @@ public class CustomItems {
     public static final List<CustomSlabs.CustomSlab> CUSTOM_SLABS = new CustomSlabs().slabs;
     public static final SkeletonKey SKELETON_KEY = new SkeletonKey();
     public static final ToGoBoxItem TO_GO_BOX = new ToGoBoxItem();
+    public static final NetherStarChunk NETHER_STAR_CHUNK = new NetherStarChunk();
     public static final EnchantmentTome FUSE_TOME = new EnchantmentTome(BlazingGames.get().key("fuse_tome"), "Fuse Tome", EnchantmentWrappers.MENDING);
     public static final EnchantmentTome BIND_TOME = new EnchantmentTome(BlazingGames.get().key("bind_tome"), "Bind Tome", EnchantmentWrappers.BINDING_CURSE);
     public static final EnchantmentTome VANISH_TOME = new EnchantmentTome(BlazingGames.get().key("vanish_tome"), "Vanish Tome", EnchantmentWrappers.VANISHING_CURSE);
@@ -59,6 +60,7 @@ public class CustomItems {
             TOME_ALTAR,
             SKELETON_KEY,
             TO_GO_BOX,
+            NETHER_STAR_CHUNK,
             FUSE_TOME,
             BIND_TOME,
             VANISH_TOME,
