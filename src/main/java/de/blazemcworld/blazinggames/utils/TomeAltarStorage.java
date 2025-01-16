@@ -17,7 +17,7 @@ package de.blazemcworld.blazinggames.utils;
 
 import de.blazemcworld.blazinggames.data.DataStorage;
 import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
-import de.blazemcworld.blazinggames.data.providers.ArbitraryNameProvider;
+import de.blazemcworld.blazinggames.data.name.ArbitraryNameProvider;
 import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
 
 import org.bukkit.Location;

@@ -31,7 +31,7 @@ import org.bukkit.persistence.PersistentDataType;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.data.DataStorage;
 import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
-import de.blazemcworld.blazinggames.data.providers.ULIDNameProvider;
+import de.blazemcworld.blazinggames.data.name.ULIDNameProvider;
 import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

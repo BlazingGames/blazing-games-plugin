@@ -13,41 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.data.providers;
+package de.blazemcworld.blazinggames.data.name;
 
-import java.util.function.Supplier;
+import java.util.UUID;
 
 import de.blazemcworld.blazinggames.data.NameProvider;
 
-public class ArbitraryNameProvider extends NameProvider<String> {
-    protected final Supplier<String> supplier;
-
-
-    public ArbitraryNameProvider() {
-        this.supplier = () -> null;
-    }
-
-    public ArbitraryNameProvider(final String value) {
-        this.supplier = () -> value;
-    }
-
-    public ArbitraryNameProvider(final Supplier<String> supplier) {
-        this.supplier = supplier;
+public class UUIDNameProvider extends NameProvider<UUID> {
+    @Override
+    public UUID next() {
+        return UUID.randomUUID();
     }
 
     @Override
-    public String next() {
-        return supplier.get();
+    public String fromValue(UUID value) {
+        return value.toString();
     }
 
     @Override
-    public String fromValue(String value) {
-        return value;
+    public UUID fromString(String string) {
+        return UUID.fromString(string);
     }
-
-    @Override
-    public String fromString(String string) {
-        return string;
-    }
-    
 }

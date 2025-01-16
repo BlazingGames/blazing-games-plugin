@@ -20,8 +20,8 @@ import java.util.UUID;
 
 import de.blazemcworld.blazinggames.data.DataStorage;
 import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
+import de.blazemcworld.blazinggames.data.name.UUIDNameProvider;
 import de.blazemcworld.blazinggames.data.storage.PropertiesStorageProvider;
-import de.blazemcworld.blazinggames.data.providers.UUIDNameProvider;
 import net.kyori.adventure.text.format.TextColor;
 
 public class PlayerConfig {

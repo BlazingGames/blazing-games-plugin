@@ -28,7 +28,7 @@ import com.google.common.reflect.TypeToken;
 
 import de.blazemcworld.blazinggames.data.DataStorage;
 import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
-import de.blazemcworld.blazinggames.data.providers.ULIDNameProvider;
+import de.blazemcworld.blazinggames.data.name.ULIDNameProvider;
 import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
 import de.blazemcworld.blazinggames.utils.TextLocation;
 import net.kyori.adventure.text.Component;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.data.providers;
+package de.blazemcworld.blazinggames.data.name;
 
 import de.blazemcworld.blazinggames.data.NameProvider;
 import io.azam.ulidj.MonotonicULID;

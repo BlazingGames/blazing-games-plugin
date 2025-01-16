@@ -20,7 +20,7 @@ import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
 import de.blazemcworld.blazinggames.computing.types.IComputerType;
 import de.blazemcworld.blazinggames.data.DataStorage;
 import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
-import de.blazemcworld.blazinggames.data.providers.ULIDNameProvider;
+import de.blazemcworld.blazinggames.data.name.ULIDNameProvider;
 import de.blazemcworld.blazinggames.data.storage.BinaryStorageProvider;
 import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
 import de.blazemcworld.blazinggames.data.storage.RawTextStorageProvider;
