@@ -15,61 +15,34 @@
  */
 package de.blazemcworld.blazinggames.utils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Properties;
 import java.util.UUID;
 
-import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.data.DataStorage;
+import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
+import de.blazemcworld.blazinggames.data.storage.PropertiesStorageProvider;
+import de.blazemcworld.blazinggames.data.providers.UUIDNameProvider;
 import net.kyori.adventure.text.format.TextColor;
 
 public class PlayerConfig {
-    private static final File prefsDir = new File("prefs");
-    static {
-        if (!prefsDir.exists()) {
-            prefsDir.mkdir();
-        }
-
-        if (!prefsDir.isDirectory()) {
-            throw new RuntimeException("prefsDir is not a directory");
-        }
-    }
+    private static final DataStorage<Properties, UUID> dataStorage = DataStorage.forClass(
+        PlayerConfig.class, null,
+        new PropertiesStorageProvider(), new UUIDNameProvider(), new GZipCompressionProvider()
+    );
 
     public static PlayerConfig forPlayer(UUID uuid) {
-        File file = new File(prefsDir, uuid.toString() + ".properties");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                BlazingGames.get().log(e);
-                return null;
-            }
-        }
-
-        return new PlayerConfig(file);
+        return new PlayerConfig(dataStorage.getData(uuid), uuid);
     }
 
-    private Properties props;
-    private File file;
-    private PlayerConfig(File file) {
-        this.props = new Properties();
-        this.file = file;
-
-        try {
-            props.load(new FileReader(file));
-        } catch (IOException e) {
-            BlazingGames.get().log(e);
-        }
+    private final Properties props;
+    private final UUID uuid;
+    private PlayerConfig(Properties props, UUID uuid) {
+        this.props = props;
+        this.uuid = uuid;
     }
 
     private void write() {
-        try {
-            props.store(new FileOutputStream(file), null);
-        } catch (IOException e) {
-            BlazingGames.get().log(e);
-        }
+        dataStorage.storeData(uuid, props);
     }
 
 
