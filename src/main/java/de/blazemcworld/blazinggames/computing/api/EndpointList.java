@@ -16,16 +16,8 @@
 package de.blazemcworld.blazinggames.computing.api;
 
 import de.blazemcworld.blazinggames.computing.api.impl.RootEndpoint;
-import de.blazemcworld.blazinggames.computing.api.impl.auth.AuthCallbackEndpoint;
-import de.blazemcworld.blazinggames.computing.api.impl.auth.AuthConsentEndpoint;
-import de.blazemcworld.blazinggames.computing.api.impl.auth.AuthErrorEndpoint;
-import de.blazemcworld.blazinggames.computing.api.impl.auth.AuthLinkEndpoint;
-import de.blazemcworld.blazinggames.computing.api.impl.auth.AuthPrepareEndpoint;
-import de.blazemcworld.blazinggames.computing.api.impl.auth.AuthRedeemEndpoint;
-import de.blazemcworld.blazinggames.computing.api.impl.auth.AuthTestEndpoint;
-import de.blazemcworld.blazinggames.computing.api.impl.auth.AuthUnlinkConfirmEndpoint;
-import de.blazemcworld.blazinggames.computing.api.impl.auth.AuthUnlinkEndpoint;
-import de.blazemcworld.blazinggames.computing.api.impl.computers.ComputersListEndpoint;
+import de.blazemcworld.blazinggames.computing.api.impl.auth.*;
+import de.blazemcworld.blazinggames.computing.api.impl.computers.*;
 
 public enum EndpointList {
     ROOT(null, new RootEndpoint()),
@@ -38,7 +30,10 @@ public enum EndpointList {
     AUTH_ERROR(null, new AuthErrorEndpoint()),
     AUTH_UNLINK(null, new AuthUnlinkEndpoint()),
     AUTH_UNLINK_CONFIRM(null, new AuthUnlinkConfirmEndpoint()),
-    COMPUTER_LIST("Computers", new ComputersListEndpoint());
+
+    COMPUTER_LIST("Computers", new ComputersListEndpoint()),
+    COMPUTER_CODE_READ("Computers", new ViewCodeEndpoint()),
+    ;
 
     public final String category;
     public final Endpoint endpoint;

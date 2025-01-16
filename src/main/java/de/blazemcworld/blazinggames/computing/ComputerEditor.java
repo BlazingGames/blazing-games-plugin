@@ -19,10 +19,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.gson.JsonObject;
+
 /**
  * Utility class for directly modifiying computers.
  */
 public class ComputerEditor {
+    private static void _setMetadata(final ComputerMetadata metadata) {
+        if (ComputerRegistry.getComputerById(metadata.id) != null) {
+            ComputerRegistry.getComputerById(metadata.id).updateMetadata(metadata);
+        }
+        ComputerRegistry.metadataStorage.storeData(metadata.id, metadata);
+    }
     private ComputerEditor() {}
 
     /**
@@ -35,6 +43,9 @@ public class ComputerEditor {
         }).stream().map(id -> ComputerRegistry.metadataStorage.getData(id)).toList();
     }
 
+    /**
+     * Returns true if the user has permissions to access the computer
+     */
     public static boolean hasAccessToComputer(final UUID user, final String computer) {
         ComputerMetadata metadata = ComputerRegistry.metadataStorage.getData(computer);
 
@@ -43,5 +54,29 @@ public class ComputerEditor {
         }
 
         return metadata.owner == user || Arrays.asList(metadata.collaborators).contains(user);
+    }
+
+    public static ComputerMetadata getMetadata(final String computer) {
+        if (ComputerRegistry.getComputerById(computer) != null) {
+            return ComputerRegistry.getComputerById(computer).getMetadata();
+        }
+        return ComputerRegistry.metadataStorage.getData(computer);
+    }
+
+    /**
+     * Get the stored code for a computer
+     */
+    public static String getCode(final String computer) {
+        if (ComputerRegistry.getComputerById(computer) != null) {
+            return ComputerRegistry.getComputerById(computer).getCode();
+        }
+
+        return ComputerRegistry.codeStorage.getData(computer);
+    }
+
+    public static void rename(final String computerId, final String name) {
+        JsonObject metadata = getMetadata(computerId).serialize();
+        metadata.addProperty("name", name);
+        _setMetadata(new ComputerMetadata(metadata));
     }
 }
