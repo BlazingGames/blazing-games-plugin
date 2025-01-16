@@ -29,7 +29,6 @@ import de.blazemcworld.blazinggames.computing.api.Permission;
 import de.blazemcworld.blazinggames.computing.api.RequestContext;
 import de.blazemcworld.blazinggames.computing.api.RequestMethod;
 import de.blazemcworld.blazinggames.utils.GZipToolkit;
-import de.blazemcworld.blazinggames.utils.GetGson;
 
 public class ViewCodeEndpoint implements Endpoint {
     @Override
@@ -42,8 +41,8 @@ public class ViewCodeEndpoint implements Endpoint {
         LinkedUser linked = context.requireAuthentication();
         context.requirePermission(Permission.COMPUTER_CODE_READ);
         
-        JsonObject body = GetGson.getAsObject(context.requireBody(), EarlyResponse.of(EndpointResponse.of400("Missing query parameters")));
-        String id = context.requireClean("id", GetGson.getString(body, "id", EarlyResponse.of(EndpointResponse.of400("Missing id argument"))));
+        var body = context.useBodyWrapper();
+        String id = context.requireClean("id", body.getString("id"));
 
         if (!ComputerEditor.hasAccessToComputer(linked.uuid(), id)) {
             return EndpointResponse.of403();

@@ -53,7 +53,7 @@ public class ComputerEditor {
             return false;
         }
 
-        return metadata.owner == user || Arrays.asList(metadata.collaborators).contains(user);
+        return metadata.owner.equals(user) || Arrays.asList(metadata.collaborators).contains(user);
     }
 
     public static ComputerMetadata getMetadata(final String computer) {
@@ -71,6 +71,9 @@ public class ComputerEditor {
             return ComputerRegistry.getComputerById(computer).getCode();
         }
 
+        if (!ComputerRegistry.codeStorage.hasData(computer)) {
+            return ComputerRegistry.defaultCode;
+        }
         return ComputerRegistry.codeStorage.getData(computer);
     }
 

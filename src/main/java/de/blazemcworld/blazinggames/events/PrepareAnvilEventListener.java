@@ -28,6 +28,7 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 public class PrepareAnvilEventListener implements Listener {
     @EventHandler
     public void onAnvilPrepare(PrepareAnvilEvent event) {
+        event.getView().setMaximumRepairCost(Integer.MAX_VALUE);
         if (event.getView().getRepairCost() > 10) {
             event.getView().setRepairCost(10);
         }

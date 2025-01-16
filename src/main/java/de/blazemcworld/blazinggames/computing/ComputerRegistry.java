@@ -47,7 +47,7 @@ public class ComputerRegistry {
     private static int tick = 0;
     private static final int loopOnTick = 100;
     private static final int hitsThreshold = 5;
-    private static final String defaultCode = "// welcome to the editor!\n" +
+    public static final String defaultCode = "// welcome to the editor!\n" +
             "// this uses JavaScript along with our custom methods to control computers\n// learn more in the documentation: ______";
     private static final String NAMESPACE = "blazingcomputing";
     public static final NamespacedKey NAMESPACEDKEY_COMPUTER_TYPE = new NamespacedKey(NAMESPACE, "_computer_type");

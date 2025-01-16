@@ -33,6 +33,7 @@ public enum EndpointList {
 
     COMPUTER_LIST("Computers", new ComputersListEndpoint()),
     COMPUTER_CODE_READ("Computers", new ViewCodeEndpoint()),
+    COMPUTER_RENAME("Computers", new RenameEndpoint()),
     ;
 
     public final String category;
