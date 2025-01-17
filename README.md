@@ -1,5 +1,8 @@
 # blazing-games-plugin
 
+![Latest Release](https://git.ivycollective.dev/BlazingGames/blazing-games-plugin/badges/release.svg)
+![Build Status](https://git.ivycollective.dev/BlazingGames/blazing-games-plugin/badges/workflows/build.yml/badge.svg?label=build+status)
+
 The plugin powering the Blazing Games minecraft server, with computers, enchanting altars, spawner modification, and more!
 
 ## Usage
