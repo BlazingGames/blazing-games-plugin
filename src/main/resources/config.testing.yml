@@ -1,0 +1,27 @@
+# overrides of config.yml for when unit testing is enabled
+
+jda:
+  enabled: false
+
+logging:
+  log-error: true
+  log-info: true
+  log-debug: true
+  notify-ops-on-error: false
+
+computing:
+  local:
+    disable-computers: false
+    privileges:
+      chunkloading: true
+      net: true
+  microsoft:
+    spoof-ms-server: true
+  jwt:
+    secret-key: randomize-on-server-start
+    secret-key-is-password: false
+  services:
+    blazing-api:
+      enabled: true
+    blazing-wss:
+      enabled: true

@@ -16,6 +16,10 @@ This is a standard Paper plugin using Gradle.
 
 To build, use: `./gradlew build`
 
+## Testing
+
+This plugins supports testing. To run tests, use: `./gradlew build -Ptest=true`, and load the plugin normally. Once tests are done running, the file `TESTS_RESULT` in the server files directory will contain `true` if tests passed or `false` if tests failed.
+
 ## License
 
 This plugin is licensed under the Apache License (version 2.0). For more information, please read the NOTICE and LICENSE files.
