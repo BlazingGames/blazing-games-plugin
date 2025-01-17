@@ -15,8 +15,11 @@
  */
 package de.blazemcworld.blazinggames.testing;
 
-public enum TestList {
+import de.blazemcworld.blazinggames.testing.tests.*;
 
+public enum TestList {
+    LOGIN_FLOW(new LoginFlowTest()),
+    UNLINK_FLOW(new UnlinkFlowTest()),
     ;
 
     public final BlazingTest test;
