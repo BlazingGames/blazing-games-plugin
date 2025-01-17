@@ -38,7 +38,11 @@ jobs:
       - name: Run unit tests
         timeout-minutes: 30
         run: |
-          java -Xms2048M -Xmx2048M -jar testsrv/server.jar nogui --nogui
+          cd testsrv && java -Xms2048M -Xmx2048M -jar server.jar nogui --nogui
+      
+      - name: Ensure tests passed
+        run: |
+          if [ "$(cat testsrv/TESTS_RESULT)" = "true" ]; then exit 0; else exit 1; fi
   build-and-publish:
     runs-on: docker
     needs: test
