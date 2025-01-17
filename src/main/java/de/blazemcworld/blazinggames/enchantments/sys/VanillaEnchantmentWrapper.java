@@ -36,6 +36,20 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
     private final List<AltarRecipe> recipes;
     private final List<Integer> altarLevels;
 
+    public VanillaEnchantmentWrapper(Enchantment enchantment, Supplier<ItemStack> icon, int tier1, int tier2, int tier3, int tier4, int tier5, AltarRecipe... recipes) {
+        this.enchantment = enchantment;
+        this.icon = icon;
+        this.altarLevels = List.of(tier1, tier2, tier3, tier4, tier5);
+        this.recipes = List.of(recipes);
+    }
+
+    public VanillaEnchantmentWrapper(Enchantment enchantment, Supplier<ItemStack> icon, int tier1, int tier2, int tier3, int tier4, AltarRecipe... recipes) {
+        this.enchantment = enchantment;
+        this.icon = icon;
+        this.altarLevels = List.of(tier1, tier2, tier3, tier4);
+        this.recipes = List.of(recipes);
+    }
+
     public VanillaEnchantmentWrapper(Enchantment enchantment, Supplier<ItemStack> icon, int tier1, int tier2, int tier3, AltarRecipe... recipes) {
         this.enchantment = enchantment;
         this.icon = icon;
@@ -67,7 +81,7 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
 
     @Override
     public int getMaxLevel() {
-        return enchantment.getMaxLevel();
+        return altarLevels.getLast();
     }
 
     @Override
@@ -122,6 +136,14 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
     }
 
     @Override
+    public String getWarning(int level) {
+        if (enchantment == Enchantment.SILK_TOUCH && level > 1) {
+            return "Might break pickaxe when used on spawners.\nAlways breaks Iron pickaxes.\nUses 2/3rd of durability on diamond pickaxes.\nUses half ofdurability on netherite pickaxes.";
+        }
+        return null;
+    }
+
+    @Override
     public Component getLevelessComponent() {
         TextColor color = NamedTextColor.GRAY;
 
@@ -134,12 +156,8 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
 
     @Override
     public int maxLevelAvailableInAltar(int altarTier) {
-        if(altarTier < 1) {
-            return 0;
-        }
-        if(altarTier > 3) {
-            return getMaxLevel();
-        }
+        if (altarTier < 1) return 0;
+        if (altarLevels.size() < altarTier) return getMaxLevel();
         return altarLevels.get(altarTier-1);
     }
 

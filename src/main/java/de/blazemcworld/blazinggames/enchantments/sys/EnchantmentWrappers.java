@@ -16,7 +16,10 @@
 package de.blazemcworld.blazinggames.enchantments.sys;
 
 import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarRecipe;
-import de.blazemcworld.blazinggames.items.*;
+import de.blazemcworld.blazinggames.items.ColorlessItemPredicate;
+import de.blazemcworld.blazinggames.items.CustomItems;
+import de.blazemcworld.blazinggames.items.MaterialItemPredicate;
+import de.blazemcworld.blazinggames.items.PotionItemPredicate;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -43,8 +46,9 @@ public class EnchantmentWrappers {
             );
     public static VanillaEnchantmentWrapper SILK_TOUCH =
             new VanillaEnchantmentWrapper(Enchantment.SILK_TOUCH, () -> new ItemStack(Material.STRING),
-                    0, 0, 1,
-                    new AltarRecipe(1, 8, 32, new MaterialItemPredicate(Material.STRING))
+                    0, 0, 1, 1, 2,
+                    new AltarRecipe(1, 15, 32, new MaterialItemPredicate(Material.STRING)),
+                    new AltarRecipe(2, 30, 1, new MaterialItemPredicate(Material.NETHERITE_INGOT))
             );
     public static VanillaEnchantmentWrapper VANISHING_CURSE =
             new VanillaEnchantmentWrapper(Enchantment.VANISHING_CURSE, () -> new ItemStack(Material.GLASS),

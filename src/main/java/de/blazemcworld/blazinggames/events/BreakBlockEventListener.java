@@ -18,15 +18,17 @@ package de.blazemcworld.blazinggames.events;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.BootedComputer;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
+import de.blazemcworld.blazinggames.enchantments.PatternEnchantment;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
-import de.blazemcworld.blazinggames.enchantments.PatternEnchantment;
 import de.blazemcworld.blazinggames.items.RecipeHelper;
 import de.blazemcworld.blazinggames.teleportanchor.LodestoneStorage;
 import de.blazemcworld.blazinggames.utils.InventoryUtils;
 import de.blazemcworld.blazinggames.utils.ItemUtils;
 import de.blazemcworld.blazinggames.utils.Pair;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Material;
 import org.bukkit.block.*;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.block.data.type.Leaves;
@@ -233,7 +235,7 @@ public class BreakBlockEventListener implements Listener {
         }
 
         if (block.getType() == Material.SPAWNER) {
-            if (mainHand.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0 && (
+            if (mainHand.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 1 && (
                 mainHand.getType() == Material.IRON_PICKAXE ||
                 mainHand.getType() == Material.DIAMOND_PICKAXE ||
                 mainHand.getType() == Material.NETHERITE_PICKAXE
@@ -247,6 +249,15 @@ public class BreakBlockEventListener implements Listener {
                 item.setItemMeta(meta);
 
                 drops.add(item);
+
+                org.bukkit.inventory.meta.Damageable itemMeta = (org.bukkit.inventory.meta.Damageable) mainHand.getItemMeta();
+                if (mainHand.getType() == Material.IRON_PICKAXE)
+                    itemMeta.setDamage(Material.IRON_PICKAXE.getMaxDurability());
+                if (mainHand.getType() == Material.DIAMOND_PICKAXE)
+                    itemMeta.setDamage(itemMeta.getDamage() + Material.DIAMOND_PICKAXE.getMaxDurability() / 3 * 2 - 1);
+                if (mainHand.getType() == Material.NETHERITE_PICKAXE)
+                    itemMeta.setDamage(itemMeta.getDamage() + Material.NETHERITE_PICKAXE.getMaxDurability() / 2 - 1);
+                mainHand.setItemMeta(itemMeta);
             }
         }
 
