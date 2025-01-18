@@ -59,6 +59,10 @@ public interface EnchantmentWrapper {
     Component getComponent(int level);
     Component getLevelessComponent();
 
+    default String getWarning(int level) {
+        return null;
+    }
+
     int maxLevelAvailableInAltar(int altarTier);
 
     ItemStack getPreIcon();
@@ -97,6 +101,16 @@ public interface EnchantmentWrapper {
                         .append(name.color(recipe.matchMaterial(material) ? NamedTextColor.GREEN : NamedTextColor.RED))
                         .color(recipe.matchMaterial(material) ? NamedTextColor.GREEN : NamedTextColor.RED)
                         .decoration(TextDecoration.ITALIC, false));
+
+                if (getWarning(level + 1) != null) {
+                    lore.add(Component.empty());
+                    lore.add(Component.text("[WARNING]").color(NamedTextColor.DARK_RED).decoration(TextDecoration.ITALIC, false));
+                    String[] warnings = getWarning(level + 1).split("\n");
+                    for (String line : warnings) {
+                        lore.add(Component.text(line).color(NamedTextColor.DARK_RED).decoration(TextDecoration.ITALIC, false));
+                    }
+                    lore.add(Component.text("[WARNING]").color(NamedTextColor.DARK_RED).decoration(TextDecoration.ITALIC, false));
+                }
             }
         }
         else {
