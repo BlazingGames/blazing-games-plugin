@@ -19,7 +19,9 @@ import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.utils.NamespacedKeyDataType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Keyed;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.UseCooldownComponent;
@@ -62,14 +64,21 @@ public abstract class CustomItem implements RecipeProvider, Keyed, ItemPredicate
     public abstract @NotNull NamespacedKey getKey();
 
     public final @NotNull ItemStack create() {
-        ItemStack result = material();
+        ItemStack result = new ItemStack(baseMaterial());
 
         ItemMeta meta = result.getItemMeta();
+
         meta.getPersistentDataContainer().set(key, NamespacedKeyDataType.instance, getKey());
+
+        meta.setItemModel(getKey());
 
         UseCooldownComponent cooldown = meta.getUseCooldown();
         cooldown.setCooldownGroup(getKey());
         meta.setUseCooldown(cooldown);
+
+        meta.itemName(itemName());
+
+        meta.setRarity(ItemRarity.COMMON);
 
         result.setItemMeta(meta);
 
@@ -108,10 +117,12 @@ public abstract class CustomItem implements RecipeProvider, Keyed, ItemPredicate
     // DO NOT CALL THIS METHOD, instead call create() on the item's instance
     // also there's no need to set the "custom_item" item tag because
     // the create() method does it anyway
-    // if you want to call a function that requires a custom item stack,
-    // do it in modifyMaterial(ItemStack stack)
-    protected abstract @NotNull ItemStack material();
     protected @NotNull ItemStack modifyMaterial(ItemStack stack) {
         return stack;
     }
+
+    protected @NotNull Material baseMaterial() {
+        return Material.STRUCTURE_BLOCK;
+    }
+    protected abstract @NotNull Component itemName();
 }

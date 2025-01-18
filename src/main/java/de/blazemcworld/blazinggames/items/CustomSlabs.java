@@ -17,14 +17,11 @@ package de.blazemcworld.blazinggames.items;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -33,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CustomSlabs {
-    private final List<Material> blockedMaterials = List.of(
+    private static final List<Material> blockedMaterials = List.of(
         Material.COMMAND_BLOCK,
         Material.CHAIN_COMMAND_BLOCK,
         Material.REPEATING_COMMAND_BLOCK,
@@ -79,15 +76,13 @@ public class CustomSlabs {
         }
 
         @Override
-        protected @NotNull ItemStack material() {
-            ItemStack item = new ItemStack(material);
+        protected @NotNull Material baseMaterial() {
+            return Material.REINFORCED_DEEPSLATE;
+        }
 
-            ItemMeta meta = item.getItemMeta();
-            meta.setEnchantmentGlintOverride(true);
-            meta.itemName(Component.text(camelName + " Slab").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
-            item.setItemMeta(meta);
-
-            return item;
+        @Override
+        protected @NotNull Component itemName() {
+            return Component.text(camelName + " Slab");
         }
 
         public Map<NamespacedKey, Recipe> getRecipes() {
@@ -124,7 +119,7 @@ public class CustomSlabs {
 
             for (String word : words) {
                 // Capitalize the first letter and append the rest of the word
-                if (word.length() > 0) {
+                if (!word.isEmpty()) {
                     formattedName.append(Character.toUpperCase(word.charAt(0))); // Capitalize first letter
                     formattedName.append(word.substring(1).toLowerCase()); // Append the rest in lowercase
                     formattedName.append(" "); // Add a space after each word

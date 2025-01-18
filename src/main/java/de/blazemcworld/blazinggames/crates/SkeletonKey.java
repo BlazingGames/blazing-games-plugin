@@ -39,12 +39,14 @@ public class SkeletonKey extends CustomItem {
     }
 
     @Override
-    protected @NotNull ItemStack material() {
-        ItemStack item = new ItemStack(Material.SKELETON_SKULL);
+    protected @NotNull Component itemName() {
+        return Component.text("Skeleton Key").color(NamedTextColor.DARK_PURPLE);
+    }
+
+    @Override
+    protected @NotNull ItemStack modifyMaterial(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
-        meta.itemName(Component.text("Skeleton Key").color(NamedTextColor.DARK_PURPLE).decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(Component.text("Used to open any crate that you've lost the key to.").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true)));
-        meta.setEquippable(null);
         item.setItemMeta(meta);
         return item;
     }
