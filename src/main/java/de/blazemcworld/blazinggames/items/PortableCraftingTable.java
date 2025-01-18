@@ -45,4 +45,9 @@ public class PortableCraftingTable extends ContextlessItem {
                 getKey(), portableCraftingTableRecipe
         );
     }
+
+    @Override
+    protected int stackSize() {
+        return 1;
+    }
 }

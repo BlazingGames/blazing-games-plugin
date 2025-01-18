@@ -46,6 +46,11 @@ public class BuilderWand extends ContextlessItem {
     }
 
     @Override
+    protected int stackSize() {
+        return 1;
+    }
+
+    @Override
     protected @NotNull ItemStack modifyMaterial(ItemStack wand) {
         ItemMeta meta = wand.getItemMeta();
 

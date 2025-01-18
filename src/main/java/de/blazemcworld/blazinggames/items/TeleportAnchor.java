@@ -43,6 +43,11 @@ public class TeleportAnchor extends ContextlessItem {
     }
 
     @Override
+    protected int stackSize() {
+        return 1;
+    }
+
+    @Override
     protected @NotNull ItemStack modifyMaterial(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
         List<Component> lore = new ArrayList<>();

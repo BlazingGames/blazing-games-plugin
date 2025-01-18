@@ -21,7 +21,7 @@ import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarRecipe;
 import de.blazemcworld.blazinggames.items.predicates.ColorlessItemPredicate;
 import de.blazemcworld.blazinggames.items.CustomItems;
 import de.blazemcworld.blazinggames.items.predicates.MaterialItemPredicate;
-import de.blazemcworld.blazinggames.items.PotionItemPredicate;
+import de.blazemcworld.blazinggames.items.predicates.PotionItemPredicate;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;

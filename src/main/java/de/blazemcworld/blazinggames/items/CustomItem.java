@@ -83,6 +83,8 @@ public abstract class CustomItem<T extends ItemContext> implements RecipeProvide
 
         meta.setRarity(ItemRarity.COMMON);
 
+        meta.setMaxStackSize(stackSize());
+
         result.setItemMeta(meta);
 
         return modifyMaterial(result, context);
@@ -113,4 +115,7 @@ public abstract class CustomItem<T extends ItemContext> implements RecipeProvide
         return Material.STRUCTURE_BLOCK;
     }
     protected abstract @NotNull Component itemName();
+    protected int stackSize() {
+        return 64;
+    }
 }

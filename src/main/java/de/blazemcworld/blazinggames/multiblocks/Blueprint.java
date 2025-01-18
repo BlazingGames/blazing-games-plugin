@@ -75,5 +75,10 @@ public class Blueprint extends ContextlessItem {
             getKey(), wandRecipe
         );
     }
+
+    @Override
+    protected int stackSize() {
+        return 1;
+    }
 }
 

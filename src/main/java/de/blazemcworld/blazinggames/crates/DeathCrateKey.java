@@ -46,6 +46,11 @@ public class DeathCrateKey extends CustomItem<DeathCrateKey.DeathCrateKeyContext
     }
 
     @Override
+    protected int stackSize() {
+        return 1;
+    }
+
+    @Override
     protected @NotNull ItemStack modifyMaterial(ItemStack stack, DeathCrateKeyContext context) {
         String crateId = context.crateId();
         Location location = CrateManager.readCrate(crateId).location;

@@ -38,11 +38,11 @@ public class CustomItems implements ItemProvider {
     public static final TeleportAnchor TELEPORT_ANCHOR = new TeleportAnchor();
     public static final Blueprint BLUEPRINT = new Blueprint();
     public static final TomeAltar TOME_ALTAR = new TomeAltar();
-
     public static final DeathCrateKey DEATH_CRATE_KEY = new DeathCrateKey();
     public static final SkeletonKey SKELETON_KEY = new SkeletonKey();
     public static final ToGoBoxItem TO_GO_BOX = new ToGoBoxItem();
     public static final NetherStarChunk NETHER_STAR_CHUNK = new NetherStarChunk();
+
     public static final EnchantmentTome FUSE_TOME = new EnchantmentTome(BlazingGames.get().key("fuse_tome"), "Fuse Tome", EnchantmentWrappers.MENDING);
     public static final EnchantmentTome BIND_TOME = new EnchantmentTome(BlazingGames.get().key("bind_tome"), "Bind Tome", EnchantmentWrappers.BINDING_CURSE);
     public static final EnchantmentTome VANISH_TOME = new EnchantmentTome(BlazingGames.get().key("vanish_tome"), "Vanish Tome", EnchantmentWrappers.VANISHING_CURSE);
