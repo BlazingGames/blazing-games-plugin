@@ -17,12 +17,15 @@ package de.blazemcworld.blazinggames.computing.api.impl.auth;
 
 import de.blazemcworld.blazinggames.computing.api.APIDocs;
 import de.blazemcworld.blazinggames.computing.api.TokenManager;
+import de.blazemcworld.blazinggames.testing.CoveredByTests;
+import de.blazemcworld.blazinggames.testing.tests.UnlinkFlowTest;
 import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
 import de.blazemcworld.blazinggames.computing.api.Endpoint;
 import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
 import de.blazemcworld.blazinggames.computing.api.RequestContext;
 import java.util.HashMap;
 
+@CoveredByTests(UnlinkFlowTest.class)
 public class AuthUnlinkConfirmEndpoint implements Endpoint {
     @Override
     public APIDocs[] docs() {

@@ -17,6 +17,8 @@ package de.blazemcworld.blazinggames.computing.api.impl.auth;
 
 import de.blazemcworld.blazinggames.computing.api.APIDocs;
 import de.blazemcworld.blazinggames.computing.api.TokenManager;
+import de.blazemcworld.blazinggames.testing.CoveredByTests;
+import de.blazemcworld.blazinggames.testing.tests.LoginFlowTest;
 import de.blazemcworld.blazinggames.computing.api.ComputingAPI;
 import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
 import de.blazemcworld.blazinggames.computing.api.Endpoint;
@@ -27,6 +29,7 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 
+@CoveredByTests(LoginFlowTest.class)
 public class AuthLinkEndpoint implements Endpoint {
     private static final String BASE_URL = "https://login.live.com/oauth20_authorize.srf";
     private static final String SCOPES = "Xboxlive.signin";

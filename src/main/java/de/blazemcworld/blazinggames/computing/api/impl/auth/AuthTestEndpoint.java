@@ -22,7 +22,11 @@ import de.blazemcworld.blazinggames.computing.api.Endpoint;
 import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
 import de.blazemcworld.blazinggames.computing.api.RequestContext;
 import de.blazemcworld.blazinggames.computing.api.RequestMethod;
+import de.blazemcworld.blazinggames.testing.CoveredByTests;
+import de.blazemcworld.blazinggames.testing.tests.LoginFlowTest;
+import de.blazemcworld.blazinggames.testing.tests.UnlinkFlowTest;
 
+@CoveredByTests({LoginFlowTest.class, UnlinkFlowTest.class})
 public class AuthTestEndpoint implements Endpoint {
     @Override
     public String path() {

@@ -17,6 +17,8 @@ package de.blazemcworld.blazinggames.computing.api.impl.auth;
 
 import de.blazemcworld.blazinggames.computing.api.APIDocs;
 import de.blazemcworld.blazinggames.computing.api.TokenManager;
+import de.blazemcworld.blazinggames.testing.CoveredByTests;
+import de.blazemcworld.blazinggames.testing.tests.LoginFlowTest;
 import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
 import de.blazemcworld.blazinggames.computing.api.Endpoint;
 import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
@@ -28,6 +30,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+@CoveredByTests(LoginFlowTest.class)
 public class AuthConsentEndpoint implements Endpoint {
     @Override
     public String path() {

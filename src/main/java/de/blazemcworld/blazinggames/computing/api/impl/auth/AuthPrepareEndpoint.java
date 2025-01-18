@@ -22,6 +22,8 @@ import com.google.gson.JsonObject;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.api.APIDocs;
 import de.blazemcworld.blazinggames.computing.api.TokenManager;
+import de.blazemcworld.blazinggames.testing.CoveredByTests;
+import de.blazemcworld.blazinggames.testing.tests.LoginFlowTest;
 import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
 import de.blazemcworld.blazinggames.computing.api.Endpoint;
 import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
@@ -32,6 +34,7 @@ import de.blazemcworld.blazinggames.utils.GetGson;
 import java.util.ArrayList;
 import java.util.List;
 
+@CoveredByTests(LoginFlowTest.class)
 public class AuthPrepareEndpoint implements Endpoint {
     @Override
     public String path() {
