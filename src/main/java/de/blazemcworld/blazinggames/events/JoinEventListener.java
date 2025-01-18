@@ -17,7 +17,7 @@ package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.discord.DiscordApp;
 import de.blazemcworld.blazinggames.discord.DiscordNotification;
-import de.blazemcworld.blazinggames.items.CustomRecipes;
+import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;

@@ -81,7 +81,7 @@ public class CustomGiveCommand implements CommandExecutor, TabCompleter {
         List<String> tabs = new ArrayList<>();
 
         if(strings.length == 1) {
-            CustomItems.list().forEach(itemType -> {
+            CustomItems.getAllItems().forEach(itemType -> {
                 if(itemType instanceof ContextlessItem)
                 {
                     tabs.add(itemType.getKey().getKey());

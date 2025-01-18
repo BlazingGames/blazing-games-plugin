@@ -26,7 +26,7 @@ import de.blazemcworld.blazinggames.utils.ItemStackTypeAdapter;
 import de.blazemcworld.blazinggames.utils.TextLocation;
 import de.blazemcworld.blazinggames.discord.*;
 import de.blazemcworld.blazinggames.events.*;
-import de.blazemcworld.blazinggames.items.CustomRecipes;
+import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
 import de.blazemcworld.blazinggames.teleportanchor.LodestoneInteractionEventListener;
 import de.blazemcworld.blazinggames.teleportanchor.LodestoneInventoryClickEventListener;
 import io.jsonwebtoken.Jwts.SIG;

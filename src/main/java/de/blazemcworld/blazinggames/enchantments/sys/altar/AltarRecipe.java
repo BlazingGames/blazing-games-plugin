@@ -15,8 +15,8 @@
  */
 package de.blazemcworld.blazinggames.enchantments.sys.altar;
 
-import de.blazemcworld.blazinggames.items.EmptyItemPredicate;
-import de.blazemcworld.blazinggames.items.ItemPredicate;
+import de.blazemcworld.blazinggames.items.predicates.EmptyItemPredicate;
+import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import org.bukkit.inventory.ItemStack;
 
 public record AltarRecipe(int lapisAmount, int expAmount, int itemAmount, ItemPredicate itemRequirement) {

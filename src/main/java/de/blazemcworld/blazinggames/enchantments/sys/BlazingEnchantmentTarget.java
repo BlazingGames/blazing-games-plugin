@@ -16,7 +16,7 @@
 package de.blazemcworld.blazinggames.enchantments.sys;
 
 import de.blazemcworld.blazinggames.items.CustomItem;
-import de.blazemcworld.blazinggames.items.ItemPredicate;
+import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

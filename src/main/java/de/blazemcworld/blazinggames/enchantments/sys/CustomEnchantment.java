@@ -15,7 +15,7 @@
  */
 package de.blazemcworld.blazinggames.enchantments.sys;
 
-import de.blazemcworld.blazinggames.items.ItemPredicate;
+import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import de.blazemcworld.blazinggames.utils.NumberUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;

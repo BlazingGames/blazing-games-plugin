@@ -15,6 +15,7 @@
  */
 package de.blazemcworld.blazinggames.items;
 
+import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
