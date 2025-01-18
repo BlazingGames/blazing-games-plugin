@@ -138,7 +138,7 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
     @Override
     public String getWarning(int level) {
         if (enchantment == Enchantment.SILK_TOUCH && level > 1) {
-            return "Might break pickaxe when used on spawners.\nAlways breaks Iron pickaxes.\nUses 2/3rd of durability on diamond pickaxes.\nUses half ofdurability on netherite pickaxes.";
+            return "Might break pickaxe when used on spawners.\nAlways breaks iron pickaxes and lower.\nUses 2/3rd of durability on diamond pickaxes.\nUses half of durability on netherite pickaxes.";
         }
         return null;
     }

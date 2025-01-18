@@ -40,6 +40,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
@@ -236,6 +237,9 @@ public class BreakBlockEventListener implements Listener {
 
         if (block.getType() == Material.SPAWNER) {
             if (mainHand.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 1 && (
+                    mainHand.getType() == Material.WOODEN_PICKAXE ||
+                            mainHand.getType() == Material.STONE_PICKAXE ||
+                            mainHand.getType() == Material.GOLDEN_PICKAXE ||
                 mainHand.getType() == Material.IRON_PICKAXE ||
                 mainHand.getType() == Material.DIAMOND_PICKAXE ||
                 mainHand.getType() == Material.NETHERITE_PICKAXE
@@ -250,8 +254,8 @@ public class BreakBlockEventListener implements Listener {
 
                 drops.add(item);
 
-                org.bukkit.inventory.meta.Damageable itemMeta = (org.bukkit.inventory.meta.Damageable) mainHand.getItemMeta();
-                if (mainHand.getType() == Material.IRON_PICKAXE)
+                Damageable itemMeta = (Damageable) mainHand.getItemMeta();
+                if (mainHand.getType() == Material.IRON_PICKAXE || mainHand.getType() == Material.GOLDEN_PICKAXE || mainHand.getType() == Material.STONE_PICKAXE || mainHand.getType() == Material.WOODEN_PICKAXE)
                     itemMeta.setDamage(Material.IRON_PICKAXE.getMaxDurability());
                 if (mainHand.getType() == Material.DIAMOND_PICKAXE)
                     itemMeta.setDamage(itemMeta.getDamage() + Material.DIAMOND_PICKAXE.getMaxDurability() / 3 * 2 - 1);
