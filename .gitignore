@@ -1,6 +1,6 @@
 # User-specific stuff
 .idea/
-!.idea/fileTemplates/
+!.idea/copyright/
 
 *.iml
 *.ipr
@@ -123,3 +123,4 @@ bin
 
 # testing server
 /testsrv/
+/.idea/fileTemplates/
