@@ -89,7 +89,7 @@ public class BlazingAPIRequestHandler implements HttpHandler {
         }
 
         try {
-            if (length != 0 && !emptyBody) {
+            if (length > 0 && !emptyBody) {
                 try (OutputStream os = exchange.getResponseBody()) {
                     response.body.handle(os);
                 }
