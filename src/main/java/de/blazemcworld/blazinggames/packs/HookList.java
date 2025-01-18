@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.computing.api;
+package de.blazemcworld.blazinggames.packs;
 
-public enum RequiredFeature {
-    COMPUTERS,
-    RESOURCE_PACK
+public enum HookList {
+    ;
+
+    public final PackBuildHook hook;
+
+    HookList(PackBuildHook hook) {
+        this.hook = hook;
+    }
 }

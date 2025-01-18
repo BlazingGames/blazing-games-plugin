@@ -17,6 +17,12 @@ computing:
     chunkloading: false
     net: false
 
+resource-packs:
+  enabled: false
+  metadata:
+    description: blazing-games
+    uuid: 9404e6fe-9563-4615-9eed-d7385b5504d7
+
 authorization:
   microsoft:
     spoof-ms-server: true

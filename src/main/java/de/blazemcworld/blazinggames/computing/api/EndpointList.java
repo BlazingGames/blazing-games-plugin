@@ -17,6 +17,7 @@ package de.blazemcworld.blazinggames.computing.api;
 
 import java.util.List;
 
+import de.blazemcworld.blazinggames.computing.api.impl.PackZipEndpoint;
 import de.blazemcworld.blazinggames.computing.api.impl.RootEndpoint;
 import de.blazemcworld.blazinggames.computing.api.impl.auth.*;
 import de.blazemcworld.blazinggames.computing.api.impl.computers.*;
@@ -36,6 +37,8 @@ public enum EndpointList {
     COMPUTER_LIST("Computers", new ComputersListEndpoint(), RequiredFeature.COMPUTERS),
     COMPUTER_CODE_READ("Computers", new ViewCodeEndpoint(), RequiredFeature.COMPUTERS),
     COMPUTER_RENAME("Computers", new RenameEndpoint(), RequiredFeature.COMPUTERS),
+
+    PACK_ZIP(null, new PackZipEndpoint(), RequiredFeature.RESOURCE_PACK),
     ;
 
     public final String category;

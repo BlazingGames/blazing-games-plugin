@@ -28,6 +28,8 @@ import de.blazemcworld.blazinggames.utils.TextLocation;
 import de.blazemcworld.blazinggames.discord.*;
 import de.blazemcworld.blazinggames.events.*;
 import de.blazemcworld.blazinggames.items.CustomRecipes;
+import de.blazemcworld.blazinggames.packs.ResourcePackManager;
+import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
 import de.blazemcworld.blazinggames.teleportanchor.LodestoneInteractionEventListener;
 import de.blazemcworld.blazinggames.teleportanchor.LodestoneInventoryClickEventListener;
 import io.jsonwebtoken.Jwts.SIG;
@@ -50,11 +52,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
@@ -81,6 +85,11 @@ public final class BlazingGames extends JavaPlugin {
     // Computers
     private boolean computersEnabled = false;
     private ComputerPrivileges computerPrivileges = ComputerPrivileges.minimal();
+
+    // Resource pack
+    private PackConfig packConfig;
+    private File packFile;
+    private byte[] sha1;
 
     @Override
     public void onEnable() {
@@ -163,6 +172,7 @@ public final class BlazingGames extends JavaPlugin {
 
                 ArrayList<RequiredFeature> features = new ArrayList<>();
                 if (computersEnabled) features.add(RequiredFeature.COMPUTERS);
+                if (config.getBoolean("resource-packs.enabled")) features.add(RequiredFeature.RESOURCE_PACK);
 
                 BlazingAPI.setConfig(new BlazingAPI.Config(spoofMsServer, clientId, clientSecret, key, apiConfig, wssConfig, List.copyOf(features)));
                 API_AVAILABLE = BlazingAPI.startAll();
@@ -178,6 +188,25 @@ public final class BlazingGames extends JavaPlugin {
             }
         } else {
             API_AVAILABLE = false;
+        }
+
+        // Resource pack
+        if (config.getBoolean("resource-packs.enabled") && API_AVAILABLE) {
+            var resourcePackConfig = new PackConfig(
+                config.getString("resource-packs.metadata.description"),
+                UUID.fromString(config.getString("resource-packs.metadata.uuid"))
+            );
+
+            this.packFile = ResourcePackManager.build(getLogger(), resourcePackConfig);
+            if (packFile != null) {
+                this.packConfig = resourcePackConfig;
+                this.sha1 = ResourcePackManager.getFileHash(packFile);
+                getLogger().info("Resource pack built");
+            } else {
+                this.packConfig = null;
+            }
+        } else if (config.getBoolean("resource-packs.enabled") && !API_AVAILABLE) {
+            getLogger().severe("The resource pack is enabled, but the API is not available!");
         }
 
         // Commands
@@ -297,5 +326,17 @@ public final class BlazingGames extends JavaPlugin {
 
     public boolean isApiAvailable() {
         return API_AVAILABLE;
+    }
+
+    public PackConfig getPackConfig() {
+        return packConfig;
+    }
+
+    public File getPackFile() {
+        return packFile;
+    }
+
+    public byte[] getPackSha1() {
+        return sha1;
     }
 }

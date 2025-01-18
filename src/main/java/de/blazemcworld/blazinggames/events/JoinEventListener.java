@@ -15,9 +15,14 @@
  */
 package de.blazemcworld.blazinggames.events;
 
+import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.discord.DiscordApp;
 import de.blazemcworld.blazinggames.discord.DiscordNotification;
 import de.blazemcworld.blazinggames.items.CustomRecipes;
+import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
+import net.kyori.adventure.text.Component;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -27,5 +32,17 @@ public class JoinEventListener implements Listener {
     public void join(PlayerJoinEvent event) {
         event.getPlayer().discoverRecipes(CustomRecipes.getAllRecipes().keySet());
         DiscordApp.send(DiscordNotification.playerJoin(event.getPlayer()));
+
+        if (BlazingGames.get().getPackConfig() != null) {
+            PackConfig config = BlazingGames.get().getPackConfig();
+            byte[] sha1 = BlazingGames.get().getPackSha1();
+            event.getPlayer().setResourcePack(
+                config.uuid(),
+                BlazingAPI.getConfig().apiConfig().findAt() + "/pack.zip",
+                sha1,
+                Component.text("Custom features require this resource pack."),
+                true
+            );
+        }
     }
 }
