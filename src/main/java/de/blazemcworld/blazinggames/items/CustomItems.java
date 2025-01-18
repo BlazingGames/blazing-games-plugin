@@ -17,6 +17,7 @@ package de.blazemcworld.blazinggames.items;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.builderwand.BuilderWand;
+import de.blazemcworld.blazinggames.crates.DeathCrateKey;
 import de.blazemcworld.blazinggames.crates.SkeletonKey;
 import de.blazemcworld.blazinggames.crates.ToGoBoxItem;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
@@ -36,6 +37,7 @@ public class CustomItems {
     public static final Blueprint BLUEPRINT = new Blueprint();
     public static final TomeAltar TOME_ALTAR = new TomeAltar();
     public static final List<CustomSlabs.CustomSlab> CUSTOM_SLABS = new CustomSlabs().slabs;
+    public static final DeathCrateKey DEATH_CRATE_KEY = new DeathCrateKey();
     public static final SkeletonKey SKELETON_KEY = new SkeletonKey();
     public static final ToGoBoxItem TO_GO_BOX = new ToGoBoxItem();
     public static final NetherStarChunk NETHER_STAR_CHUNK = new NetherStarChunk();
@@ -51,13 +53,14 @@ public class CustomItems {
     public static final EnchantmentTome GREED_TOME = new EnchantmentTome(BlazingGames.get().key("greed_tome"), "Greed Tome", CustomEnchantments.SCAVENGER);
     public static final EnchantmentTome DIM_TOME = new EnchantmentTome(BlazingGames.get().key("dim_tome"), "Dim Tome", CustomEnchantments.UNSHINY);
 
-    public static Set<CustomItem> list() {
-        Set<CustomItem> set = new java.util.HashSet<>(Set.of(
+    public static Set<CustomItem<?>> list() {
+        Set<CustomItem<?>> set = new java.util.HashSet<>(Set.of(
             BUILDER_WAND,
             PORTABLE_CRAFTING_TABLE,
             TELEPORT_ANCHOR,
             BLUEPRINT,
             TOME_ALTAR,
+            DEATH_CRATE_KEY,
             SKELETON_KEY,
             TO_GO_BOX,
             NETHER_STAR_CHUNK,
@@ -77,8 +80,8 @@ public class CustomItems {
         return set;
     }
 
-    public static @Nullable CustomItem getByKey(NamespacedKey key) {
-        for(CustomItem curr : list()) {
+    public static @Nullable CustomItem<?> getByKey(NamespacedKey key) {
+        for(CustomItem<?> curr : list()) {
             if(curr.getKey().equals(key)) {
                 return curr;
             }
