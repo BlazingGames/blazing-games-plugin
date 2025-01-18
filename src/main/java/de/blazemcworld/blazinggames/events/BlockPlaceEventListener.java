@@ -48,15 +48,14 @@ import org.bukkit.util.Vector;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
 public class BlockPlaceEventListener implements Listener {
 
     @EventHandler
-    public void onBlockPlace(BlockPlaceEvent event) throws IOException {
-        if (event.getItemInHand() != null && (CustomItems.SKELETON_KEY.matchItem(event.getItemInHand()) || CrateManager.getKeyULID(event.getItemInHand()) != null)) {
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (CustomItems.SKELETON_KEY.matchItem(event.getItemInHand()) || CrateManager.getKeyULID(event.getItemInHand()) != null) {
             event.setCancelled(true);
             return;
         }
@@ -175,7 +174,7 @@ public class BlockPlaceEventListener implements Listener {
                 } else {
                     event.getPlayer().getInventory().setItem(event.getHand(), new ItemStack(Material.AIR));
                 }
-                if ("".equals(computerId)) {
+                if (computerId.isEmpty()) {
                     ComputerRegistry.placeNewComputer(
                         placeLocation,
                         computerTypes,
@@ -241,7 +240,7 @@ public class BlockPlaceEventListener implements Listener {
         shulker.setSilent(true);
         shulker.getPersistentDataContainer().set(BlazingGames.get().key("slab_type"), PersistentDataType.STRING, slab);
         shulker.getPersistentDataContainer().set(BlazingGames.get().key("slab"), PersistentDataType.STRING, uuid.toString());
-        Objects.requireNonNull(shulker.getAttribute(Attribute.GENERIC_SCALE)).setBaseValue(0.5);
+        Objects.requireNonNull(shulker.getAttribute(Attribute.SCALE)).setBaseValue(0.5);
 
         ArmorStand armorStand = (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
         armorStand.setInvisible(true);
@@ -250,7 +249,7 @@ public class BlockPlaceEventListener implements Listener {
         armorStand.setMarker(true);
         armorStand.setGravity(false);
         armorStand.setSmall(true);
-        Objects.requireNonNull(armorStand.getAttribute(Attribute.GENERIC_SCALE)).setBaseValue(0.00001);
+        Objects.requireNonNull(armorStand.getAttribute(Attribute.SCALE)).setBaseValue(0.00001);
         armorStand.addPassenger(shulker);
     }
 

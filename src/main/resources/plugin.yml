@@ -1,7 +1,7 @@
 name: blazinggames
 version: '${version}'
 main: de.blazemcworld.blazinggames.BlazingGames
-api-version: '1.21'
+api-version: '1.21.4'
 prefix: BlazingGames
 authors: [BlazeMCworld, sbot50, 'Ivy Collective (ivyc.)', XTerPL]
 description: funny block game javascript computers
