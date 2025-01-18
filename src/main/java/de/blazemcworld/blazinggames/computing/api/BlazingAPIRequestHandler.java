@@ -71,6 +71,7 @@ public class BlazingAPIRequestHandler implements HttpHandler {
         }
 
         boolean emptyBody;
+        long length;
         try {
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             exchange.getResponseHeaders()
@@ -78,7 +79,9 @@ public class BlazingAPIRequestHandler implements HttpHandler {
             exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization");
             emptyBody = context.method().flags.contains(RequestMethod.Flag.RESPOND_EMPTY_BODY);
             response.headers.forEach((s, s2) -> exchange.getResponseHeaders().add(s, s2));
-            exchange.sendResponseHeaders(this.emptyBodyVersionIfNeeded(response.status, emptyBody), response.body.length);
+            length = response.body.length();
+            if (length == 0) length = -1;
+            exchange.sendResponseHeaders(this.emptyBodyVersionIfNeeded(response.status, emptyBody), length);
         } catch (Exception e) {
             BlazingGames.get().debugLog("Failed to send response headers");
             BlazingGames.get().debugLog(e);
@@ -86,9 +89,9 @@ public class BlazingAPIRequestHandler implements HttpHandler {
         }
 
         try {
-            if (response.body.length != 0 && !emptyBody) {
+            if (length != 0 && !emptyBody) {
                 try (OutputStream os = exchange.getResponseBody()) {
-                    os.write(response.body);
+                    response.body.handle(os);
                 }
             } else {
                 exchange.getResponseBody().close();
