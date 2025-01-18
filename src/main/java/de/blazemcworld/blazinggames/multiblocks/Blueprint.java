@@ -16,7 +16,7 @@
 package de.blazemcworld.blazinggames.multiblocks;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.items.CustomItem;
+import de.blazemcworld.blazinggames.items.ContextlessItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Blueprint extends CustomItem {
+public class Blueprint extends ContextlessItem {
     @Override
     public @NotNull NamespacedKey getKey() {
         return BlazingGames.get().key("blueprint");

@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-public class PortableCraftingTable extends CustomItem {
+public class PortableCraftingTable extends ContextlessItem {
     @Override
     public @NotNull NamespacedKey getKey() {
         return BlazingGames.get().key("portable_crafting_table");

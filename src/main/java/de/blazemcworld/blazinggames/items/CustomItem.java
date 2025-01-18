@@ -16,6 +16,7 @@
 package de.blazemcworld.blazinggames.items;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.items.contexts.ItemContext;
 import de.blazemcworld.blazinggames.utils.NamespacedKeyDataType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Keyed;
@@ -29,11 +30,11 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-public abstract class CustomItem implements RecipeProvider, Keyed, ItemPredicate {
+public abstract class CustomItem<T extends ItemContext> implements RecipeProvider, Keyed, ItemPredicate {
     private static final NamespacedKey key = BlazingGames.get().key("custom_item");
 
     // returns null if not a custom item
-    public static @Nullable CustomItem getCustomItem(ItemStack stack) {
+    public static @Nullable CustomItem<?> getCustomItem(ItemStack stack) {
         if(stack == null || !stack.hasItemMeta()) {
             return null;
         }
@@ -63,7 +64,7 @@ public abstract class CustomItem implements RecipeProvider, Keyed, ItemPredicate
 
     public abstract @NotNull NamespacedKey getKey();
 
-    public final @NotNull ItemStack create() {
+    public final @NotNull ItemStack create(T context) {
         ItemStack result = new ItemStack(baseMaterial());
 
         ItemMeta meta = result.getItemMeta();
@@ -82,12 +83,12 @@ public abstract class CustomItem implements RecipeProvider, Keyed, ItemPredicate
 
         result.setItemMeta(meta);
 
-        return modifyMaterial(result);
+        return modifyMaterial(result, context);
     }
 
     @Override
     public final boolean matchItem(ItemStack stack) {
-        CustomItem other = getCustomItem(stack);
+        CustomItem<?> other = getCustomItem(stack);
 
         if(other == null) return false;
 
@@ -96,28 +97,13 @@ public abstract class CustomItem implements RecipeProvider, Keyed, ItemPredicate
 
     @Override
     public final Component getDescription() {
-        ItemStack item = create();
-
-        Component name = Component.translatable(item.translationKey());
-        ItemMeta reqMeta = item.getItemMeta();
-
-        if(reqMeta != null) {
-            if(reqMeta.hasItemName()) {
-                name = reqMeta.itemName();
-            }
-
-            if(reqMeta.hasDisplayName()) {
-                name = reqMeta.displayName();
-            }
-        }
-
-        return name;
+        return itemName();
     }
 
     // DO NOT CALL THIS METHOD, instead call create() on the item's instance
     // also there's no need to set the "custom_item" item tag because
     // the create() method does it anyway
-    protected @NotNull ItemStack modifyMaterial(ItemStack stack) {
+    protected @NotNull ItemStack modifyMaterial(ItemStack stack, T context) {
         return stack;
     }
 

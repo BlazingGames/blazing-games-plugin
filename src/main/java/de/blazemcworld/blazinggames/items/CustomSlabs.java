@@ -59,7 +59,7 @@ public class CustomSlabs {
         }
     }
 
-    public static class CustomSlab extends CustomItem {
+    public static class CustomSlab extends ContextlessItem {
         public final Material material;
         public final String name;
         public final String camelName;

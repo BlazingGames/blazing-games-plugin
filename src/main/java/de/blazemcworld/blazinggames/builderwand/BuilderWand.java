@@ -16,6 +16,7 @@
 package de.blazemcworld.blazinggames.builderwand;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.items.ContextlessItem;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -36,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class BuilderWand extends CustomItem {
+public class BuilderWand extends ContextlessItem {
     private static final NamespacedKey modeKey = BlazingGames.get().key("builder_mode");
 
     @Override
