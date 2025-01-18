@@ -15,6 +15,8 @@
  */
 package de.blazemcworld.blazinggames.computing.api;
 
+import java.util.List;
+
 import de.blazemcworld.blazinggames.computing.api.impl.RootEndpoint;
 import de.blazemcworld.blazinggames.computing.api.impl.auth.*;
 import de.blazemcworld.blazinggames.computing.api.impl.computers.*;
@@ -31,16 +33,18 @@ public enum EndpointList {
     AUTH_UNLINK(null, new AuthUnlinkEndpoint()),
     AUTH_UNLINK_CONFIRM(null, new AuthUnlinkConfirmEndpoint()),
 
-    COMPUTER_LIST("Computers", new ComputersListEndpoint()),
-    COMPUTER_CODE_READ("Computers", new ViewCodeEndpoint()),
-    COMPUTER_RENAME("Computers", new RenameEndpoint()),
+    COMPUTER_LIST("Computers", new ComputersListEndpoint(), RequiredFeature.COMPUTERS),
+    COMPUTER_CODE_READ("Computers", new ViewCodeEndpoint(), RequiredFeature.COMPUTERS),
+    COMPUTER_RENAME("Computers", new RenameEndpoint(), RequiredFeature.COMPUTERS),
     ;
 
     public final String category;
     public final Endpoint endpoint;
+    public final List<RequiredFeature> requiredFeatures;
 
-    private EndpointList(String category, Endpoint endpoint) {
+    private EndpointList(String category, Endpoint endpoint, RequiredFeature... requiredFeatures) {
         this.endpoint = endpoint;
         this.category = category;
+        this.requiredFeatures = List.of(requiredFeatures);
     }
 }

@@ -15,23 +15,27 @@
  */
 package de.blazemcworld.blazinggames.computing.api;
 
+import java.util.List;
+
 public enum Permission {
-    READ_COMPUTERS("Read a list of your computers, with metadata", DangerLevel.LOW),
-    WRITE_COMPUTERS("Unregister and edit metadata of your computers", DangerLevel.HIGH),
-    RESTART_COMPUTER("Restart your computers", DangerLevel.LOW),
-    START_STOP_COMPUTER("Start or stop your computers", DangerLevel.MEDIUM),
-    COMPUTER_CODE_READ("View your computer code", DangerLevel.LOW),
-    COMPUTER_CODE_MODIFY("Modify your computer code", DangerLevel.MEDIUM),
-    COLLABORATOR_MANAGEMENT("Manage collaborators of your computers (with consent)", DangerLevel.MEDIUM),
-    OWNER_MANAGEMENT("Transfer ownership of your computers (with consent)", DangerLevel.MEDIUM),
-    COLLABORATOR_OWNER_MANAGEMENT_NO_CONSENT("Do not require consent for collaborator and owner changes", DangerLevel.CRITICAL);
+    READ_COMPUTERS("Read a list of your computers, with metadata", DangerLevel.LOW, RequiredFeature.COMPUTERS),
+    WRITE_COMPUTERS("Unregister and edit metadata of your computers", DangerLevel.HIGH, RequiredFeature.COMPUTERS),
+    RESTART_COMPUTER("Restart your computers", DangerLevel.LOW, RequiredFeature.COMPUTERS),
+    START_STOP_COMPUTER("Start or stop your computers", DangerLevel.MEDIUM, RequiredFeature.COMPUTERS),
+    COMPUTER_CODE_READ("View your computer code", DangerLevel.LOW, RequiredFeature.COMPUTERS),
+    COMPUTER_CODE_MODIFY("Modify your computer code", DangerLevel.MEDIUM, RequiredFeature.COMPUTERS),
+    COLLABORATOR_MANAGEMENT("Manage collaborators of your computers (with consent)", DangerLevel.MEDIUM, RequiredFeature.COMPUTERS),
+    OWNER_MANAGEMENT("Transfer ownership of your computers (with consent)", DangerLevel.MEDIUM, RequiredFeature.COMPUTERS),
+    COLLABORATOR_OWNER_MANAGEMENT_NO_CONSENT("Do not require consent for collaborator and owner changes", DangerLevel.CRITICAL, RequiredFeature.COMPUTERS);
 
     public final String description;
     public final DangerLevel level;
+    public final List<RequiredFeature> requiredFeatures;
 
-    private Permission(String description, DangerLevel level) {
+    private Permission(String description, DangerLevel level, RequiredFeature... requiredFeatures) {
         this.description = description;
         this.level = level;
+        this.requiredFeatures = List.of(requiredFeatures);
     }
 
     public boolean isAllowed(LinkedUser user) {

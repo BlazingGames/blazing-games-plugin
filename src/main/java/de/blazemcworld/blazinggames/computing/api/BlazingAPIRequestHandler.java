@@ -55,7 +55,7 @@ public class BlazingAPIRequestHandler implements HttpHandler {
 
         EndpointResponse response;
         try {
-            if (!ComputingAPI.config.apiConfig().findAt().replace("https://", "").replace("http://", "").equals(context.getFirstHeader("Host"))) {
+            if (!BlazingAPI.config.apiConfig().findAt().replace("https://", "").replace("http://", "").equals(context.getFirstHeader("Host"))) {
                 BlazingGames.get().debugLog("Refused to respond: Host header is " + context.getFirstHeader("Host"));
                 response = EndpointResponse.builder(421).build();
             } else if (context.ipAddress() == null) {
@@ -189,10 +189,10 @@ public class BlazingAPIRequestHandler implements HttpHandler {
 
         String realIp = exchange.getRemoteAddress().getAddress().getHostAddress();
         String ip;
-        if (ComputingAPI.config.apiConfig().proxyEnabled()) {
-            boolean isAllowed = ComputingAPI.config.apiConfig().isAllowed(realIp);
-            if (headers.containsKey(ComputingAPI.config.apiConfig().proxyIpAddressHeader()) && !headers.get(ComputingAPI.config.apiConfig().proxyIpAddressHeader()).isEmpty()) {
-                ip = headers.get(ComputingAPI.config.apiConfig().proxyIpAddressHeader()).getFirst();
+        if (BlazingAPI.config.apiConfig().proxyEnabled()) {
+            boolean isAllowed = BlazingAPI.config.apiConfig().isAllowed(realIp);
+            if (headers.containsKey(BlazingAPI.config.apiConfig().proxyIpAddressHeader()) && !headers.get(BlazingAPI.config.apiConfig().proxyIpAddressHeader()).isEmpty()) {
+                ip = headers.get(BlazingAPI.config.apiConfig().proxyIpAddressHeader()).getFirst();
             } else {
                 BlazingGames.get().debugLog("Missing IP address header on proxy " + realIp);
                 ip = null;
@@ -222,6 +222,7 @@ public class BlazingAPIRequestHandler implements HttpHandler {
         String finalPath = path;
         Endpoint endpoint = Arrays.stream(EndpointList.values())
             .filter(ex -> ex.endpoint.path().equals(finalPath))
+            .filter(ex -> BlazingAPI.config.hasAllRequiredFeatures(ex.requiredFeatures))
             .map(ex -> ex.endpoint)
             .findFirst()
             .orElse(null);

@@ -17,6 +17,7 @@ package de.blazemcworld.blazinggames.computing.api.impl;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.api.APIDocs;
+import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.computing.api.Endpoint;
 import de.blazemcworld.blazinggames.computing.api.EndpointList;
 import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
@@ -71,8 +72,13 @@ public class RootEndpoint implements Endpoint {
         });
         root.put("devurls", devurls);
         
+        var apiConfig = BlazingAPI.getConfig();
         HashMap<String, ArrayList<HashMap<String, Object>>> endpoints = new HashMap<>();
         for (EndpointList endpoint : EndpointList.values()) {
+            if (!apiConfig.hasAllRequiredFeatures(endpoint.requiredFeatures)) {
+                continue;
+            }
+
             String category = endpoint.category;
             if (category != null) {
                 if (!endpoints.containsKey(category)) {

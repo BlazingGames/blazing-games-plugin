@@ -33,7 +33,7 @@ import com.google.gson.JsonParser;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.ComputerEditor;
-import de.blazemcworld.blazinggames.computing.api.ComputingAPI;
+import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.computing.api.LinkedUser;
 import de.blazemcworld.blazinggames.computing.api.Permission;
 import de.blazemcworld.blazinggames.utils.GZipToolkit;
@@ -56,8 +56,8 @@ public class BlazingWSS extends WebSocketServer {
         Permission.COMPUTER_CODE_MODIFY
     };
 
-    private final ComputingAPI.WebsiteConfig wssConfig;
-    public BlazingWSS(ComputingAPI.WebsiteConfig wssConfig) {
+    private final BlazingAPI.WebsiteConfig wssConfig;
+    public BlazingWSS(BlazingAPI.WebsiteConfig wssConfig) {
         super(new InetSocketAddress(wssConfig.bindPort()));
         this.wssConfig = wssConfig;
         if (wssConfig.https()) this.setWebSocketFactory(new DefaultSSLWebSocketServerFactory(wssConfig.makeSSLContext()));
