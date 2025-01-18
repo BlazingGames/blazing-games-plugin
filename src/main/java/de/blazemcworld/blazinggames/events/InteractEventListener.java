@@ -56,7 +56,6 @@ import org.bukkit.util.Vector;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -87,7 +86,7 @@ public class InteractEventListener implements Listener {
 
         if (block != null && block.getType() == Material.VAULT) vaultShit(block);
 
-        if (eventItem != null && (CustomItems.SKELETON_KEY.matchItem(eventItem) || CrateManager.getKeyULID(eventItem) != null)) {
+        if (eventItem != null && (CrateManager.getKeyULID(eventItem) != null)) {
             event.setCancelled(true);
         }
 
@@ -204,7 +203,6 @@ public class InteractEventListener implements Listener {
         }
 
         if (CustomItems.PORTABLE_CRAFTING_TABLE.matchItem(eventItem)) {
-            event.setCancelled(true);
             // TODO: use a non-deprecated method
             player.openWorkbench(null, true);
             return;
@@ -249,7 +247,6 @@ public class InteractEventListener implements Listener {
             }
             if(CustomItems.BLUEPRINT.matchItem(eventItem)) {
                 if(!player.hasCooldown(eventItem)) {
-                    event.setCancelled(true);
                     CustomItems.BLUEPRINT.outputMultiBlockProgress(player, block.getLocation());
                     player.setCooldown(eventItem, 40);
                 }

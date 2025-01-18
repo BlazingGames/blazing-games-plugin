@@ -55,7 +55,11 @@ public class BlockPlaceEventListener implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (CustomItems.SKELETON_KEY.matchItem(event.getItemInHand()) || CrateManager.getKeyULID(event.getItemInHand()) != null) {
+        if(CustomItem.isCustomItem(event.getItemInHand())) {
+            event.setCancelled(true);
+        }
+
+        if (CrateManager.getKeyULID(event.getItemInHand()) != null) {
             event.setCancelled(true);
             return;
         }
@@ -130,7 +134,7 @@ public class BlockPlaceEventListener implements Listener {
                 subPillar.setTransformation(transformation);
             });
         } else {
-            boolean isSlab = CustomItem.getCustomItem(event.getItemInHand()) != null && Objects.requireNonNull(event.getItemInHand().getPersistentDataContainer().get(BlazingGames.get().key("custom_item"), PersistentDataType.STRING)).contains("slab");
+            boolean isSlab = CustomItem.getCustomItem(event.getItemInHand()) instanceof CustomSlabs.CustomSlab;
 
             if (isSlab) {
                 event.setCancelled(true);
