@@ -17,14 +17,10 @@ package de.blazemcworld.blazinggames.items;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -36,15 +32,13 @@ public class TomeAltar extends CustomItem {
     }
 
     @Override
-    protected @NotNull ItemStack material() {
-        ItemStack item = new ItemStack(Material.BLACKSTONE_WALL);
+    protected @NotNull Material baseMaterial() {
+        return Material.REINFORCED_DEEPSLATE;
+    }
 
-        ItemMeta meta = item.getItemMeta();
-        meta.setEnchantmentGlintOverride(true);
-        meta.itemName(Component.text("Tome Altar").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
-        item.setItemMeta(meta);
-
-        return item;
+    @Override
+    protected @NotNull Component itemName() {
+        return Component.text("Tome Altar");
     }
 
     public Map<NamespacedKey, Recipe> getRecipes() {

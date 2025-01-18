@@ -24,15 +24,17 @@ public class NetherStarChunk extends CustomItem {
     }
 
     @Override
-    protected @NotNull ItemStack material() {
-        ItemStack item = new ItemStack(Material.GHAST_TEAR);
+    protected @NotNull Component itemName() {
+        return Component.text("Nether Star Chunk");
+    }
+
+    @Override
+    protected @NotNull ItemStack modifyMaterial(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
         meta.setEnchantmentGlintOverride(true);
-        meta.itemName(Component.text("Nether Star Chunk").color(NamedTextColor.WHITE));
         List<Component> lore = new ArrayList<>();
         lore.add(Component.text("Used to enchant mending").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
         meta.lore(lore);
-        meta.setEnchantmentGlintOverride(true);
         item.setItemMeta(meta);
         return item;
     }

@@ -38,15 +38,16 @@ public class TeleportAnchor extends CustomItem {
     }
 
     @Override
-    protected @NotNull ItemStack material() {
-        ItemStack item = new ItemStack(Material.COMPASS);
+    protected @NotNull Component itemName() {
+        return Component.text("Teleport Anchor");
+    }
+
+    @Override
+    protected @NotNull ItemStack modifyMaterial(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
-        meta.setEnchantmentGlintOverride(true);
-        meta.itemName(Component.text("Teleport Anchor").color(NamedTextColor.WHITE));
         List<Component> lore = new ArrayList<>();
         lore.add(Component.text("Click to show discovered lodestones.").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
         meta.lore(lore);
-        meta.setEnchantmentGlintOverride(true);
         item.setItemMeta(meta);
         return item;
     }

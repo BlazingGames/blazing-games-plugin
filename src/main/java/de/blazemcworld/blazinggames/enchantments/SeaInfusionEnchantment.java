@@ -18,9 +18,9 @@ package de.blazemcworld.blazinggames.enchantments;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.enchantments.sys.BlazingEnchantmentTarget;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantment;
-import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantmentTarget;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarRecipe;
+import de.blazemcworld.blazinggames.items.ItemPredicate;
 import de.blazemcworld.blazinggames.items.MaterialItemPredicate;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -40,7 +40,7 @@ public class SeaInfusionEnchantment extends CustomEnchantment {
         return "Sea Infusion";
     }
 
-    public CustomEnchantmentTarget getItemTarget() {
+    public ItemPredicate getItemTarget() {
         return BlazingEnchantmentTarget.WEAPON_TRIDENT;
     }
 

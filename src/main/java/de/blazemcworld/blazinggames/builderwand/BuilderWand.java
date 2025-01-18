@@ -45,24 +45,19 @@ public class BuilderWand extends CustomItem {
     }
 
     @Override
-    protected @NotNull ItemStack material() {
-        ItemStack wand = new ItemStack(Material.BLAZE_ROD);
-
+    protected @NotNull ItemStack modifyMaterial(ItemStack wand) {
         ItemMeta meta = wand.getItemMeta();
-
-        meta.itemName(Component.text("Builder's Wand").color(NamedTextColor.GOLD));
-        meta.setEnchantmentGlintOverride(true);
 
         meta.getPersistentDataContainer().set(modeKey, BuilderWandMode.persistentType, BuilderWandMode.NO_LOCK);
 
         wand.setItemMeta(meta);
 
-        return wand;
+        return updateWand(wand);
     }
 
     @Override
-    protected @NotNull ItemStack modifyMaterial(ItemStack wand) {
-        return updateWand(wand);
+    protected @NotNull Component itemName() {
+        return Component.text("Builder's Wand").color(NamedTextColor.GOLD);
     }
 
     private ItemStack updateWand(ItemStack wand) {

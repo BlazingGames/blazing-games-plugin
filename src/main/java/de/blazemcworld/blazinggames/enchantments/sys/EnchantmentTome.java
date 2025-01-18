@@ -18,7 +18,6 @@ package de.blazemcworld.blazinggames.enchantments.sys;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -43,13 +42,15 @@ public class EnchantmentTome extends CustomItem {
     }
 
     @Override
-    protected @NotNull ItemStack material() {
-        ItemStack stack = new ItemStack(Material.BOOK);
+    protected @NotNull Component itemName() {
+        return Component.text(tomeName).color(NamedTextColor.LIGHT_PURPLE);
+    }
 
+    @Override
+    protected @NotNull ItemStack modifyMaterial(ItemStack stack) {
         ItemMeta meta = stack.getItemMeta();
-        meta.setEnchantmentGlintOverride(true);
 
-        meta.itemName(Component.text(tomeName).color(NamedTextColor.LIGHT_PURPLE));
+        meta.setEnchantmentGlintOverride(true);
         meta.lore(List.of(getComponent()));
 
         stack.setItemMeta(meta);
