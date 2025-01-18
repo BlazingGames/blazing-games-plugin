@@ -45,6 +45,7 @@ public abstract class BlazingTest {
     }
 
     protected abstract void runTest() throws Exception;
+    public void preRunSync() throws Exception {}
 
     // methods for test runner
     protected void assertBoolean(String condition, boolean assertion) throws TestFailedException {

@@ -130,13 +130,12 @@ public class TestBlazingGames extends BlazingGames {
     }
 
     public static synchronized void scheduleNextTest(final TestList currentTest, final boolean passed) {
-        TestList test = nextTest(currentTest, passed);
+        final TestList test = nextTest(currentTest, passed);
         if (test != null) {
-            if (test.test.runAsync()) {
-                Bukkit.getScheduler().runTaskLaterAsynchronously(get(), new TestRunner(test, get().getLogger()), 5);
-            } else {
-                Bukkit.getScheduler().runTaskLater(get(), new TestRunner(test, get().getLogger()), 5);
-            }
+            final int taskId = test.test.runAsync()
+                ? Bukkit.getScheduler().runTaskLaterAsynchronously(get(), new TestRunner(test, get().getLogger()), 10).getTaskId()
+                : Bukkit.getScheduler().runTaskLater(get(), new TestRunner(test, get().getLogger()), 10).getTaskId();
+            Bukkit.getScheduler().runTaskLater(get(), () -> runPreTestSync(test, taskId), 5);
         } else {
             remainingRunners--;
             if (remainingRunners <= 0) {
@@ -152,6 +151,16 @@ public class TestBlazingGames extends BlazingGames {
                 }
                 Bukkit.getScheduler().runTaskLater(get(), () -> exit(isSuccess), 20);
             }
+        }
+    }
+
+    private static void runPreTestSync(final TestList test, final int taskId) {
+        try {
+            test.test.preRunSync();
+        } catch (Exception e) {
+            BlazingGames.get().getLogger().severe("Failed to run preRunSync for " + test.name());
+            Bukkit.getScheduler().cancelTask(taskId);
+            scheduleNextTest(test, false);
         }
     }
 
