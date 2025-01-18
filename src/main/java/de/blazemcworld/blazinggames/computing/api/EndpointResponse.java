@@ -32,13 +32,13 @@ import java.util.TimeZone;
 public class EndpointResponse {
     final int status;
     final Map<String, String> headers;
-    final String body;
+    final byte[] body;
     private static final Configuration config = new Configuration(Configuration.VERSION_2_3_33);
 
-    public EndpointResponse(int status, HashMap<String, String> headers, String body) {
+    public EndpointResponse(int status, HashMap<String, String> headers, byte[] body) {
         this.status = status;
         this.headers = Map.copyOf(headers);
-        this.body = body == null ? "" : body;
+        this.body = body == null ? new byte[0] : body;
     }
 
     public static EndpointResponse.Builder builder(int status) {
@@ -122,7 +122,7 @@ public class EndpointResponse {
     public static class Builder {
         private int status;
         private HashMap<String, String> headers = new HashMap<>();
-        private String body = null;
+        private byte[] body = null;
 
         public Builder(int status) {
             this.status = status;
@@ -156,11 +156,16 @@ public class EndpointResponse {
             return this;
         }
 
-        public String body() {
+        public byte[] body() {
             return this.body;
         }
 
         public EndpointResponse.Builder body(String body) {
+            this.body = body.getBytes();
+            return this;
+        }
+
+        public EndpointResponse.Builder body(byte[] body) {
             this.body = body;
             return this;
         }
