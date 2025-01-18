@@ -32,15 +32,16 @@ import de.blazemcworld.blazinggames.items.CustomItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.jetbrains.annotations.NotNull;
 
 public class ToGoBoxItem extends CustomItem {
     @Override
-    public NamespacedKey getKey() {
+    public @NotNull NamespacedKey getKey() {
         return BlazingGames.get().key("to_go_box");
     }
 
     @Override
-    protected ItemStack material() {
+    protected @NotNull ItemStack material() {
         ItemStack item = new ItemStack(Material.NETHERITE_SHOVEL);
         ItemMeta meta = item.getItemMeta();
 

@@ -72,7 +72,7 @@ public class InteractEventListener implements Listener {
     );
 
     @EventHandler
-    public void onInteract(PlayerInteractEvent event) throws IOException, ClassNotFoundException {
+    public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack eventItem = event.getItem();
         EquipmentSlot hand = event.getHand();
@@ -95,7 +95,7 @@ public class InteractEventListener implements Listener {
             ItemStack handItem = player.getInventory().getItem(hand);
             String ulid = (CustomItems.SKELETON_KEY.matchItem(handItem) || CustomItems.TO_GO_BOX.matchItem(handItem))
                 ? CrateManager.getKeyULID(block.getLocation()) : CrateManager.getKeyULID(handItem);
-            if (CustomItems.SKELETON_KEY.matchItem(handItem) || CustomItems.TO_GO_BOX.matchItem(handItem)) player.setCooldown(handItem.getType(), 200);
+            if (CustomItems.SKELETON_KEY.matchItem(handItem) || CustomItems.TO_GO_BOX.matchItem(handItem)) player.setCooldown(handItem, 200);
             if (ulid != null) {
                 CrateData data = CrateManager.readCrate(ulid);
                 Location crateLocation = data.location;
@@ -205,6 +205,7 @@ public class InteractEventListener implements Listener {
 
         if (CustomItems.PORTABLE_CRAFTING_TABLE.matchItem(eventItem)) {
             event.setCancelled(true);
+            // TODO: use a non-deprecated method
             player.openWorkbench(null, true);
             return;
         }
@@ -238,19 +239,19 @@ public class InteractEventListener implements Listener {
                 }
             }
             if(CustomItems.BUILDER_WAND.matchItem(eventItem)) {
-                if(!player.hasCooldown(Material.BLAZE_ROD)) {
+                if(!player.hasCooldown(eventItem)) {
                     int blocksUsed = CustomItems.BUILDER_WAND.build(player, eventItem, block, face, clampedInteractionPoint);
                     if(blocksUsed > 0) {
-                        player.setCooldown(Material.BLAZE_ROD, 5);
+                        player.setCooldown(eventItem, 5);
                         player.getWorld().playSound(player, Sound.ENTITY_CHICKEN_STEP, 1, 1.25f);
                     }
                 }
             }
             if(CustomItems.BLUEPRINT.matchItem(eventItem)) {
-                if(!player.hasCooldown(Material.PAPER)) {
+                if(!player.hasCooldown(eventItem)) {
                     event.setCancelled(true);
                     CustomItems.BLUEPRINT.outputMultiBlockProgress(player, block.getLocation());
-                    player.setCooldown(Material.PAPER, 40);
+                    player.setCooldown(eventItem, 40);
                 }
             }
             if (block.getType() == Material.SPAWNER)

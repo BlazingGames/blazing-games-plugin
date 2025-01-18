@@ -22,6 +22,7 @@ import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.components.UseCooldownComponent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -65,6 +66,11 @@ public abstract class CustomItem implements RecipeProvider, Keyed, ItemPredicate
 
         ItemMeta meta = result.getItemMeta();
         meta.getPersistentDataContainer().set(key, NamespacedKeyDataType.instance, getKey());
+
+        UseCooldownComponent cooldown = meta.getUseCooldown();
+        cooldown.setCooldownGroup(getKey());
+        meta.setUseCooldown(cooldown);
+
         result.setItemMeta(meta);
 
         return modifyMaterial(result);

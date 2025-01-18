@@ -49,6 +49,7 @@ public class PortableCraftingTable extends CustomItem {
         PlayerProfile profile = Bukkit.createProfile(new UUID(mostSignificantBits, leastSignificantBits), "PortableCrafting");
         profile.setProperty(new ProfileProperty("textures","eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmNkYzBmZWI3MDAxZTJjMTBmZDUwNjZlNTAxYjg3ZTNkNjQ3OTMwOTJiODVhNTBjODU2ZDk2MmY4YmU5MmM3OCJ9fX0=", "Lfgwh10EgQOoFIRUYJjsKIDdlcOeXWSDAXi6CESfnb3E4pgr9ddqznPvsuo5d6fDhrpKSE4YblWMe1jv6d2M0vEzu+fkhWmG/NvBjAzOCaQ6j0V1urP3cU41nLbJax7eqdf5NDMh9uoXsmVUjUjwRAk4EotdBae4nTXdDNo47sLh80In6WMa04IA9eXkWC+gpNLfPUFgCf9Gn2RTttDSvyPCB5p7rSSd+03vOswGB4U7F1ttYEm1ih8PFzQQm7BLk3RL+L7chlMQqLyrURsPrH7OSKTrBB+Wxx6Z7pZS0yc8/8oRzEb8I6QdrGi1TANpuC1dorGCK4p6j7Pq6UQmUz0OjawEB0kc30v+CTGRnoDyQhLoKRguomxb4R7pCPHCOptAvNNaoFewOWsWPWlBg2lzRel2icKnjzvYyu6PR3Tj9lhNLUsK7IjV7Jqq6obzHNG/v/8dQL13WQPio8Uctkt/hi6b6QgM++lCdf9DbpgLpYPhID9vmXPuOgpVzBlImfYx67NYFPSb4EykG8sWZ1xoh3+y4/dHz2XMY10Q5IEZrxDuctn0oHlKdxi/R23DhJ9M5FwPYnvJ1Ew17EP03wDs85qcI2m5FQC2RwUvAWqBiQ5Qm+wykuWv7DYaul1Q0rSumuSjEIpCf3RxAozOKQOHploee2ekxPpwpHJltMo="));
 
+        meta.setEquippable(null);
         meta.setPlayerProfile(profile);
         meta.itemName(Component.text("Portable Crafting Table").color(NamedTextColor.WHITE));
         item.setItemMeta(meta);
