@@ -62,7 +62,7 @@ public class ComputerMetadata {
         this.upgrades = GetGson.getString(json, "upgrades", e).split(",");
         this.location = TextLocation.deserialize(GetGson.getString(json, "location", e));
         this.owner = UUID.fromString(GetGson.getString(json, "owner", e));
-        this.collaborators = Arrays.stream(GetGson.getString(json, "collaborators", e).split(",")).map(UUID::fromString).toArray(UUID[]::new);
+        this.collaborators = Arrays.stream(GetGson.getString(json, "collaborators", e).split(",")).filter(s -> !s.isEmpty()).map(UUID::fromString).toArray(UUID[]::new);
         this.shouldRun = GetGson.getBoolean(json, "shouldRun", e);
         this.frozenTicks = GetGson.getNumber(json, "frozenTicks", e).intValue();
     }

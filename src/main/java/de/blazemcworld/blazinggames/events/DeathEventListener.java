@@ -85,10 +85,9 @@ public class DeathEventListener implements Listener {
 
         crateLocation.getBlock().setType(Material.END_PORTAL_FRAME);
 
-        final int expDropped = event.getDroppedExp();
         event.setDroppedExp(0);
         event.getDrops().clear();
-        String ulid = CrateManager.createDeathCrate(player.getUniqueId(), event.getPlayer().getInventory(), expDropped, crateLocation);
+        String ulid = CrateManager.createDeathCrate(player.getUniqueId(), event.getPlayer().getInventory(), event.getPlayer().calculateTotalExperiencePoints(), crateLocation);
         event.getItemsToKeep().add(CrateManager.makeKey(ulid, crateLocation));
     }
 }

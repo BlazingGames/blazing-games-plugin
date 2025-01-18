@@ -31,6 +31,7 @@ public class PlayerConfig {
     );
 
     public static PlayerConfig forPlayer(UUID uuid) {
+        if (dataStorage.getData(uuid) == null) dataStorage.storeData(uuid, new Properties());
         return new PlayerConfig(dataStorage.getData(uuid), uuid);
     }
 

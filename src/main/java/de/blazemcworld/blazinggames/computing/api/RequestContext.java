@@ -98,7 +98,9 @@ public record RequestContext(JsonElement body, Map<String, List<String>> headers
     }
 
     public String requireCleanCustom(String paramName, String in, int min, int max) throws EarlyResponse {
-        if (in.length() < min) {
+        if (in == null) {
+            throw new EarlyResponse(EndpointResponse.of400("Missing " + paramName));
+        } else if (in.length() < min) {
             throw new EarlyResponse(EndpointResponse.of400("Parameter " + paramName + " is too short (at least 3 chars)"));
         } else if (in.length() > max) {
             throw new EarlyResponse(EndpointResponse.of400("Parameter " + paramName + " is too long (at most 80 chars)"));

@@ -22,6 +22,8 @@ import com.caoccao.javet.interop.V8Runtime;
 import com.caoccao.javet.interop.options.V8RuntimeOptions;
 import com.caoccao.javet.values.reference.IV8ValueObject;
 import com.caoccao.javet.values.reference.V8ValueObject;
+
+import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.functions.GlobalFunctions;
 import de.blazemcworld.blazinggames.computing.functions.JSFunctionalClass;
 import de.blazemcworld.blazinggames.computing.motor.IComputerMotor;
@@ -31,6 +33,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -242,18 +245,20 @@ public class BootedComputer {
         );
     }
 
-    void updateMetadata(ComputerMetadata metadata) {
-        if (metadata.location.equals(this.location) && metadata.location != null) {
-            IComputerMotor motor = this.type.getType().getMotor();
-            if (motor.usesBlock()) {
-                this.location.getBlock().setType(Material.AIR);
-                metadata.location.getBlock().setType(motor.blockMaterial());
-                motor.applyPropsToBlock(metadata.location.getBlock());
-            }
-    
-            if (motor.usesActor()) {
-                motor.moveActor(this.location.getWorld().getEntity(this.motorRuntimeEntityUUID), metadata.location);
-            }
+    void updateMetadata(final ComputerMetadata metadata) {
+        if (!metadata.location.equals(this.location) && metadata.location != null) {
+            Bukkit.getScheduler().runTask(BlazingGames.get(), () -> {
+                IComputerMotor motor = this.type.getType().getMotor();
+                if (motor.usesBlock()) {
+                    this.location.getBlock().setType(Material.AIR);
+                    metadata.location.getBlock().setType(motor.blockMaterial());
+                    motor.applyPropsToBlock(metadata.location.getBlock());
+                }
+        
+                if (motor.usesActor()) {
+                    motor.moveActor(this.location.getWorld().getEntity(this.motorRuntimeEntityUUID), metadata.location);
+                }
+            });
         }
         this.location = metadata.location;
         this.address = metadata.address;
