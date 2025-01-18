@@ -20,10 +20,8 @@ import de.blazemcworld.blazinggames.items.CustomItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -37,19 +35,8 @@ public class Blueprint extends CustomItem {
     }
 
     @Override
-    protected @NotNull ItemStack material() {
-        ItemStack wand = new ItemStack(Material.PAPER);
-
-        ItemMeta meta = wand.getItemMeta();
-
-        meta.addEnchant(Enchantment.CHANNELING, 1, true);
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-
-        meta.itemName(Component.text("Blueprint").color(NamedTextColor.BLUE));
-
-        wand.setItemMeta(meta);
-
-        return wand;
+    protected @NotNull Component itemName() {
+        return Component.text("Blueprint").color(NamedTextColor.BLUE);
     }
 
     public void outputMultiBlockProgress(Player player, Location location) {

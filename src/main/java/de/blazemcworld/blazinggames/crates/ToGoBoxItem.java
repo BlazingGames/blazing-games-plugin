@@ -24,7 +24,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import de.blazemcworld.blazinggames.BlazingGames;
@@ -32,28 +31,28 @@ import de.blazemcworld.blazinggames.items.CustomItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.jetbrains.annotations.NotNull;
 
 public class ToGoBoxItem extends CustomItem {
     @Override
-    public NamespacedKey getKey() {
+    public @NotNull NamespacedKey getKey() {
         return BlazingGames.get().key("to_go_box");
     }
 
     @Override
-    protected ItemStack material() {
-        ItemStack item = new ItemStack(Material.NETHERITE_SHOVEL);
+    protected @NotNull ItemStack modifyMaterial(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
-
-        meta.displayName(Component.text("To-Go Box").color(NamedTextColor.GOLD)
-            .decoration(TextDecoration.ITALIC, false));
-        
         meta.lore(List.of(
             Component.text("Right-click a crate to open it and store it inside of a bundle, for transportation.")
                 .color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true)
         ));
-
         item.setItemMeta(meta);
         return item;
+    }
+
+    @Override
+    protected @NotNull Component itemName() {
+        return Component.text("To-Go Box").color(NamedTextColor.GOLD);
     }
 
     @Override
@@ -68,13 +67,8 @@ public class ToGoBoxItem extends CustomItem {
         recipe.setIngredient('E', new ItemStack(Material.ENDER_CHEST));
         recipe.setIngredient('B', new ItemStack(Material.BUNDLE));
 
-        ShapelessRecipe bundleRecipe = new ShapelessRecipe(BlazingGames.get().key("bundle"), new ItemStack(Material.BUNDLE));
-        bundleRecipe.addIngredient(new ItemStack(Material.LEATHER));
-        bundleRecipe.addIngredient(new ItemStack(Material.STRING));
-
         var out = new HashMap<NamespacedKey, Recipe>();
         out.put(getKey(), recipe);
-        out.put(BlazingGames.get().key("bundle"), bundleRecipe);
         return out;
     }
 }

@@ -73,20 +73,15 @@ public class AltarInterface extends UserInterface {
 
     @Override
     public void preload() {
-        StaticUserInterfaceSlot pane = new StaticUserInterfaceSlot(element(Material.GRAY_STAINED_GLASS_PANE,
-                                                BlazingGames.get().key("pane")));
-        StaticUserInterfaceSlot tool = new StaticUserInterfaceSlot(element(Material.DIAMOND_PICKAXE,
-                BlazingGames.get().key("pane")));
-        StaticUserInterfaceSlot randomMaterial = new StaticUserInterfaceSlot(element(Material.COPPER_INGOT,
-                BlazingGames.get().key("pane")));
-        StaticUserInterfaceSlot lapisLazuli = new StaticUserInterfaceSlot(element(Material.LAPIS_LAZULI,
-                BlazingGames.get().key("pane")));
+        StaticUserInterfaceSlot tool = new StaticUserInterfaceSlot(BlazingGames.get().key("tool_slot"));
+        StaticUserInterfaceSlot randomMaterial = new StaticUserInterfaceSlot(BlazingGames.get().key("material_slot"));
+        StaticUserInterfaceSlot lapisLazuli = new StaticUserInterfaceSlot(BlazingGames.get().key("lazuli_slot"));
 
         int index = 0;
         for(int y = 0; y < 5; y++) {
-            addSlot(0, y, pane);
-            addSlot(1, y, pane);
-            addSlot(2, y, pane);
+            addSlot(0, y, StaticUserInterfaceSlot.blank);
+            addSlot(1, y, StaticUserInterfaceSlot.blank);
+            addSlot(2, y, StaticUserInterfaceSlot.blank);
 
             for(int x = 3; x < 9; x++) {
                 addSlot(x, y, new EnchantmentSlot(index));

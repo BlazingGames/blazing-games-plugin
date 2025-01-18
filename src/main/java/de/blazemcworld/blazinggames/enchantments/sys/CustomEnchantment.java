@@ -15,6 +15,7 @@
  */
 package de.blazemcworld.blazinggames.enchantments.sys;
 
+import de.blazemcworld.blazinggames.items.ItemPredicate;
 import de.blazemcworld.blazinggames.utils.NumberUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -49,7 +50,7 @@ public abstract class CustomEnchantment implements EnchantmentWrapper {
         return 1;
     }
 
-    public CustomEnchantmentTarget getItemTarget() {
+    public ItemPredicate getItemTarget() {
         return PaperEnchantmentTarget.BREAKABLE;
     }
 
@@ -91,7 +92,7 @@ public abstract class CustomEnchantment implements EnchantmentWrapper {
 
     @Override
     public boolean canGoOnItem(ItemStack tool) {
-        return getItemTarget().includes(tool) || tool.getType() == Material.BOOK
+        return getItemTarget().matchItem(tool) || tool.getType() == Material.BOOK
                 || tool.getType() == Material.ENCHANTED_BOOK;
     }
 
