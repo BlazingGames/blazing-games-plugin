@@ -52,8 +52,7 @@ public class LoginFlowTest extends BlazingTest {
         prepareBody.addProperty("contact", ".....");
         prepareBody.addProperty("purpose", "testing xd");
         prepareBody.add("permissions", new JsonArray());
-        JsonObject prepareResponse = sendPostRequest("http://localhost:8080/auth/prepare", prepareBody);
-        debugLog("prepare: " + prepareResponse.toString());
+        JsonObject prepareResponse = sendPostRequestUnauthenticated("/auth/prepare", prepareBody);
         assertBoolean("/auth/prepare", GetGson.getBoolean(prepareResponse, "success", new IllegalStateException()));
         String code = GetGson.getString(prepareResponse, "code", new IllegalArgumentException("Prepare endpoint missing code"));
         String key = GetGson.getString(prepareResponse, "key", new IllegalStateException("Prepare endpoint missing key"));
@@ -120,14 +119,12 @@ public class LoginFlowTest extends BlazingTest {
         // server: send redeem request
         JsonObject redeemBody = new JsonObject();
         redeemBody.addProperty("key", key);
-        JsonObject redeemResponse = sendPostRequest("http://localhost:8080/auth/redeem", redeemBody);
-        debugLog("redeem: " + redeemResponse.toString());
+        JsonObject redeemResponse = sendPostRequestUnauthenticated("/auth/redeem", redeemBody);
         assertBoolean("/auth/redeem", GetGson.getBoolean(redeemResponse, "success", new IllegalStateException()));
         String token = GetGson.getString(redeemResponse, "token", new IllegalStateException("Redeem endpoint missing token"));
 
         // server: send test request
-        JsonObject testResponse = sendGetRequest("http://localhost:8080/auth/test", token);
-        debugLog("test: " + testResponse.toString());
+        JsonObject testResponse = sendGetRequest("/auth/test", token);
         assertBoolean("/auth/test", GetGson.getBoolean(testResponse, "success", new IllegalStateException()));
     }
 }

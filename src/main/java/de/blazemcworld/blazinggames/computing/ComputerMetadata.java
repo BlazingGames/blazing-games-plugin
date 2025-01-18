@@ -18,6 +18,7 @@ package de.blazemcworld.blazinggames.computing;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
 import org.bukkit.Location;
 
@@ -54,17 +55,17 @@ public class ComputerMetadata {
     }
 
     public ComputerMetadata(JsonObject json) {
-        IllegalArgumentException e = new IllegalArgumentException("Invalid computer metadata");
-        this.id = GetGson.getString(json, "id", e);
-        this.name = GetGson.getString(json, "name", e);
-        this.address = UUID.fromString(GetGson.getString(json, "address", e));
-        this.type = ComputerTypes.valueOf(GetGson.getString(json, "type", e));
-        this.upgrades = GetGson.getString(json, "upgrades", e).split(",");
-        this.location = TextLocation.deserialize(GetGson.getString(json, "location", e));
-        this.owner = UUID.fromString(GetGson.getString(json, "owner", e));
-        this.collaborators = Arrays.stream(GetGson.getString(json, "collaborators", e).split(",")).filter(s -> !s.isEmpty()).map(UUID::fromString).toArray(UUID[]::new);
-        this.shouldRun = GetGson.getBoolean(json, "shouldRun", e);
-        this.frozenTicks = GetGson.getNumber(json, "frozenTicks", e).intValue();
+        Function<String, IllegalArgumentException> e = (msg) -> new IllegalArgumentException("Invalid computer metadata: missing property " + msg);
+        this.id = GetGson.getString(json, "id", e.apply("id"));
+        this.name = GetGson.getString(json, "name", e.apply("name"));
+        this.address = UUID.fromString(GetGson.getString(json, "address", e.apply("address")));
+        this.type = ComputerTypes.valueOf(GetGson.getString(json, "type", e.apply("type")));
+        this.upgrades = GetGson.getString(json, "upgrades", e.apply("upgrades")).split(",");
+        this.location = TextLocation.deserialize(json.get("location").isJsonNull() ? null : json.get("location").getAsString());
+        this.owner = UUID.fromString(GetGson.getString(json, "owner", e.apply("owner")));
+        this.collaborators = Arrays.stream(GetGson.getString(json, "collaborators", e.apply("collaborators")).split(",")).filter(s -> !s.isEmpty()).map(UUID::fromString).toArray(UUID[]::new);
+        this.shouldRun = GetGson.getBoolean(json, "shouldRun", e.apply("shouldRun"));
+        this.frozenTicks = GetGson.getNumber(json, "frozenTicks", e.apply("frozenTicks")).intValue();
     }
 
     public JsonObject serialize() {

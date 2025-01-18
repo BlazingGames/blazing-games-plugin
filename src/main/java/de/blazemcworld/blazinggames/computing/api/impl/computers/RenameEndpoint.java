@@ -26,7 +26,10 @@ import de.blazemcworld.blazinggames.computing.api.LinkedUser;
 import de.blazemcworld.blazinggames.computing.api.Permission;
 import de.blazemcworld.blazinggames.computing.api.RequestContext;
 import de.blazemcworld.blazinggames.computing.api.RequestMethod;
+import de.blazemcworld.blazinggames.testing.CoveredByTests;
+import de.blazemcworld.blazinggames.testing.tests.RenameEndpointTest;
 
+@CoveredByTests(RenameEndpointTest.class)
 public class RenameEndpoint implements Endpoint {
     @Override
     public String path() {

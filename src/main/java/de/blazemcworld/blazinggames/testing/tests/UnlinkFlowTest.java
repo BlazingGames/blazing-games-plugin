@@ -39,7 +39,7 @@ public class UnlinkFlowTest extends BlazingTest {
         String signed = LinkedUser.signLinkedUser(linkedUser);
 
         // send test request 1
-        JsonObject testResponse1 = sendGetRequest("http://localhost:8080/auth/test", signed);
+        JsonObject testResponse1 = sendGetRequest("/auth/test", signed);
         assertBoolean("/auth/test linked", GetGson.getBoolean(testResponse1, "success", new IllegalStateException()));
 
         // send callback request
@@ -78,7 +78,7 @@ public class UnlinkFlowTest extends BlazingTest {
         assertEquals(200, unlinkConfirmResponse.code());
 
         // send test request 2
-        JsonObject testResponse2 = sendGetRequest("http://localhost:8080/auth/test", signed);
+        JsonObject testResponse2 = sendGetRequest("/auth/test", signed);
         assertBoolean("/auth/test unlinked", !GetGson.getBoolean(testResponse2, "success", new IllegalStateException()));
     }
 }

@@ -20,6 +20,7 @@ import de.blazemcworld.blazinggames.testing.tests.*;
 public enum TestList {
     LOGIN_FLOW(new LoginFlowTest()),
     UNLINK_FLOW(new UnlinkFlowTest()),
+    RENAME_ENDPOINT(new RenameEndpointTest()),
     ;
 
     public final BlazingTest test;
