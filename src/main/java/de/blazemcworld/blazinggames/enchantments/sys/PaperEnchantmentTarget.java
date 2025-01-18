@@ -15,34 +15,52 @@
  */
 package de.blazemcworld.blazinggames.enchantments.sys;
 
+import de.blazemcworld.blazinggames.items.CustomItem;
+import de.blazemcworld.blazinggames.items.ItemPredicate;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.enchantments.EnchantmentTarget;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public enum PaperEnchantmentTarget implements CustomEnchantmentTarget {
-    ALL(EnchantmentTarget.ALL),
-    ARMOR(EnchantmentTarget.ARMOR),
-    ARMOR_FFET(EnchantmentTarget.ARMOR_FEET),
-    ARMOR_HEAD(EnchantmentTarget.ARMOR_HEAD),
-    ARMOR_LEGS(EnchantmentTarget.ARMOR_LEGS),
-    ARMOR_TORSO(EnchantmentTarget.ARMOR_TORSO),
-    TOOL(EnchantmentTarget.TOOL),
-    BOW(EnchantmentTarget.BOW),
-    BREAKABLE(EnchantmentTarget.BREAKABLE),
-    CROSSBOW(EnchantmentTarget.CROSSBOW),
-    FISHING_ROD(EnchantmentTarget.FISHING_ROD),
-    TRIDENT(EnchantmentTarget.TRIDENT),
-    VANISHABLE(EnchantmentTarget.VANISHABLE),
-    WEAPON(EnchantmentTarget.WEAPON),
-    WEARABLE(EnchantmentTarget.WEARABLE);
+public enum PaperEnchantmentTarget implements ItemPredicate {
+    ALL("\"All\"", EnchantmentTarget.ALL),
+    ARMOR("Armor", EnchantmentTarget.ARMOR),
+    ARMOR_FFET("Boots", EnchantmentTarget.ARMOR_FEET),
+    ARMOR_HEAD("Head", EnchantmentTarget.ARMOR_HEAD),
+    ARMOR_LEGS("Legs", EnchantmentTarget.ARMOR_LEGS),
+    ARMOR_TORSO("Torso", EnchantmentTarget.ARMOR_TORSO),
+    TOOL("Tools", EnchantmentTarget.TOOL),
+    BOW("Bows", EnchantmentTarget.BOW),
+    BREAKABLE("Breakable", EnchantmentTarget.BREAKABLE),
+    CROSSBOW("Crossbows", EnchantmentTarget.CROSSBOW),
+    FISHING_ROD("Fishing Rods", EnchantmentTarget.FISHING_ROD),
+    TRIDENT("Tridents", EnchantmentTarget.TRIDENT),
+    VANISHABLE("Vanishable", EnchantmentTarget.VANISHABLE),
+    WEAPON("Weapons", EnchantmentTarget.WEAPON),
+    WEARABLE("Wearable", EnchantmentTarget.WEARABLE);
 
     final EnchantmentTarget paperTarget;
+    final String description;
 
-    PaperEnchantmentTarget(EnchantmentTarget target) {
+    PaperEnchantmentTarget(String description, EnchantmentTarget target) {
         paperTarget = target;
+        this.description = description;
     }
 
-    public boolean includes(@NotNull Material item) {
+    public boolean matchItem(@NotNull Material item) {
         return paperTarget.includes(item);
+    }
+
+    @Override
+    public boolean matchItem(ItemStack stack) {
+        if(CustomItem.isCustomItem(stack)) return false;
+
+        return matchItem(stack.getType());
+    }
+
+    @Override
+    public Component getDescription() {
+        return Component.text(description);
     }
 }

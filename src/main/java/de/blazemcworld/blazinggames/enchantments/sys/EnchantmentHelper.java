@@ -127,7 +127,7 @@ public class EnchantmentHelper {
     }
 
     public static int getCustomEnchantmentLevel(ItemStack stack, CustomEnchantment enchantment) {
-        return getCustomEnchantments(stack).getOrDefault(enchantment, Integer.valueOf(0));
+        return getCustomEnchantments(stack).getOrDefault(enchantment, 0);
     }
 
     public static boolean hasCustomEnchantment(ItemStack stack, CustomEnchantment enchantment) {
@@ -191,7 +191,7 @@ public class EnchantmentHelper {
     public static boolean canEnchantItem(ItemStack stack) {
         if(CustomItem.isCustomItem(stack)) return false;
 
-        return PaperEnchantmentTarget.ALL.includes(stack) || stack.getType() == Material.ENCHANTED_BOOK
+        return PaperEnchantmentTarget.ALL.matchItem(stack) || stack.getType() == Material.ENCHANTED_BOOK
                                                            || stack.getType() == Material.BOOK;
     }
 

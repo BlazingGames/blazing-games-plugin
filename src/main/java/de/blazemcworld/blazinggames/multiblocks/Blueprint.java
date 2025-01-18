@@ -20,7 +20,6 @@ import de.blazemcworld.blazinggames.items.CustomItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -42,8 +41,7 @@ public class Blueprint extends CustomItem {
 
         ItemMeta meta = wand.getItemMeta();
 
-        meta.addEnchant(Enchantment.CHANNELING, 1, true);
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        meta.setEnchantmentGlintOverride(true);
 
         meta.itemName(Component.text("Blueprint").color(NamedTextColor.BLUE));
 

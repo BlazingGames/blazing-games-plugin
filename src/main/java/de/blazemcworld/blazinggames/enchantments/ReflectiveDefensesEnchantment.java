@@ -18,8 +18,8 @@ package de.blazemcworld.blazinggames.enchantments;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.enchantments.sys.BlazingEnchantmentTarget;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantment;
-import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantmentTarget;
 import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarRecipe;
+import de.blazemcworld.blazinggames.items.ItemPredicate;
 import de.blazemcworld.blazinggames.items.MaterialItemPredicate;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -37,7 +37,7 @@ public class ReflectiveDefensesEnchantment extends CustomEnchantment {
         return "Reflective Defenses";
     }
 
-    public CustomEnchantmentTarget getItemTarget() {
+    public ItemPredicate getItemTarget() {
         return BlazingEnchantmentTarget.SHIELD;
     }
 

@@ -15,25 +15,43 @@
  */
 package de.blazemcworld.blazinggames.enchantments.sys;
 
+import de.blazemcworld.blazinggames.items.CustomItem;
+import de.blazemcworld.blazinggames.items.ItemPredicate;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-public enum BlazingEnchantmentTarget implements CustomEnchantmentTarget {
-    AXE(Material.WOODEN_AXE, Material.STONE_AXE, Material.IRON_AXE, Material.GOLDEN_AXE, Material.DIAMOND_AXE, Material.NETHERITE_AXE),
-    HOE(Material.WOODEN_HOE, Material.STONE_HOE, Material.IRON_HOE, Material.GOLDEN_HOE, Material.DIAMOND_HOE, Material.NETHERITE_HOE),
-    SHIELD(Material.SHIELD), ELYTRA(Material.ELYTRA),
-    WEAPON_TRIDENT(Material.WOODEN_SWORD, Material.STONE_SWORD, Material.IRON_SWORD, Material.GOLDEN_SWORD,
+public enum BlazingEnchantmentTarget implements ItemPredicate {
+    AXE("Axe", Material.WOODEN_AXE, Material.STONE_AXE, Material.IRON_AXE, Material.GOLDEN_AXE, Material.DIAMOND_AXE, Material.NETHERITE_AXE),
+    HOE("Hoe", Material.WOODEN_HOE, Material.STONE_HOE, Material.IRON_HOE, Material.GOLDEN_HOE, Material.DIAMOND_HOE, Material.NETHERITE_HOE),
+    SHIELD("Shield", Material.SHIELD), ELYTRA("Elytra", Material.ELYTRA),
+    WEAPON_TRIDENT("Weapons OR Trident", Material.WOODEN_SWORD, Material.STONE_SWORD, Material.IRON_SWORD, Material.GOLDEN_SWORD,
             Material.DIAMOND_SWORD, Material.NETHERITE_SWORD, Material.TRIDENT);
 
     final Set<Material> allowed;
+    final String description;
 
-    BlazingEnchantmentTarget(Material... allowed) {
+    BlazingEnchantmentTarget(String description, Material... allowed) {
         this.allowed = Set.of(allowed);
+        this.description = description;
     }
 
-    public boolean includes(@NotNull Material item) {
+    public boolean matchItem(@NotNull Material item) {
         return allowed.contains(item);
+    }
+
+    @Override
+    public boolean matchItem(ItemStack stack) {
+        if(CustomItem.isCustomItem(stack)) return false;
+
+        return matchItem(stack.getType());
+    }
+
+    @Override
+    public Component getDescription() {
+        return Component.text(description);
     }
 }
