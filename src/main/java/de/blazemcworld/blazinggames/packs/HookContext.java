@@ -18,6 +18,8 @@ package de.blazemcworld.blazinggames.packs;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 
+import org.bukkit.NamespacedKey;
+
 import com.google.gson.JsonObject;
 
 import de.blazemcworld.blazinggames.BlazingGames;
@@ -46,5 +48,13 @@ public class HookContext {
 
     public void writeFile(String path, JsonObject contents) {
         writeFile(path, contents.toString().getBytes());
+    }
+
+    public void installTexture(NamespacedKey namespace, byte[] texture) {
+        writeFile("assets/" + namespace.getNamespace() + "/textures/item/" + namespace.getKey() + ".png", texture);
+    }
+
+    public void installModel(NamespacedKey namespace, byte[] model) {
+        writeFile("assets/" + namespace.getNamespace() + "/models/" + namespace.getKey() + ".json", model);
     }
 }

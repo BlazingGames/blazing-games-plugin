@@ -84,6 +84,7 @@ public class ResourcePackManager {
     }
 
     public static void write(Path path, byte[] data) throws IOException {
+        Files.createDirectories(path.getParent());
         try (OutputStream outputStream = Files.newOutputStream(path)) {
             outputStream.write(data);
         }

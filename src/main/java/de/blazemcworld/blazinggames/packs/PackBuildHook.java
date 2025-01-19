@@ -16,5 +16,5 @@
 package de.blazemcworld.blazinggames.packs;
 
 public abstract class PackBuildHook {
-    abstract void run(HookContext context);
+    public abstract void run(HookContext context);
 }
