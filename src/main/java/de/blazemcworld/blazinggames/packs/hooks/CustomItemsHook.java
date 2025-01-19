@@ -17,6 +17,7 @@ package de.blazemcworld.blazinggames.packs.hooks;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Logger;
 
 import com.google.gson.JsonObject;
 
@@ -28,7 +29,7 @@ import de.blazemcworld.blazinggames.packs.PackBuildHook;
 
 public class CustomItemsHook extends PackBuildHook {
     @Override
-    public void run(HookContext context) {
+    public void run(Logger logger, HookContext context) {
         for (CustomItem<?> item : new CustomItems().getItems()) {
             // install texture
             try (InputStream stream = item.getClass().getResourceAsStream("/customitems/" + item.getKey().getKey() + ".png")) {
