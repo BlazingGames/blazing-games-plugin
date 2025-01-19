@@ -113,10 +113,10 @@ public class EntityDamagedByEventListener implements Listener {
 
                 CustomItem<?> slab = CustomItems.getByKey(BlazingGames.get().key(slabType + "_slab"));
 
-                if(slab instanceof ContextlessItem slab2)
+                if(slab instanceof ContextlessItem contextlessSlab)
                 {
                     if (p.getGameMode() != GameMode.CREATIVE) {
-                        InventoryUtils.collectableDrop(p, blockLocation, slab2.create());
+                        InventoryUtils.collectableDrop(p, blockLocation, contextlessSlab.create());
                     }
                 }
                 else

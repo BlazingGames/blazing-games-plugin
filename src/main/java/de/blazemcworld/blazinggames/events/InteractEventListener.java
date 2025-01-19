@@ -143,60 +143,61 @@ public class InteractEventListener implements Listener {
                     CrateManager.deleteCrate(crateId);
                     return;
                 }
+                else {
+                    PlayerInventory inventory = player.getInventory();
 
-                PlayerInventory inventory = player.getInventory();
-
-                if (
-                    (data.offhand != null && inventory.getItemInOffHand() != null && !inventory.getItemInOffHand().isEmpty()) ||
-                    (data.helmet != null && inventory.getHelmet() != null && !inventory.getHelmet().isEmpty()) ||
-                    (data.chestplate != null && inventory.getChestplate() != null && !inventory.getChestplate().isEmpty()) ||
-                    (data.leggings != null && inventory.getLeggings() != null && !inventory.getLeggings().isEmpty()) ||
-                    (data.boots != null && inventory.getBoots() != null && !inventory.getBoots().isEmpty())
-                ) {
-                    player.sendActionBar(Component.text("Move your offhand/armor into your inventory to open").color(NamedTextColor.RED));
-                    return;
-                }
-
-                player.getInventory().getItem(hand).subtract(1);
-                crateLocation.getBlock().breakNaturally(true);
-
-                if (data.offhand != null) inventory.setItemInOffHand(data.offhand);
-                if (data.helmet != null) inventory.setHelmet(data.helmet);
-                if (data.chestplate != null) inventory.setChestplate(data.chestplate);
-                if (data.leggings != null) inventory.setLeggings(data.leggings);
-                if (data.boots != null) inventory.setBoots(data.boots);
-
-                int hotbarIndex = -1;
-                for (ItemStack hotbarItem : data.hotbarItems) {
-                    hotbarIndex++;
-                    if (hotbarItem == null) continue;
-                    if (inventory.getItem(hotbarIndex) == null) {
-                        inventory.setItem(hotbarIndex, hotbarItem);
-                    } else {
-                        if (inventory.firstEmpty() == -1) {
-                            crateLocation.getWorld().dropItemNaturally(crateLocation, hotbarItem);
-                        }
-                        inventory.addItem(hotbarItem);
+                    if (
+                            (data.offhand != null && inventory.getItemInOffHand() != null && !inventory.getItemInOffHand().isEmpty()) ||
+                                    (data.helmet != null && inventory.getHelmet() != null && !inventory.getHelmet().isEmpty()) ||
+                                    (data.chestplate != null && inventory.getChestplate() != null && !inventory.getChestplate().isEmpty()) ||
+                                    (data.leggings != null && inventory.getLeggings() != null && !inventory.getLeggings().isEmpty()) ||
+                                    (data.boots != null && inventory.getBoots() != null && !inventory.getBoots().isEmpty())
+                    ) {
+                        player.sendActionBar(Component.text("Move your offhand/armor into your inventory to open").color(NamedTextColor.RED));
+                        return;
                     }
-                }
 
-                int inventoryIndex = 8;
-                for (ItemStack inventoryItem : data.inventoryItems) {
-                    inventoryIndex++;
-                    if (inventoryItem == null) continue;
-                    if (inventory.getItem(inventoryIndex) == null) {
-                        inventory.setItem(inventoryIndex, inventoryItem);
-                    } else {
-                        if (inventory.firstEmpty() == -1) {
-                            crateLocation.getWorld().dropItemNaturally(crateLocation, inventoryItem);
+                    player.getInventory().getItem(hand).subtract(1);
+                    crateLocation.getBlock().breakNaturally(true);
+
+                    if (data.offhand != null) inventory.setItemInOffHand(data.offhand);
+                    if (data.helmet != null) inventory.setHelmet(data.helmet);
+                    if (data.chestplate != null) inventory.setChestplate(data.chestplate);
+                    if (data.leggings != null) inventory.setLeggings(data.leggings);
+                    if (data.boots != null) inventory.setBoots(data.boots);
+
+                    int hotbarIndex = -1;
+                    for (ItemStack hotbarItem : data.hotbarItems) {
+                        hotbarIndex++;
+                        if (hotbarItem == null) continue;
+                        if (inventory.getItem(hotbarIndex) == null) {
+                            inventory.setItem(hotbarIndex, hotbarItem);
+                        } else {
+                            if (inventory.firstEmpty() == -1) {
+                                crateLocation.getWorld().dropItemNaturally(crateLocation, hotbarItem);
+                            }
+                            inventory.addItem(hotbarItem);
                         }
-                        inventory.addItem(inventoryItem);
                     }
+
+                    int inventoryIndex = 8;
+                    for (ItemStack inventoryItem : data.inventoryItems) {
+                        inventoryIndex++;
+                        if (inventoryItem == null) continue;
+                        if (inventory.getItem(inventoryIndex) == null) {
+                            inventory.setItem(inventoryIndex, inventoryItem);
+                        } else {
+                            if (inventory.firstEmpty() == -1) {
+                                crateLocation.getWorld().dropItemNaturally(crateLocation, inventoryItem);
+                            }
+                            inventory.addItem(inventoryItem);
+                        }
+                    }
+
+                    player.giveExp(data.exp);
+
+                    CrateManager.deleteCrate(crateId);
                 }
-
-                player.giveExp(data.exp);
-
-                CrateManager.deleteCrate(crateId);
             }
             return;
         }

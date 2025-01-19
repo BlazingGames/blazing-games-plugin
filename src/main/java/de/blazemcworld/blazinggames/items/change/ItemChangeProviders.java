@@ -35,10 +35,8 @@ public class ItemChangeProviders {
     public static List<Component> getLore(ItemStack stack) {
         ArrayList<Component> lore = new ArrayList<>();
 
-        if(CustomItem.isCustomItem(stack)) {
-            CustomItem<?> customItem = CustomItem.getCustomItem(stack);
-
-            assert customItem != null;
+        CustomItem<?> customItem = CustomItem.getCustomItem(stack);
+        if(customItem != null) {
             lore.addAll(customItem.lore(stack));
         }
 
@@ -53,10 +51,8 @@ public class ItemChangeProviders {
     public static ItemStack update(ItemStack stack) {
         ItemStack result = stack.clone();
 
-        if(CustomItem.isCustomItem(result)) {
-            CustomItem<?> customItem = CustomItem.getCustomItem(result);
-
-            assert customItem != null;
+        CustomItem<?> customItem = CustomItem.getCustomItem(result);
+        if(customItem != null) {
             result = customItem.update(result);
         }
 

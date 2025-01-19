@@ -318,38 +318,33 @@ public class EnchantmentHelper implements ItemChangeProvider {
 
         ItemMeta meta = result.getItemMeta();
 
-        try {
-            meta.setEnchantmentGlintOverride(null);
+        meta.setEnchantmentGlintOverride(null);
 
-            if(getCustomEnchantments(stack).isEmpty()) {
-                if(stack.getType() == Material.ENCHANTED_BOOK && meta instanceof EnchantmentStorageMeta esm)
-                {
-                    if(!esm.hasStoredEnchants()) {
-                        result = result.withType(Material.BOOK);
-                        meta = result.getItemMeta();
-                    }
-                }
-            }
-            else {
-                if(result.getType() != Material.BOOK && result.getType() != Material.ENCHANTED_BOOK)
-                {
-                    if(!meta.hasEnchants()) {
-                        meta.setEnchantmentGlintOverride(true);
-                    }
-                }
-                else if(result.getType() == Material.BOOK)
-                {
-                    result = result.withType(Material.ENCHANTED_BOOK);
+        if(getCustomEnchantments(stack).isEmpty()) {
+            if(stack.getType() == Material.ENCHANTED_BOOK && meta instanceof EnchantmentStorageMeta esm)
+            {
+                if(!esm.hasStoredEnchants()) {
+                    result = result.withType(Material.BOOK);
                     meta = result.getItemMeta();
-                }
-
-                if(hasCustomEnchantment(stack, CustomEnchantments.UNSHINY)) {
-                    meta.setEnchantmentGlintOverride(false);
                 }
             }
         }
-        catch(Exception err) {
-            BlazingGames.get().log(err);
+        else {
+            if(result.getType() != Material.BOOK && result.getType() != Material.ENCHANTED_BOOK)
+            {
+                if(!meta.hasEnchants()) {
+                    meta.setEnchantmentGlintOverride(true);
+                }
+            }
+            else if(result.getType() == Material.BOOK)
+            {
+                result = result.withType(Material.ENCHANTED_BOOK);
+                meta = result.getItemMeta();
+            }
+
+            if(hasCustomEnchantment(stack, CustomEnchantments.UNSHINY)) {
+                meta.setEnchantmentGlintOverride(false);
+            }
         }
 
         result.setItemMeta(meta);

@@ -57,7 +57,7 @@ public class CustomGiveCommand implements CommandExecutor, TabCompleter {
         CustomItem<?> itemType = CustomItems.getByKey(BlazingGames.get().key(strings[0]));
         int count = 1;
 
-        if(!(itemType instanceof ContextlessItem itemType2))
+        if(!(itemType instanceof ContextlessItem contextlessItemType))
         {
             commandSender.sendMessage(Component.text("Unknown custom item: " + strings[0] + "!").color(NamedTextColor.RED));
             return true;
@@ -67,7 +67,7 @@ public class CustomGiveCommand implements CommandExecutor, TabCompleter {
             count = Integer.parseInt(strings[1]);
         }
 
-        ItemStack item = itemType2.create();
+        ItemStack item = contextlessItemType.create();
         item.setAmount(count);
 
         p.getInventory().addItem(item);
