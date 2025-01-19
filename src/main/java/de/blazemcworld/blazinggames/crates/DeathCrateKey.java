@@ -53,22 +53,30 @@ public class DeathCrateKey extends CustomItem<DeathCrateKey.DeathCrateKeyContext
     @Override
     protected @NotNull ItemStack modifyMaterial(ItemStack stack, DeathCrateKeyContext context) {
         String crateId = context.crateId();
-        Location location = CrateManager.readCrate(crateId).location;
 
         ItemMeta meta = stack.getItemMeta();
 
         meta.getPersistentDataContainer().set(crateKey, PersistentDataType.STRING, crateId);
-        meta.lore(List.of(
+
+        stack.setItemMeta(meta);
+
+        return stack;
+    }
+
+    @Override
+    public @NotNull List<Component> lore(ItemStack stack) {
+        ItemMeta meta = stack.getItemMeta();
+
+        String crateId = meta.getPersistentDataContainer().get(crateKey, PersistentDataType.STRING);
+        Location location = CrateManager.readCrate(crateId).location;
+
+        return List.of(
                 Component.text("Location: %s, %s, %s in %s".formatted(location.getBlockX(), location.getBlockY(), location.getBlockZ(),
                         location.getWorld().getName())).color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true),
                 Component.text("ULID: %s".formatted(crateId)).color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true),
                 Component.empty(),
                 Component.text("Unlocks the crate at the location above. Can be used by anyone.").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true)
-        ));
-
-        stack.setItemMeta(meta);
-
-        return stack;
+        );
     }
 
     public static String getKeyULID(ItemStack item) {

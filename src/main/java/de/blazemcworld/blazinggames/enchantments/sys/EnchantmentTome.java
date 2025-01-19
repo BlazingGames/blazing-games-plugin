@@ -51,11 +51,15 @@ public class EnchantmentTome extends ContextlessItem {
         ItemMeta meta = stack.getItemMeta();
 
         meta.setEnchantmentGlintOverride(true);
-        meta.lore(List.of(getComponent()));
 
         stack.setItemMeta(meta);
 
         return stack;
+    }
+
+    @Override
+    public @NotNull List<Component> lore(ItemStack stack) {
+        return List.of(getComponent());
     }
 
     protected Component getComponent() {

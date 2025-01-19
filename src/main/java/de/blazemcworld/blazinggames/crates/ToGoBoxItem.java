@@ -25,7 +25,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import net.kyori.adventure.text.Component;
@@ -40,14 +39,11 @@ public class ToGoBoxItem extends ContextlessItem {
     }
 
     @Override
-    protected @NotNull ItemStack modifyMaterial(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        meta.lore(List.of(
-            Component.text("Right-click a crate to open it and store it inside of a bundle, for transportation.")
-                .color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true)
-        ));
-        item.setItemMeta(meta);
-        return item;
+    public @NotNull List<Component> lore(ItemStack item) {
+        return List.of(
+                Component.text("Right-click a crate to open it and store it inside of a bundle, for transportation.")
+                        .color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true)
+        );
     }
 
     @Override

@@ -18,6 +18,7 @@ package de.blazemcworld.blazinggames.builderwand;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.items.ContextlessItem;
 import de.blazemcworld.blazinggames.items.CustomItem;
+import de.blazemcworld.blazinggames.items.change.ItemChangeProviders;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -58,7 +59,7 @@ public class BuilderWand extends ContextlessItem {
 
         wand.setItemMeta(meta);
 
-        return updateWand(wand);
+        return wand;
     }
 
     @Override
@@ -66,20 +67,13 @@ public class BuilderWand extends ContextlessItem {
         return Component.text("Builder's Wand").color(NamedTextColor.GOLD);
     }
 
-    private ItemStack updateWand(ItemStack wand) {
+    @Override
+    public List<Component> lore(ItemStack wand) {
         if(!matchItem(wand)) {
-            return wand;
+            return List.of();
         }
 
-        ItemStack result = wand.clone();
-
-        ItemMeta meta = result.getItemMeta();
-
-        meta.lore(List.of(Component.text(getModeText(wand)).color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)));
-
-        result.setItemMeta(meta);
-
-        return result;
+        return List.of(Component.text(getModeText(wand)).color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
     }
 
     public ItemStack cycleMode(ItemStack wand) {
@@ -98,7 +92,7 @@ public class BuilderWand extends ContextlessItem {
 
         result.setItemMeta(meta);
 
-        return updateWand(result);
+        return ItemChangeProviders.update(result);
     }
 
     public String getModeText(ItemStack wand) {
@@ -139,8 +133,13 @@ public class BuilderWand extends ContextlessItem {
             maxBlocks += itemStack.getAmount();
         }
 
-        if(maxBlocks > 128 || player.getGameMode() == GameMode.CREATIVE) {
+        if(maxBlocks > 128) {
             maxBlocks = 128;
+        }
+
+        if(maxBlocks <= 0 && player.getGameMode() != GameMode.CREATIVE)
+        {
+            return 0;
         }
 
         BuilderLocation location = getBuilderLocationFromInteractionPoint(block, interactionPoint);

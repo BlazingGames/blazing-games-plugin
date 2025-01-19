@@ -16,6 +16,7 @@
 package de.blazemcworld.blazinggames.items;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.items.change.ItemChangeProviders;
 import de.blazemcworld.blazinggames.items.contexts.ItemContext;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import de.blazemcworld.blazinggames.items.recipes.RecipeProvider;
@@ -31,6 +32,7 @@ import org.bukkit.inventory.meta.components.UseCooldownComponent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public abstract class CustomItem<T extends ItemContext> implements RecipeProvider, Keyed, ItemPredicate {
     private static final NamespacedKey key = BlazingGames.get().key("custom_item");
@@ -87,7 +89,13 @@ public abstract class CustomItem<T extends ItemContext> implements RecipeProvide
 
         result.setItemMeta(meta);
 
-        return modifyMaterial(result, context);
+        result = modifyMaterial(result, context);
+
+        return ItemChangeProviders.update(result);
+    }
+
+    public ItemStack update(ItemStack stack) {
+        return stack.clone();
     }
 
     @Override
@@ -117,5 +125,8 @@ public abstract class CustomItem<T extends ItemContext> implements RecipeProvide
     protected abstract @NotNull Component itemName();
     protected int stackSize() {
         return 64;
+    }
+    public List<Component> lore(ItemStack stack) {
+        return List.of();
     }
 }

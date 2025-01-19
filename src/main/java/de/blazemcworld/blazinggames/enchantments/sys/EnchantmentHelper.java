@@ -17,6 +17,9 @@ package de.blazemcworld.blazinggames.enchantments.sys;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.items.CustomItem;
+import de.blazemcworld.blazinggames.items.change.ItemChangeProvider;
+import de.blazemcworld.blazinggames.items.change.ItemChangeProviders;
+import de.blazemcworld.blazinggames.items.predicates.ItemPredicates;
 import de.blazemcworld.blazinggames.utils.Pair;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -29,7 +32,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import java.util.*;
 
-public class EnchantmentHelper {
+public class EnchantmentHelper implements ItemChangeProvider {
     private static final NamespacedKey key = BlazingGames.get().key("custom_enchantments");
 
     public static Map<CustomEnchantment, Integer> getCustomEnchantments(ItemStack stack) {
@@ -85,7 +88,7 @@ public class EnchantmentHelper {
 
         result.setItemMeta(meta);
 
-        return updateTool(result);
+        return ItemChangeProviders.update(result);
     }
 
     public static ItemStack removeCustomEnchantment(ItemStack stack, CustomEnchantment enchantment) {
@@ -123,7 +126,7 @@ public class EnchantmentHelper {
 
         result.setItemMeta(meta);
 
-        return updateTool(result);
+        return ItemChangeProviders.update(result);
     }
 
     public static int getCustomEnchantmentLevel(ItemStack stack, CustomEnchantment enchantment) {
@@ -134,65 +137,15 @@ public class EnchantmentHelper {
         return getCustomEnchantmentLevel(stack, enchantment) != 0;
     }
 
-    private static ItemStack updateTool(ItemStack stack) {
-        ItemStack result = stack.clone();
-
-        if(!canEnchantItem(result)) {
-            return result;
-        }
-
-        List<Component> lore = new ArrayList<>();
-
-        getCustomEnchantments(stack).forEach((enchantment, level) -> lore.add(enchantment.getComponent(level)));
-
-        ItemMeta meta = result.getItemMeta();
-
-        try {
-            meta.setEnchantmentGlintOverride(null);
-
-            if(getCustomEnchantments(stack).isEmpty()) {
-                if(result.getType() == Material.ENCHANTED_BOOK && meta instanceof EnchantmentStorageMeta esm)
-                {
-                    if(!esm.hasStoredEnchants()) {
-                        result = result.withType(Material.BOOK);
-                        meta = result.getItemMeta();
-                    }
-                }
-            }
-            else {
-                if(result.getType() != Material.BOOK && result.getType() != Material.ENCHANTED_BOOK)
-                {
-                    if(!meta.hasEnchants()) {
-                        meta.setEnchantmentGlintOverride(true);
-                    }
-                }
-                else if(result.getType() == Material.BOOK)
-                {
-                    result = result.withType(Material.ENCHANTED_BOOK);
-                    meta = result.getItemMeta();
-                }
-
-                if(hasCustomEnchantment(stack, CustomEnchantments.UNSHINY)) {
-                    meta.setEnchantmentGlintOverride(false);
-                }
-            }
-        }
-        catch(Exception err) {
-            BlazingGames.get().log(err);
-        }
-
-        meta.lore(lore);
-
-        result.setItemMeta(meta);
-
-        return result;
-    }
-
     public static boolean canEnchantItem(ItemStack stack) {
-        if(CustomItem.isCustomItem(stack)) return false;
+        if(!CustomItem.isCustomItem(stack)) {
+            if(stack.getType() == Material.ENCHANTED_BOOK
+                    || stack.getType() == Material.BOOK) {
+                return true;
+            }
+        }
 
-        return PaperEnchantmentTarget.ALL.matchItem(stack) || stack.getType() == Material.ENCHANTED_BOOK
-                                                           || stack.getType() == Material.BOOK;
+        return ItemPredicates.enchantability.matchItem(stack);
     }
 
     public static ItemStack enchantTool(ItemStack stack, CustomEnchantment enchantment, int level) {
@@ -297,7 +250,7 @@ public class EnchantmentHelper {
             result = enchantTool(result, enchantment.getKey(), enchantment.getValue());
         }
 
-        return updateTool(result);
+        return ItemChangeProviders.update(result);
     }
 
     public static boolean hasCustomEnchantments(ItemStack stack) {
@@ -319,7 +272,7 @@ public class EnchantmentHelper {
             }
         }
 
-        return updateTool(result);
+        return ItemChangeProviders.update(result);
     }
 
     // This version of the getCustomEnchantmentLevel function ignores enchanted books
@@ -340,5 +293,67 @@ public class EnchantmentHelper {
             return new HashMap<>();
         }
         return getCustomEnchantments(stack);
+    }
+
+    @Override
+    public List<Component> getLore(ItemStack stack) {
+        if(!canEnchantItem(stack)) {
+            return List.of();
+        }
+
+        List<Component> lore = new ArrayList<>();
+
+        getCustomEnchantments(stack).forEach((enchantment, level) -> lore.add(enchantment.getComponent(level)));
+
+        return lore;
+    }
+
+    @Override
+    public ItemStack update(ItemStack stack) {
+        ItemStack result = stack.clone();
+
+        if(!canEnchantItem(result)) {
+            return result;
+        }
+
+        ItemMeta meta = result.getItemMeta();
+
+        try {
+            meta.setEnchantmentGlintOverride(null);
+
+            if(getCustomEnchantments(stack).isEmpty()) {
+                if(stack.getType() == Material.ENCHANTED_BOOK && meta instanceof EnchantmentStorageMeta esm)
+                {
+                    if(!esm.hasStoredEnchants()) {
+                        result = result.withType(Material.BOOK);
+                        meta = result.getItemMeta();
+                    }
+                }
+            }
+            else {
+                if(result.getType() != Material.BOOK && result.getType() != Material.ENCHANTED_BOOK)
+                {
+                    if(!meta.hasEnchants()) {
+                        meta.setEnchantmentGlintOverride(true);
+                    }
+                }
+                else if(result.getType() == Material.BOOK)
+                {
+                    result = result.withType(Material.ENCHANTED_BOOK);
+                    meta = result.getItemMeta();
+                }
+
+                if(hasCustomEnchantment(stack, CustomEnchantments.UNSHINY)) {
+                    meta.setEnchantmentGlintOverride(false);
+                }
+            }
+        }
+        catch(Exception err) {
+            BlazingGames.get().log(err);
+        }
+
+        result.setItemMeta(meta);
+
+        return result;
     }
 }

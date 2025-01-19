@@ -13,7 +13,6 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,12 +28,14 @@ public class NetherStarChunk extends ContextlessItem {
     }
 
     @Override
+    public List<Component> lore(ItemStack stack) {
+        return List.of(Component.text("Used to enchant mending").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+    }
+
+    @Override
     protected @NotNull ItemStack modifyMaterial(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
         meta.setEnchantmentGlintOverride(true);
-        List<Component> lore = new ArrayList<>();
-        lore.add(Component.text("Used to enchant mending").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
-        meta.lore(lore);
         item.setItemMeta(meta);
         return item;
     }
