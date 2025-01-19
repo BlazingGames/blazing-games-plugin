@@ -19,12 +19,12 @@ jobs:
       - name: Setup Gradle
         uses: actions/gradle/setup-gradle@v4
         with:
-          gradle-version: '8.11'
+          gradle-version: '8.12'
       
       - name: Setup Paper
         run: |
           mkdir testsrv
-          curl -o testsrv/server.jar https://api.papermc.io/v2/projects/paper/versions/1.21/builds/130/downloads/paper-1.21-130.jar
+          curl -o testsrv/server.jar https://api.papermc.io/v2/projects/paper/versions/1.21.4/builds/118/downloads/paper-1.21.4-118.jar
           echo "eula=true" > testsrv/eula.txt
 
       - name: Build test jar with Gradle
