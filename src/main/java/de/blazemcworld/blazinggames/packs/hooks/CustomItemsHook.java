@@ -29,7 +29,7 @@ import de.blazemcworld.blazinggames.packs.PackBuildHook;
 public class CustomItemsHook extends PackBuildHook {
     @Override
     public void run(HookContext context) {
-        for (CustomItem item : CustomItems.list()) {
+        for (CustomItem<?> item : new CustomItems().getItems()) {
             // install texture
             try (InputStream stream = item.getClass().getResourceAsStream("/customitems/" + item.getKey().getKey() + ".png")) {
                 if (stream == null) continue;
