@@ -32,20 +32,16 @@ public class CustomItemsHook extends PackBuildHook {
         for (CustomItem<?> item : new CustomItems().getItems()) {
             // install texture
             try (InputStream stream = item.getClass().getResourceAsStream("/customitems/" + item.getKey().getKey() + ".png")) {
-                if (stream == null) continue;
-                context.installTexture(item.getKey(), stream.readAllBytes());
+                if (stream != null) context.installTexture(item.getKey(), stream.readAllBytes());
             } catch (IOException e) {
                 BlazingGames.get().log(e);
-                continue;
             }
 
             // install model
             try (InputStream stream = item.getClass().getResourceAsStream("/customitems/" + item.getKey().getKey() + ".json")) {
-                if (stream == null) continue;
-                context.installModel(item.getKey(), stream.readAllBytes());
+                if (stream != null) context.installModel(item.getKey(), stream.readAllBytes());
             } catch (IOException e) {
                 BlazingGames.get().log(e);
-                continue;
             }
 
             // create items data
