@@ -87,7 +87,13 @@ public class TestBlazingGames extends BlazingGames {
             exit(false);
         }
     }
-    
+
+    @Override
+    public void saveConfig() {}
+
+    @Override
+    public void saveDefaultConfig() {}
+
     @Override
     public @NotNull FileConfiguration getConfig() {
         var config = new YamlConfiguration();
