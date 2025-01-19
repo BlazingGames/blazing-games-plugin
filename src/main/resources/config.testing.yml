@@ -10,18 +10,23 @@ logging:
   notify-ops-on-error: false
 
 computing:
-  local:
-    disable-computers: false
-    privileges:
-      chunkloading: true
-      net: true
+  disable-computers: false
+  privileges:
+    chunkloading: true
+    net: true
+
+resource-packs:
+  enabled: true
+
+authorization:
   microsoft:
     spoof-ms-server: true
   jwt:
     secret-key: randomize-on-server-start
     secret-key-is-password: false
-  services:
-    blazing-api:
-      enabled: true
-    blazing-wss:
-      enabled: true
+
+services:
+  blazing-api:
+    enabled: true
+  blazing-wss:
+    enabled: true
