@@ -29,7 +29,7 @@ public class QuitEventListener implements Listener {
     public void join(PlayerQuitEvent event) {
         DiscordApp.send(DiscordNotification.playerLeave(event.getPlayer()));
 
-        if (Bukkit.getOnlinePlayers().size() == 1) {
+        if (Bukkit.getOnlinePlayers().size() == 1 && BlazingGames.get().getPackConfig() != null) {
             BlazingGames.get().rebuildPack();
         }
     }
