@@ -16,6 +16,7 @@
 package de.blazemcworld.blazinggames.commands;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.items.ContextlessItem;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.CustomItems;
 import net.kyori.adventure.text.Component;
@@ -53,10 +54,10 @@ public class CustomGiveCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        CustomItem itemType = CustomItems.getByKey(BlazingGames.get().key(strings[0]));
+        CustomItem<?> itemType = CustomItems.getByKey(BlazingGames.get().key(strings[0]));
         int count = 1;
 
-        if(itemType == null)
+        if(!(itemType instanceof ContextlessItem contextlessItemType))
         {
             commandSender.sendMessage(Component.text("Unknown custom item: " + strings[0] + "!").color(NamedTextColor.RED));
             return true;
@@ -66,7 +67,7 @@ public class CustomGiveCommand implements CommandExecutor, TabCompleter {
             count = Integer.parseInt(strings[1]);
         }
 
-        ItemStack item = itemType.create();
+        ItemStack item = contextlessItemType.create();
         item.setAmount(count);
 
         p.getInventory().addItem(item);
@@ -80,7 +81,12 @@ public class CustomGiveCommand implements CommandExecutor, TabCompleter {
         List<String> tabs = new ArrayList<>();
 
         if(strings.length == 1) {
-            CustomItems.list().forEach(itemType -> tabs.add(itemType.getKey().getKey()));
+            CustomItems.getAllItems().forEach(itemType -> {
+                if(itemType instanceof ContextlessItem)
+                {
+                    tabs.add(itemType.getKey().getKey());
+                }
+            });
         }
 
         return tabs;

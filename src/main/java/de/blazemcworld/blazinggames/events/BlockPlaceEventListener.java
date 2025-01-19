@@ -19,7 +19,6 @@ import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.BootedComputer;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
-import de.blazemcworld.blazinggames.crates.CrateManager;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.CustomItems;
 import de.blazemcworld.blazinggames.items.CustomSlabs;
@@ -57,11 +56,6 @@ public class BlockPlaceEventListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         if(CustomItem.isCustomItem(event.getItemInHand())) {
             event.setCancelled(true);
-        }
-
-        if (CrateManager.getKeyULID(event.getItemInHand()) != null) {
-            event.setCancelled(true);
-            return;
         }
 
         if (event.getItemInHand().getType() == Material.SPAWNER) {

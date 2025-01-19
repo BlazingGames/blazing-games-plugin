@@ -16,8 +16,10 @@
 package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.crates.CrateManager;
+import de.blazemcworld.blazinggames.crates.DeathCrateKey;
 import de.blazemcworld.blazinggames.discord.DiscordApp;
 import de.blazemcworld.blazinggames.discord.DiscordNotification;
+import de.blazemcworld.blazinggames.items.CustomItems;
 import de.blazemcworld.blazinggames.utils.TextUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -88,6 +90,6 @@ public class DeathEventListener implements Listener {
         event.setDroppedExp(0);
         event.getDrops().clear();
         String ulid = CrateManager.createDeathCrate(player.getUniqueId(), event.getPlayer().getInventory(), event.getPlayer().calculateTotalExperiencePoints(), crateLocation);
-        event.getItemsToKeep().add(CrateManager.makeKey(ulid, crateLocation));
+        event.getItemsToKeep().add(CustomItems.DEATH_CRATE_KEY.create(new DeathCrateKey.DeathCrateKeyContext(ulid)));
     }
 }

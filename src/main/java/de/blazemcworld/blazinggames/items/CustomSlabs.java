@@ -24,12 +24,9 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class CustomSlabs {
+public class CustomSlabs implements ItemProvider {
     private static final List<Material> blockedMaterials = List.of(
         Material.COMMAND_BLOCK,
         Material.CHAIN_COMMAND_BLOCK,
@@ -59,7 +56,12 @@ public class CustomSlabs {
         }
     }
 
-    public static class CustomSlab extends CustomItem {
+    @Override
+    public Set<CustomItem<?>> getItems() {
+        return new HashSet<>(slabs);
+    }
+
+    public static class CustomSlab extends ContextlessItem {
         public final Material material;
         public final String name;
         public final String camelName;

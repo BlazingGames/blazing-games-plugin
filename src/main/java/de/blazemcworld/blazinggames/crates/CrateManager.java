@@ -15,31 +15,21 @@
  */
 package de.blazemcworld.blazinggames.crates;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
-import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.data.DataStorage;
 import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
 import de.blazemcworld.blazinggames.data.name.ULIDNameProvider;
 import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 
 public class CrateManager {
     private CrateManager() {}
-    private static final NamespacedKey KEY = BlazingGames.get().key("death_crate_key");
     private static final DataStorage<CrateData, String> crateStorage = DataStorage.forClass(
         CrateManager.class, null,
         new GsonStorageProvider<>(CrateData.class), new ULIDNameProvider(), new GZipCompressionProvider()
@@ -59,13 +49,11 @@ public class CrateManager {
     }
 
     public static String getKeyULID(Location loc) {
-        List<String> ids = crateStorage.query(data -> {
-            return !data.opened &&
-                data.location.getWorld().getName().equals(loc.getWorld().getName()) &&
-                data.location.blockX() == loc.getBlockX() &&
-                data.location.blockY() == loc.getBlockY() &&
-                data.location.blockZ() == loc.getBlockZ();
-        });
+        List<String> ids = crateStorage.query(data -> !data.opened &&
+            data.location.getWorld().getName().equals(loc.getWorld().getName()) &&
+            data.location.blockX() == loc.getBlockX() &&
+            data.location.blockY() == loc.getBlockY() &&
+            data.location.blockZ() == loc.getBlockZ());
 
         if (ids.isEmpty()) {
             return null;
@@ -73,22 +61,17 @@ public class CrateManager {
 
         if (ids.size() > 1) {
             // sort the ULIDs to find the newest
-            ids.sort((a, b) -> {
-                return b.compareTo(a);
-            });
+            ids.sort(Comparator.reverseOrder());
         }
 
-        return ids.get(0);
+        return ids.getFirst();
     }
 
     public static String createDeathCrate(UUID owner, PlayerInventory inventory, int exp, Location crateLocation) {
-        ArrayList<ItemStack> items = new ArrayList<>();
-        for (ItemStack item : inventory.getStorageContents()) {
-            items.add(item);
-        }
+        ArrayList<ItemStack> items = new ArrayList<>(Arrays.asList(inventory.getStorageContents()));
 
-        List<ItemStack> hotbarItems = items.subList(0, 9).stream().filter(i -> i == null ? true : CrateManager.shouldStayOnDeath(i)).toList();
-        List<ItemStack> inventoryItems = items.subList(9, 36).stream().filter(i -> i == null ? true : CrateManager.shouldStayOnDeath(i)).toList();
+        List<ItemStack> hotbarItems = items.subList(0, 9).stream().filter(i -> i == null || CrateManager.shouldStayOnDeath(i)).toList();
+        List<ItemStack> inventoryItems = items.subList(9, 36).stream().filter(i -> i == null || CrateManager.shouldStayOnDeath(i)).toList();
 
         return crateStorage.storeNext(id -> new CrateData(
             id, owner, false,
@@ -108,27 +91,5 @@ public class CrateManager {
 
     public static void deleteCrate(String ulid) {
         crateStorage.deleteData(ulid);
-    }
-    
-    public static ItemStack makeKey(String ulid, Location location) {
-        ItemStack item = new ItemStack(Material.TRIPWIRE_HOOK, 1);
-        ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text("Death Crate Key").color(NamedTextColor.DARK_RED).decoration(TextDecoration.ITALIC, false));
-        meta.lore(List.of(
-            Component.text("Location: %s, %s, %s in %s".formatted(location.getBlockX(), location.getBlockY(), location.getBlockZ(),
-                    location.getWorld().getName())).color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true),
-            Component.text("ULID: %s".formatted(ulid)).color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true),
-            Component.empty(),
-            Component.text("Unlocks the crate at the location above. Can be used by anyone.").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true)
-        ));
-        meta.getPersistentDataContainer().set(KEY, PersistentDataType.STRING, ulid);
-        item.setItemMeta(meta);
-        return item;
-    }
-
-    public static String getKeyULID(ItemStack item) {
-        if (item == null) { return null; }
-        if (!item.hasItemMeta()) { return null; }
-        return item.getItemMeta().getPersistentDataContainer().get(KEY, PersistentDataType.STRING);
     }
 }

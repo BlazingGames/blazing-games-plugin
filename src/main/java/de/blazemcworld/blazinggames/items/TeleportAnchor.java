@@ -24,14 +24,12 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TeleportAnchor extends CustomItem {
+public class TeleportAnchor extends ContextlessItem {
     @Override
     public @NotNull NamespacedKey getKey() {
         return BlazingGames.get().key("teleport_anchor");
@@ -43,13 +41,13 @@ public class TeleportAnchor extends CustomItem {
     }
 
     @Override
-    protected @NotNull ItemStack modifyMaterial(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        List<Component> lore = new ArrayList<>();
-        lore.add(Component.text("Click to show discovered lodestones.").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
-        meta.lore(lore);
-        item.setItemMeta(meta);
-        return item;
+    protected int stackSize() {
+        return 1;
+    }
+
+    @Override
+    public List<Component> lore(ItemStack stack) {
+        return List.of(Component.text("Click to show discovered lodestones.").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
     }
 
     public Map<NamespacedKey, Recipe> getRecipes() {

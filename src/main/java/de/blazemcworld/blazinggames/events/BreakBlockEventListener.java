@@ -21,7 +21,7 @@ import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.enchantments.PatternEnchantment;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
-import de.blazemcworld.blazinggames.items.RecipeHelper;
+import de.blazemcworld.blazinggames.items.recipes.RecipeHelper;
 import de.blazemcworld.blazinggames.teleportanchor.LodestoneStorage;
 import de.blazemcworld.blazinggames.utils.InventoryUtils;
 import de.blazemcworld.blazinggames.utils.ItemUtils;
