@@ -1,6 +1,6 @@
 name: blazinggames
 version: '${version}'
-main: de.blazemcworld.blazinggames.BlazingGames
+main: '${launchClass}'
 api-version: '1.21.4'
 prefix: BlazingGames
 authors: [BlazeMCworld, sbot50, 'Ivy Collective (ivyc.)', XTerPL]

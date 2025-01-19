@@ -62,8 +62,7 @@ import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
-@SuppressWarnings("unused")
-public final class BlazingGames extends JavaPlugin {
+public class BlazingGames extends JavaPlugin {
     public boolean API_AVAILABLE = false;
 
     // Gson

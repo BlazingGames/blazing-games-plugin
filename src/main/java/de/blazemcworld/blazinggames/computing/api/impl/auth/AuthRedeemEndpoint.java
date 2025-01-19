@@ -18,6 +18,8 @@ package de.blazemcworld.blazinggames.computing.api.impl.auth;
 import com.google.gson.JsonObject;
 import de.blazemcworld.blazinggames.computing.api.APIDocs;
 import de.blazemcworld.blazinggames.computing.api.TokenManager;
+import de.blazemcworld.blazinggames.testing.CoveredByTests;
+import de.blazemcworld.blazinggames.testing.tests.LoginFlowTest;
 import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
 import de.blazemcworld.blazinggames.computing.api.Endpoint;
 import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
@@ -25,6 +27,7 @@ import de.blazemcworld.blazinggames.computing.api.LinkedUser;
 import de.blazemcworld.blazinggames.computing.api.RequestContext;
 import de.blazemcworld.blazinggames.computing.api.RequestMethod;
 
+@CoveredByTests(LoginFlowTest.class)
 public class AuthRedeemEndpoint implements Endpoint {
     @Override
     public EndpointResponse POST(RequestContext context) throws EarlyResponse {

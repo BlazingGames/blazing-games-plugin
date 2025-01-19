@@ -1,5 +1,8 @@
 # blazing-games-plugin
 
+![Latest Release](https://git.ivycollective.dev/BlazingGames/blazing-games-plugin/badges/release.svg)
+![Build Status](https://git.ivycollective.dev/BlazingGames/blazing-games-plugin/badges/workflows/build.yml/badge.svg?label=build+status)
+
 The plugin powering the Blazing Games minecraft server, with computers, enchanting altars, spawner modification, and more!
 
 ## Usage
@@ -15,6 +18,10 @@ Most features should be configured out of the box. For those needing advanced co
 This is a standard Paper plugin using Gradle.
 
 To build, use: `./gradlew build`
+
+## Testing
+
+This plugins supports testing. To run tests, use: `./gradlew build -Ptest=true`, and load the plugin normally. Once tests are done running, the file `TESTS_RESULT` in the server files directory will contain `true` if tests passed or `false` if tests failed.
 
 ## License
 
