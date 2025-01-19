@@ -190,7 +190,9 @@ public class InteractEventListener implements Listener {
                             if (inventory.firstEmpty() == -1) {
                                 crateLocation.getWorld().dropItemNaturally(crateLocation, inventoryItem);
                             }
-                            inventory.addItem(inventoryItem);
+                            else {
+                                inventory.addItem(inventoryItem);
+                            }
                         }
                     }
 
