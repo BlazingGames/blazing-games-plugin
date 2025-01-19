@@ -72,7 +72,7 @@ public class ResourcePackManager {
             HookContext context = new HookContext(zip, config);
             for (HookList hook : HookList.values()) {
                 log.info("Running hook " + hook.hook.getClass().getSimpleName());
-                hook.hook.run(log, context);
+                hook.hook.runHook(log, context);
                 log.info("Finished hook " + hook.hook.getClass().getSimpleName());
             }
         } catch (IOException e) {

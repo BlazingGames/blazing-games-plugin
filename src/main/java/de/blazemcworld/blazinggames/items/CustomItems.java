@@ -118,7 +118,7 @@ public class CustomItems implements ItemProvider {
     }
 
     @Override
-    public void run(Logger logger, HookContext context) {
+    public void runHook(Logger logger, HookContext context) {
         for (CustomItem<?> item : getItems()) {
             // install texture
             try (InputStream stream = item.getClass().getResourceAsStream("/customitems/" + item.getKey().getKey() + ".png")) {

@@ -24,9 +24,9 @@ import de.blazemcworld.blazinggames.packs.PackBuildHook;
 
 public class CustomItemsHook implements PackBuildHook {
     @Override
-    public void run(Logger logger, HookContext context) {
+    public void runHook(Logger logger, HookContext context) {
         for (ItemProvider provider : CustomItems.getItemProviders()) {
-            provider.run(logger, context);
+            provider.runHook(logger, context);
         }
     }
 }

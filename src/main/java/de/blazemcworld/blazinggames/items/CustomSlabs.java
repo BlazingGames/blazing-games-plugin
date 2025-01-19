@@ -136,7 +136,7 @@ public class CustomSlabs implements ItemProvider {
     }
 
     @Override
-    public void run(Logger logger, HookContext context) {
+    public void runHook(Logger logger, HookContext context) {
         // TBD
     }
 }
