@@ -18,33 +18,33 @@ package de.blazemcworld.blazinggames.crates;
 import java.util.List;
 import java.util.Map;
 
+import de.blazemcworld.blazinggames.items.ContextlessItem;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.items.CustomItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.jetbrains.annotations.NotNull;
 
-public class SkeletonKey extends CustomItem {
+public class SkeletonKey extends ContextlessItem {
     @Override
-    public NamespacedKey getKey() {
+    public @NotNull NamespacedKey getKey() {
         return BlazingGames.get().key("skeleton_key");
     }
 
     @Override
-    protected ItemStack material() {
-        ItemStack item = new ItemStack(Material.SKELETON_SKULL);
-        ItemMeta meta = item.getItemMeta();
-        meta.itemName(Component.text("Skeleton Key").color(NamedTextColor.DARK_PURPLE).decoration(TextDecoration.ITALIC, false));
-        meta.lore(List.of(Component.text("Used to open any crate that you've lost the key to.").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true)));
-        item.setItemMeta(meta);
-        return item;
+    protected @NotNull Component itemName() {
+        return Component.text("Skeleton Key").color(NamedTextColor.DARK_PURPLE);
+    }
+
+    @Override
+    public @NotNull List<Component> lore(ItemStack item) {
+        return List.of(Component.text("Used to open any crate that you've lost the key to.").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true));
     }
 
     @Override

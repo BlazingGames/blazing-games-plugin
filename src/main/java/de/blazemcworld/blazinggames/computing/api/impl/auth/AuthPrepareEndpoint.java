@@ -21,6 +21,7 @@ import com.google.gson.JsonObject;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.api.APIDocs;
+import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.computing.api.TokenManager;
 import de.blazemcworld.blazinggames.testing.CoveredByTests;
 import de.blazemcworld.blazinggames.testing.tests.LoginFlowTest;
@@ -49,12 +50,17 @@ public class AuthPrepareEndpoint implements Endpoint {
         String purpose = context.requireClean("purpose", body.getString("purpose"));
         JsonArray rawPermissions = GetGson.getArray(body.body, "permissions", EarlyResponse.of(EndpointResponse.of400("Missing permissions array")));
         ArrayList<Permission> permissions = new ArrayList<>();
+        var config = BlazingAPI.getConfig();
 
         for (JsonElement elem : rawPermissions) {
             try {
-                permissions.add(Permission.valueOf(
+                Permission permission = Permission.valueOf(
                     context.requireClean("permission", GetGson.getAsString(elem, EarlyResponse.of(EndpointResponse.of400("Permission is not a string"))))
-                ));
+                );
+                if (!config.hasAllRequiredFeatures(permission.requiredFeatures)) {
+                    throw new IllegalArgumentException("Permission " + permission.name() + " is not available on this server");
+                }
+                permissions.add(permission);
             } catch (IllegalArgumentException e) {
                 BlazingGames.get().debugLog(e);
                 return EndpointResponse.of400("Unrecognised permission (is is null? check for trailing commas)");

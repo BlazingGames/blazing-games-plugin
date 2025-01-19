@@ -15,10 +15,9 @@
  */
 package de.blazemcworld.blazinggames.enchantments.sys;
 
-import de.blazemcworld.blazinggames.items.CustomItem;
+import de.blazemcworld.blazinggames.items.ContextlessItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -26,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class EnchantmentTome extends CustomItem {
+public class EnchantmentTome extends ContextlessItem {
     private final NamespacedKey tomeKey;
     private final String tomeName;
     private final EnchantmentWrapper wrapper;
@@ -43,18 +42,24 @@ public class EnchantmentTome extends CustomItem {
     }
 
     @Override
-    protected @NotNull ItemStack material() {
-        ItemStack stack = new ItemStack(Material.BOOK);
+    protected @NotNull Component itemName() {
+        return Component.text(tomeName).color(NamedTextColor.LIGHT_PURPLE);
+    }
 
+    @Override
+    protected @NotNull ItemStack modifyMaterial(ItemStack stack) {
         ItemMeta meta = stack.getItemMeta();
-        meta.setEnchantmentGlintOverride(true);
 
-        meta.itemName(Component.text(tomeName).color(NamedTextColor.LIGHT_PURPLE));
-        meta.lore(List.of(getComponent()));
+        meta.setEnchantmentGlintOverride(true);
 
         stack.setItemMeta(meta);
 
         return stack;
+    }
+
+    @Override
+    public @NotNull List<Component> lore(ItemStack stack) {
+        return List.of(getComponent());
     }
 
     protected Component getComponent() {

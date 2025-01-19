@@ -15,17 +15,31 @@
  */
 package de.blazemcworld.blazinggames.userinterfaces;
 
+import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.utils.NamespacedKeyDataType;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class StaticUserInterfaceSlot implements UserInterfaceSlot {
-    private final ItemStack stack;
+    public static StaticUserInterfaceSlot blank = new StaticUserInterfaceSlot(BlazingGames.get().key("blank"));
 
-    public StaticUserInterfaceSlot(ItemStack stack) {
-        this.stack = stack;
+    private final NamespacedKey model;
+
+    public StaticUserInterfaceSlot(NamespacedKey model) {
+        this.model = model;
     }
 
     @Override
     public void onUpdate(UserInterface inventory, int slot) {
+        ItemStack stack = new ItemStack(Material.STRUCTURE_BLOCK);
+        ItemMeta meta = stack.getItemMeta();
+        meta.setItemModel(model);
+        meta.getPersistentDataContainer().set(UserInterface.guiKey, NamespacedKeyDataType.instance, model);
+        meta.setHideTooltip(true);
+        stack.setItemMeta(meta);
+
         inventory.setItem(slot, stack);
     }
 }

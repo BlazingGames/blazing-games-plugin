@@ -15,30 +15,42 @@
  */
 package de.blazemcworld.blazinggames.items;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonObject;
+
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.builderwand.BuilderWand;
+import de.blazemcworld.blazinggames.crates.DeathCrateKey;
 import de.blazemcworld.blazinggames.crates.SkeletonKey;
 import de.blazemcworld.blazinggames.crates.ToGoBoxItem;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentTome;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrappers;
 import de.blazemcworld.blazinggames.multiblocks.Blueprint;
+import de.blazemcworld.blazinggames.packs.HookContext;
+
 import org.bukkit.NamespacedKey;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Set;
 
-public class CustomItems {
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.logging.Logger;
+
+public class CustomItems implements ItemProvider {
+    public static final CustomSlabs CUSTOM_SLABS = new CustomSlabs();
+
     public static final BuilderWand BUILDER_WAND = new BuilderWand();
     public static final PortableCraftingTable PORTABLE_CRAFTING_TABLE = new PortableCraftingTable();
     public static final TeleportAnchor TELEPORT_ANCHOR = new TeleportAnchor();
     public static final Blueprint BLUEPRINT = new Blueprint();
     public static final TomeAltar TOME_ALTAR = new TomeAltar();
-    public static final List<CustomSlabs.CustomSlab> CUSTOM_SLABS = new CustomSlabs().slabs;
+    public static final DeathCrateKey DEATH_CRATE_KEY = new DeathCrateKey();
     public static final SkeletonKey SKELETON_KEY = new SkeletonKey();
     public static final ToGoBoxItem TO_GO_BOX = new ToGoBoxItem();
     public static final NetherStarChunk NETHER_STAR_CHUNK = new NetherStarChunk();
+
     public static final EnchantmentTome FUSE_TOME = new EnchantmentTome(BlazingGames.get().key("fuse_tome"), "Fuse Tome", EnchantmentWrappers.MENDING);
     public static final EnchantmentTome BIND_TOME = new EnchantmentTome(BlazingGames.get().key("bind_tome"), "Bind Tome", EnchantmentWrappers.BINDING_CURSE);
     public static final EnchantmentTome VANISH_TOME = new EnchantmentTome(BlazingGames.get().key("vanish_tome"), "Vanish Tome", EnchantmentWrappers.VANISHING_CURSE);
@@ -51,38 +63,84 @@ public class CustomItems {
     public static final EnchantmentTome GREED_TOME = new EnchantmentTome(BlazingGames.get().key("greed_tome"), "Greed Tome", CustomEnchantments.SCAVENGER);
     public static final EnchantmentTome DIM_TOME = new EnchantmentTome(BlazingGames.get().key("dim_tome"), "Dim Tome", CustomEnchantments.UNSHINY);
 
-    public static Set<CustomItem> list() {
-        Set<CustomItem> set = new java.util.HashSet<>(Set.of(
-            BUILDER_WAND,
-            PORTABLE_CRAFTING_TABLE,
-            TELEPORT_ANCHOR,
-            BLUEPRINT,
-            TOME_ALTAR,
-            SKELETON_KEY,
-            TO_GO_BOX,
-            NETHER_STAR_CHUNK,
-            FUSE_TOME,
-            BIND_TOME,
-            VANISH_TOME,
-            CHILL_TOME,
-            NETHER_TOME,
-            ECHO_TOME,
-            STORM_TOME,
-            BLACK_TOME,
-            GUST_TOME,
-            GREED_TOME,
-            DIM_TOME
-        ));
-        set.addAll(CUSTOM_SLABS);
-        return set;
+    @Override
+    public Set<CustomItem<?>> getItems() {
+        return Set.of(
+                BUILDER_WAND,
+                PORTABLE_CRAFTING_TABLE,
+                TELEPORT_ANCHOR,
+                BLUEPRINT,
+                TOME_ALTAR,
+                DEATH_CRATE_KEY,
+                SKELETON_KEY,
+                TO_GO_BOX,
+                NETHER_STAR_CHUNK,
+                FUSE_TOME,
+                BIND_TOME,
+                VANISH_TOME,
+                CHILL_TOME,
+                NETHER_TOME,
+                ECHO_TOME,
+                STORM_TOME,
+                BLACK_TOME,
+                GUST_TOME,
+                GREED_TOME,
+                DIM_TOME
+        );
     }
 
-    public static @Nullable CustomItem getByKey(NamespacedKey key) {
-        for(CustomItem curr : list()) {
+    public static Set<ItemProvider> getItemProviders() {
+        ImmutableSet.Builder<ItemProvider> providers = new ImmutableSet.Builder<>();
+
+        providers.add(new CustomItems());
+        providers.add(CUSTOM_SLABS);
+
+        return providers.build();
+    }
+
+    public static Set<CustomItem<?>> getAllItems() {
+        Set<CustomItem<?>> items = new HashSet<>();
+
+        for(ItemProvider provider : getItemProviders()) {
+            items.addAll(provider.getItems());
+        }
+
+        return items;
+    }
+
+    public static @Nullable CustomItem<?> getByKey(NamespacedKey key) {
+        for(CustomItem<?> curr : getAllItems()) {
             if(curr.getKey().equals(key)) {
                 return curr;
             }
         }
         return null;
+    }
+
+    @Override
+    public void runHook(Logger logger, HookContext context) {
+        for (CustomItem<?> item : getItems()) {
+            // install texture
+            try (InputStream stream = item.getClass().getResourceAsStream("/customitems/" + item.getKey().getKey() + ".png")) {
+                if (stream != null) context.installTexture(item.getKey(), "item", stream.readAllBytes());
+            } catch (IOException e) {
+                BlazingGames.get().log(e);
+            }
+
+            // install model
+            try (InputStream stream = item.getClass().getResourceAsStream("/customitems/" + item.getKey().getKey() + ".json")) {
+                if (stream != null) context.installModel(item.getKey(), stream.readAllBytes());
+            } catch (IOException e) {
+                BlazingGames.get().log(e);
+            }
+
+            // create items data
+            JsonObject root = new JsonObject();
+            JsonObject model = new JsonObject();
+            model.addProperty("type", "minecraft:model");
+            model.addProperty("model", item.getKey().toString());
+            root.add("model", model);
+            context.writeFile("/assets/" + item.getKey().getNamespace() + "/items/" + item.getKey().getKey() + ".json", root);
+        }
     }
 }

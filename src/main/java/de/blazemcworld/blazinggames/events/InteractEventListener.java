@@ -18,6 +18,7 @@ package de.blazemcworld.blazinggames.events;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.crates.CrateData;
 import de.blazemcworld.blazinggames.crates.CrateManager;
+import de.blazemcworld.blazinggames.crates.DeathCrateKey;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
 import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarInterface;
@@ -56,7 +57,6 @@ import org.bukkit.util.Vector;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -72,7 +72,7 @@ public class InteractEventListener implements Listener {
     );
 
     @EventHandler
-    public void onInteract(PlayerInteractEvent event) throws IOException, ClassNotFoundException {
+    public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack eventItem = event.getItem();
         EquipmentSlot hand = event.getHand();
@@ -87,20 +87,35 @@ public class InteractEventListener implements Listener {
 
         if (block != null && block.getType() == Material.VAULT) vaultShit(block);
 
-        if (eventItem != null && (CustomItems.SKELETON_KEY.matchItem(eventItem) || CrateManager.getKeyULID(eventItem) != null)) {
-            event.setCancelled(true);
-        }
-
         if (block != null && block.getType() == Material.END_PORTAL_FRAME && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            ItemStack handItem = player.getInventory().getItem(hand);
-            String ulid = (CustomItems.SKELETON_KEY.matchItem(handItem) || CustomItems.TO_GO_BOX.matchItem(handItem))
-                ? CrateManager.getKeyULID(block.getLocation()) : CrateManager.getKeyULID(handItem);
-            if (CustomItems.SKELETON_KEY.matchItem(handItem) || CustomItems.TO_GO_BOX.matchItem(handItem)) player.setCooldown(handItem.getType(), 200);
-            if (ulid != null) {
-                CrateData data = CrateManager.readCrate(ulid);
+            String crateId = CrateManager.getKeyULID(block.getLocation());
+
+            boolean allowOpening = false;
+
+            if(crateId != null) {
+                if(CustomItems.DEATH_CRATE_KEY.matchItem(eventItem)) {
+                    String keyId = DeathCrateKey.getKeyULID(eventItem);
+
+                    if(Objects.equals(crateId, keyId)) {
+                        allowOpening = true;
+                    }
+                }
+
+                if(CustomItems.SKELETON_KEY.matchItem(eventItem) || CustomItems.TO_GO_BOX.matchItem(eventItem)) {
+                    assert eventItem != null;
+
+                    if(!player.hasCooldown(eventItem)) {
+                        allowOpening = true;
+                        player.setCooldown(eventItem, 200);
+                    }
+                }
+            }
+
+            if (allowOpening) {
+                CrateData data = CrateManager.readCrate(crateId);
                 Location crateLocation = data.location;
 
-                if (CustomItems.TO_GO_BOX.matchItem(handItem)) {
+                if (CustomItems.TO_GO_BOX.matchItem(eventItem)) {
                     crateLocation.getBlock().breakNaturally();
                     ItemStack filledToGoBox = new ItemStack(Material.BUNDLE);
                     BundleMeta bundleMeta = (BundleMeta) filledToGoBox.getItemMeta();
@@ -118,40 +133,31 @@ public class InteractEventListener implements Listener {
                     }
 
                     filledToGoBox.setItemMeta(bundleMeta);
-                    player.getInventory().getItem(hand).setAmount(player.getInventory().getItem(hand).getAmount() - 1);
+                    player.getInventory().getItem(hand).subtract(1);
                     if (player.getInventory().firstEmpty() != -1) {
                         player.getInventory().addItem(filledToGoBox);
                     } else {
                         player.getWorld().dropItemNaturally(player.getLocation(), filledToGoBox);
                     }
                     player.giveExp(data.exp);
-                    CrateManager.deleteCrate(ulid);
+                    CrateManager.deleteCrate(crateId);
                     return;
                 }
-
-                if (crateLocation != null && (
-                        crateLocation.blockX() == block.getX() && crateLocation.blockY() == block.getY() && crateLocation.blockZ() == block.getZ()
-                )) {
+                else {
                     PlayerInventory inventory = player.getInventory();
 
                     if (
-                        (data.offhand != null && inventory.getItemInOffHand() != null && !inventory.getItemInOffHand().isEmpty()) ||
-                        (data.helmet != null && inventory.getHelmet() != null && !inventory.getHelmet().isEmpty()) ||
-                        (data.chestplate != null && inventory.getChestplate() != null && !inventory.getChestplate().isEmpty()) ||
-                        (data.leggings != null && inventory.getLeggings() != null && !inventory.getLeggings().isEmpty()) ||
-                        (data.boots != null && inventory.getBoots() != null && !inventory.getBoots().isEmpty())
+                            (data.offhand != null && inventory.getItemInOffHand() != null && !inventory.getItemInOffHand().isEmpty()) ||
+                                    (data.helmet != null && inventory.getHelmet() != null && !inventory.getHelmet().isEmpty()) ||
+                                    (data.chestplate != null && inventory.getChestplate() != null && !inventory.getChestplate().isEmpty()) ||
+                                    (data.leggings != null && inventory.getLeggings() != null && !inventory.getLeggings().isEmpty()) ||
+                                    (data.boots != null && inventory.getBoots() != null && !inventory.getBoots().isEmpty())
                     ) {
                         player.sendActionBar(Component.text("Move your offhand/armor into your inventory to open").color(NamedTextColor.RED));
                         return;
                     }
-                    
-                    if (handItem.getAmount() > 1) {
-                        ItemStack newStack = handItem;
-                        newStack.setAmount(handItem.getAmount() - 1);
-                        inventory.setItem(hand, newStack);
-                    } else {
-                        inventory.setItem(hand, new ItemStack(Material.AIR));
-                    }
+
+                    player.getInventory().getItem(hand).subtract(1);
                     crateLocation.getBlock().breakNaturally(true);
 
                     if (data.offhand != null) inventory.setItemInOffHand(data.offhand);
@@ -184,13 +190,15 @@ public class InteractEventListener implements Listener {
                             if (inventory.firstEmpty() == -1) {
                                 crateLocation.getWorld().dropItemNaturally(crateLocation, inventoryItem);
                             }
-                            inventory.addItem(inventoryItem);
+                            else {
+                                inventory.addItem(inventoryItem);
+                            }
                         }
                     }
 
                     player.giveExp(data.exp);
 
-                    CrateManager.deleteCrate(ulid);
+                    CrateManager.deleteCrate(crateId);
                 }
             }
             return;
@@ -204,7 +212,7 @@ public class InteractEventListener implements Listener {
         }
 
         if (CustomItems.PORTABLE_CRAFTING_TABLE.matchItem(eventItem)) {
-            event.setCancelled(true);
+            // TODO: use a non-deprecated method
             player.openWorkbench(null, true);
             return;
         }
@@ -238,19 +246,18 @@ public class InteractEventListener implements Listener {
                 }
             }
             if(CustomItems.BUILDER_WAND.matchItem(eventItem)) {
-                if(!player.hasCooldown(Material.BLAZE_ROD)) {
+                if(!player.hasCooldown(eventItem)) {
                     int blocksUsed = CustomItems.BUILDER_WAND.build(player, eventItem, block, face, clampedInteractionPoint);
                     if(blocksUsed > 0) {
-                        player.setCooldown(Material.BLAZE_ROD, 5);
+                        player.setCooldown(eventItem, 5);
                         player.getWorld().playSound(player, Sound.ENTITY_CHICKEN_STEP, 1, 1.25f);
                     }
                 }
             }
             if(CustomItems.BLUEPRINT.matchItem(eventItem)) {
-                if(!player.hasCooldown(Material.PAPER)) {
-                    event.setCancelled(true);
+                if(!player.hasCooldown(eventItem)) {
                     CustomItems.BLUEPRINT.outputMultiBlockProgress(player, block.getLocation());
-                    player.setCooldown(Material.PAPER, 40);
+                    player.setCooldown(eventItem, 40);
                 }
             }
             if (block.getType() == Material.SPAWNER)

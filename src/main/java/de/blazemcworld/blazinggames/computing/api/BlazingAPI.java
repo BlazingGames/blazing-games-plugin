@@ -31,6 +31,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -42,18 +43,18 @@ import javax.net.ssl.SSLParameters;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-public class ComputingAPI {
-    static ComputingAPI.Config config = null;
+public class BlazingAPI {
+    static BlazingAPI.Config config = null;
     private static HttpServer apiServer;
 
-    private ComputingAPI() {
+    private BlazingAPI() {
     }
 
-    public static void setConfig(ComputingAPI.Config config) {
-        ComputingAPI.config = config;
+    public static void setConfig(BlazingAPI.Config config) {
+        BlazingAPI.config = config;
     }
 
-    public static ComputingAPI.Config getConfig() {
+    public static BlazingAPI.Config getConfig() {
         if (config == null) {
             throw new IllegalStateException();
         } else {
@@ -93,8 +94,17 @@ public class ComputingAPI {
         String microsoftClientSecret,
         SecretKey jwtSecretKey,
         WebsiteConfig apiConfig,
-        WebsiteConfig wssConfig
-    ) {}
+        WebsiteConfig wssConfig,
+        List<RequiredFeature> availableFeatures
+    ) {
+        public boolean hasAllRequiredFeatures(List<RequiredFeature> features) {
+            ArrayList<RequiredFeature> missingFeatures = new ArrayList<>(features);
+            for (RequiredFeature feature : this.availableFeatures) {
+                missingFeatures.remove(feature);
+            }
+            return missingFeatures.isEmpty();
+        }
+    }
 
     public static record WebsiteConfig(
         boolean enabled,

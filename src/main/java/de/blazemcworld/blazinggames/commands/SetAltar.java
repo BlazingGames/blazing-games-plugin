@@ -73,6 +73,8 @@ public class SetAltar implements CommandExecutor, TabCompleter {
                 Location loc = oldLoc.clone().add(vector);
                 if (predicate instanceof SingleBlockPredicate) {
                     loc.getBlock().setType(((SingleBlockPredicate) predicate).getMaterial());
+                } else if (predicate instanceof ChoiceBlockPredicate) {
+                    loc.getBlock().setType(((ChoiceBlockPredicate) predicate).getRandomMaterial());
                 } else if (predicate instanceof ComplexBlockPredicate complexBlockPredicate) {
                     StairShapeBlockPredicate shape = (StairShapeBlockPredicate) complexBlockPredicate.getPredicates().get(1);
 
@@ -99,6 +101,6 @@ public class SetAltar implements CommandExecutor, TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command,
                                                 @NotNull String s, @NotNull String[] strings) {
-        return List.of("1", "2", "3", "4");
+        return List.of("1", "2", "3", "4", "5");
     }
 }

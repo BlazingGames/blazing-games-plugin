@@ -16,21 +16,29 @@
 package de.blazemcworld.blazinggames.items;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.items.change.ItemChangeProviders;
+import de.blazemcworld.blazinggames.items.contexts.ItemContext;
+import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
+import de.blazemcworld.blazinggames.items.recipes.RecipeProvider;
 import de.blazemcworld.blazinggames.utils.NamespacedKeyDataType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Keyed;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemRarity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.components.UseCooldownComponent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
-public abstract class CustomItem implements RecipeProvider, Keyed, ItemPredicate {
+public abstract class CustomItem<T extends ItemContext> implements RecipeProvider, Keyed, ItemPredicate {
     private static final NamespacedKey key = BlazingGames.get().key("custom_item");
 
     // returns null if not a custom item
-    public static @Nullable CustomItem getCustomItem(ItemStack stack) {
+    public static @Nullable CustomItem<?> getCustomItem(ItemStack stack) {
         if(stack == null || !stack.hasItemMeta()) {
             return null;
         }
@@ -60,19 +68,39 @@ public abstract class CustomItem implements RecipeProvider, Keyed, ItemPredicate
 
     public abstract @NotNull NamespacedKey getKey();
 
-    public final @NotNull ItemStack create() {
-        ItemStack result = material();
+    public final @NotNull ItemStack create(T context) {
+        ItemStack result = new ItemStack(baseMaterial());
 
         ItemMeta meta = result.getItemMeta();
+
         meta.getPersistentDataContainer().set(key, NamespacedKeyDataType.instance, getKey());
+
+        meta.setItemModel(getKey());
+
+        UseCooldownComponent cooldown = meta.getUseCooldown();
+        cooldown.setCooldownGroup(getKey());
+        meta.setUseCooldown(cooldown);
+
+        meta.itemName(itemName());
+
+        meta.setRarity(ItemRarity.COMMON);
+
+        meta.setMaxStackSize(stackSize());
+
         result.setItemMeta(meta);
 
-        return modifyMaterial(result);
+        result = modifyMaterial(result, context);
+
+        return ItemChangeProviders.update(result);
+    }
+
+    public ItemStack update(ItemStack stack) {
+        return stack.clone();
     }
 
     @Override
     public final boolean matchItem(ItemStack stack) {
-        CustomItem other = getCustomItem(stack);
+        CustomItem<?> other = getCustomItem(stack);
 
         if(other == null) return false;
 
@@ -81,31 +109,24 @@ public abstract class CustomItem implements RecipeProvider, Keyed, ItemPredicate
 
     @Override
     public final Component getDescription() {
-        ItemStack item = create();
-
-        Component name = Component.translatable(item.translationKey());
-        ItemMeta reqMeta = item.getItemMeta();
-
-        if(reqMeta != null) {
-            if(reqMeta.hasItemName()) {
-                name = reqMeta.itemName();
-            }
-
-            if(reqMeta.hasDisplayName()) {
-                name = reqMeta.displayName();
-            }
-        }
-
-        return name;
+        return itemName();
     }
 
     // DO NOT CALL THIS METHOD, instead call create() on the item's instance
     // also there's no need to set the "custom_item" item tag because
     // the create() method does it anyway
-    // if you want to call a function that requires a custom item stack,
-    // do it in modifyMaterial(ItemStack stack)
-    protected abstract @NotNull ItemStack material();
-    protected @NotNull ItemStack modifyMaterial(ItemStack stack) {
+    protected @NotNull ItemStack modifyMaterial(ItemStack stack, T context) {
         return stack;
+    }
+
+    protected @NotNull Material baseMaterial() {
+        return Material.STRUCTURE_BLOCK;
+    }
+    protected abstract @NotNull Component itemName();
+    protected int stackSize() {
+        return 64;
+    }
+    public List<Component> lore(ItemStack stack) {
+        return List.of();
     }
 }

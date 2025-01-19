@@ -13,15 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.enchantments.sys;
+package de.blazemcworld.blazinggames.computing.api;
 
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-
-public interface CustomEnchantmentTarget {
-    boolean includes(@NotNull Material item);
-    default boolean includes(@NotNull ItemStack item) {
-        return includes(item.getType());
-    }
+public enum RequiredFeature {
+    COMPUTERS,
+    RESOURCE_PACK
 }

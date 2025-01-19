@@ -29,6 +29,8 @@ public class AltarOfEnchanting {
     private static final BlockPredicate obsidian = new SingleBlockPredicate(Material.OBSIDIAN);
     private static final BlockPredicate lapisBlock = new SingleBlockPredicate(Material.LAPIS_BLOCK);
     private static final BlockPredicate diamondBlock = new SingleBlockPredicate(Material.DIAMOND_BLOCK);
+    private static final BlockPredicate beacon = new SingleBlockPredicate(Material.BEACON);
+    private static final BlockPredicate beaconMaterial = new ChoiceBlockPredicate(Material.IRON_BLOCK, Material.GOLD_BLOCK, Material.EMERALD_BLOCK, Material.DIAMOND_BLOCK, Material.NETHERITE_BLOCK);
 
     private static final BlockPredicate quartzStairs = new ComplexBlockPredicate(new SingleBlockPredicate(Material.QUARTZ_STAIRS),
                                                                                     BisectedBlockPredicate.BOTTOM);
@@ -103,7 +105,14 @@ public class AltarOfEnchanting {
                                     .add(new Vector(5, 3, 5), diamondBlock)
                                     .add(new Vector(5, 3, -5), diamondBlock)
                                     .add(new Vector(-5, 3, 5), diamondBlock)
-                                    .add(new Vector(-5, 3, -5), diamondBlock)
+                                    .add(new Vector(-5, 3, -5), diamondBlock),
+                            new MultiBlockStructure()
+                                    // beacon
+                                    .add(new Vector(0, -1, 0), beacon)
+                                    .addArea(new Vector(-1, -2, -1), new Vector(1, -2, 1), beaconMaterial)
+                                    .addArea(new Vector(-2, -3, -2), new Vector(2, -3, 2), beaconMaterial)
+                                    .addArea(new Vector(-3, -4, -3), new Vector(3, -4, 3), beaconMaterial)
+                                    .addArea(new Vector(-4, -5, -4), new Vector(4, -5, 4), beaconMaterial)
             ));
     //endregion
 }

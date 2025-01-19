@@ -13,25 +13,28 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class NetherStarChunk extends CustomItem {
+public class NetherStarChunk extends ContextlessItem {
     @Override
     public @NotNull NamespacedKey getKey() {
         return BlazingGames.get().key("nether_star_chunk");
     }
 
     @Override
-    protected @NotNull ItemStack material() {
-        ItemStack item = new ItemStack(Material.GHAST_TEAR);
+    protected @NotNull Component itemName() {
+        return Component.text("Nether Star Chunk");
+    }
+
+    @Override
+    public List<Component> lore(ItemStack stack) {
+        return List.of(Component.text("Used to enchant mending").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+    }
+
+    @Override
+    protected @NotNull ItemStack modifyMaterial(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
-        meta.setEnchantmentGlintOverride(true);
-        meta.itemName(Component.text("Nether Star Chunk").color(NamedTextColor.WHITE));
-        List<Component> lore = new ArrayList<>();
-        lore.add(Component.text("Used to enchant mending").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
-        meta.lore(lore);
         meta.setEnchantmentGlintOverride(true);
         item.setItemMeta(meta);
         return item;

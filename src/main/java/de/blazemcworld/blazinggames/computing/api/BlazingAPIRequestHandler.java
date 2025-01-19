@@ -55,7 +55,7 @@ public class BlazingAPIRequestHandler implements HttpHandler {
 
         EndpointResponse response;
         try {
-            if (!ComputingAPI.config.apiConfig().findAt().replace("https://", "").replace("http://", "").equals(context.getFirstHeader("Host"))) {
+            if (!BlazingAPI.config.apiConfig().findAt().replace("https://", "").replace("http://", "").equals(context.getFirstHeader("Host"))) {
                 BlazingGames.get().debugLog("Refused to respond: Host header is " + context.getFirstHeader("Host"));
                 response = EndpointResponse.builder(421).build();
             } else if (context.ipAddress() == null) {
@@ -71,6 +71,7 @@ public class BlazingAPIRequestHandler implements HttpHandler {
         }
 
         boolean emptyBody;
+        long length;
         try {
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             exchange.getResponseHeaders()
@@ -78,7 +79,9 @@ public class BlazingAPIRequestHandler implements HttpHandler {
             exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization");
             emptyBody = context.method().flags.contains(RequestMethod.Flag.RESPOND_EMPTY_BODY);
             response.headers.forEach((s, s2) -> exchange.getResponseHeaders().add(s, s2));
-            exchange.sendResponseHeaders(this.emptyBodyVersionIfNeeded(response.status, emptyBody), (long)response.body.getBytes().length);
+            length = response.body.length();
+            if (length == 0) length = -1;
+            exchange.sendResponseHeaders(this.emptyBodyVersionIfNeeded(response.status, emptyBody), length);
         } catch (Exception e) {
             BlazingGames.get().debugLog("Failed to send response headers");
             BlazingGames.get().debugLog(e);
@@ -86,9 +89,9 @@ public class BlazingAPIRequestHandler implements HttpHandler {
         }
 
         try {
-            if (!response.body.isEmpty() && !emptyBody) {
+            if (length > 0 && !emptyBody) {
                 try (OutputStream os = exchange.getResponseBody()) {
-                    os.write(response.body.getBytes());
+                    response.body.handle(os);
                 }
             } else {
                 exchange.getResponseBody().close();
@@ -189,10 +192,10 @@ public class BlazingAPIRequestHandler implements HttpHandler {
 
         String realIp = exchange.getRemoteAddress().getAddress().getHostAddress();
         String ip;
-        if (ComputingAPI.config.apiConfig().proxyEnabled()) {
-            boolean isAllowed = ComputingAPI.config.apiConfig().isAllowed(realIp);
-            if (headers.containsKey(ComputingAPI.config.apiConfig().proxyIpAddressHeader()) && !headers.get(ComputingAPI.config.apiConfig().proxyIpAddressHeader()).isEmpty()) {
-                ip = headers.get(ComputingAPI.config.apiConfig().proxyIpAddressHeader()).getFirst();
+        if (BlazingAPI.config.apiConfig().proxyEnabled()) {
+            boolean isAllowed = BlazingAPI.config.apiConfig().isAllowed(realIp);
+            if (headers.containsKey(BlazingAPI.config.apiConfig().proxyIpAddressHeader()) && !headers.get(BlazingAPI.config.apiConfig().proxyIpAddressHeader()).isEmpty()) {
+                ip = headers.get(BlazingAPI.config.apiConfig().proxyIpAddressHeader()).getFirst();
             } else {
                 BlazingGames.get().debugLog("Missing IP address header on proxy " + realIp);
                 ip = null;
@@ -222,6 +225,7 @@ public class BlazingAPIRequestHandler implements HttpHandler {
         String finalPath = path;
         Endpoint endpoint = Arrays.stream(EndpointList.values())
             .filter(ex -> ex.endpoint.path().equals(finalPath))
+            .filter(ex -> BlazingAPI.config.hasAllRequiredFeatures(ex.requiredFeatures))
             .map(ex -> ex.endpoint)
             .findFirst()
             .orElse(null);

@@ -16,11 +16,11 @@
 package de.blazemcworld.blazinggames.enchantments;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantmentTarget;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomSingleLeveledEnchantment;
 import de.blazemcworld.blazinggames.enchantments.sys.PaperEnchantmentTarget;
 import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarRecipe;
-import de.blazemcworld.blazinggames.items.MaterialItemPredicate;
+import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
+import de.blazemcworld.blazinggames.items.predicates.MaterialItemPredicate;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -47,7 +47,7 @@ public class CollectableEnchantment extends CustomSingleLeveledEnchantment {
         return "Collectable";
     }
 
-    public CustomEnchantmentTarget getItemTarget() {
+    public ItemPredicate getItemTarget() {
         return PaperEnchantmentTarget.TOOL;
     }
 

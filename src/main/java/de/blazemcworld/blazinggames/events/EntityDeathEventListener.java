@@ -23,6 +23,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -50,7 +51,7 @@ public class EntityDeathEventListener implements Listener {
 
         int capturing = EnchantmentHelper.getActiveCustomEnchantmentLevel(mainHand, CustomEnchantments.CAPTURING);
 
-        if(Math.random() < capturing*0.05) {
+        if (Math.random() < capturing * 0.03 && !victim.getEntitySpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER)) {
             Material spawnEgg = Material.getMaterial(victim.getType().getKey().getKey().toUpperCase() + "_SPAWN_EGG");
 
             if(spawnEgg != null && !EGG_BLACKLIST.contains(spawnEgg)) {

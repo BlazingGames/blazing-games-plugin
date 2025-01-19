@@ -31,24 +31,62 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
+    public record AltarTiers(int tier1, int tier2, int tier3, int tier4, int tier5) {
+        public AltarTiers(int tier1, int tier2, int tier3, int tier4) {
+            this(tier1, tier2, tier3, tier4, tier4);
+        }
+
+        public AltarTiers(int tier1, int tier2, int tier3) {
+            this(tier1, tier2, tier3, tier3, tier3);
+        }
+
+        public AltarTiers(int tier1, int tier2) {
+            this(tier1, tier2, tier2, tier2, tier2);
+        }
+
+        public AltarTiers(int tier1) {
+            this(tier1, tier1, tier1, tier1, tier1);
+        }
+
+        public int get(int tier) {
+            return switch (tier) {
+                case 1 -> tier1;
+                case 2 -> tier2;
+                case 3 -> tier3;
+                case 4 -> tier4;
+                case 5 -> tier5;
+                default -> 0;
+            };
+        }
+
+        public int getMax() {
+            return tier5;
+        }
+    }
+
+    public record Warning(String message, int enchantmentLevel) {
+    }
+
     private final Enchantment enchantment;
     private final Supplier<ItemStack> icon;
     private final List<AltarRecipe> recipes;
-    private final List<Integer> altarLevels;
+    private final AltarTiers altarLevels;
+    private final List<Warning> warnings;
 
-    public VanillaEnchantmentWrapper(Enchantment enchantment, Supplier<ItemStack> icon, int tier1, int tier2, int tier3, AltarRecipe... recipes) {
+    public VanillaEnchantmentWrapper(Enchantment enchantment, Supplier<ItemStack> icon, AltarTiers altarLevels, List<Warning> warnings, AltarRecipe... recipes) {
         this.enchantment = enchantment;
         this.icon = icon;
-        this.altarLevels = List.of(tier1, tier2, tier3);
         this.recipes = List.of(recipes);
+        this.altarLevels = altarLevels;
+        this.warnings = warnings;
     }
 
-    public VanillaEnchantmentWrapper(Enchantment enchantment, Supplier<ItemStack> icon, int tier1, int tier2, AltarRecipe... recipes) {
-        this(enchantment, icon, tier1, tier2, tier2, recipes);
-    }
-
-    public VanillaEnchantmentWrapper(Enchantment enchantment, Supplier<ItemStack> icon, int tier, AltarRecipe... recipes) {
-        this(enchantment, icon, tier, tier, recipes);
+    public VanillaEnchantmentWrapper(Enchantment enchantment, Supplier<ItemStack> icon, AltarTiers altarLevels, AltarRecipe... recipes) {
+        this.enchantment = enchantment;
+        this.icon = icon;
+        this.recipes = List.of(recipes);
+        this.altarLevels = altarLevels;
+        this.warnings = List.of();
     }
 
     @Override
@@ -67,7 +105,7 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
 
     @Override
     public int getMaxLevel() {
-        return enchantment.getMaxLevel();
+        return altarLevels.getMax();
     }
 
     @Override
@@ -122,6 +160,11 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
     }
 
     @Override
+    public String getWarning(int level) {
+        return warnings.stream().filter(warning -> warning.enchantmentLevel == level).findFirst().map(Warning::message).orElse(null);
+    }
+
+    @Override
     public Component getLevelessComponent() {
         TextColor color = NamedTextColor.GRAY;
 
@@ -134,13 +177,8 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
 
     @Override
     public int maxLevelAvailableInAltar(int altarTier) {
-        if(altarTier < 1) {
-            return 0;
-        }
-        if(altarTier > 3) {
-            return getMaxLevel();
-        }
-        return altarLevels.get(altarTier-1);
+        if (altarTier < 1) return 0;
+        return altarLevels.get(altarTier);
     }
 
     @Override

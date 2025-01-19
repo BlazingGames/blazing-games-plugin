@@ -20,13 +20,16 @@ import com.google.gson.GsonBuilder;
 import de.blazemcworld.blazinggames.commands.*;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry.ComputerPrivileges;
-import de.blazemcworld.blazinggames.computing.api.ComputingAPI;
+import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
+import de.blazemcworld.blazinggames.computing.api.RequiredFeature;
 import de.blazemcworld.blazinggames.utils.Cooldown;
 import de.blazemcworld.blazinggames.utils.ItemStackTypeAdapter;
 import de.blazemcworld.blazinggames.utils.TextLocation;
 import de.blazemcworld.blazinggames.discord.*;
 import de.blazemcworld.blazinggames.events.*;
-import de.blazemcworld.blazinggames.items.CustomRecipes;
+import de.blazemcworld.blazinggames.packs.ResourcePackManager;
+import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
+import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
 import de.blazemcworld.blazinggames.teleportanchor.LodestoneInteractionEventListener;
 import de.blazemcworld.blazinggames.teleportanchor.LodestoneInventoryClickEventListener;
 import io.jsonwebtoken.Jwts.SIG;
@@ -49,8 +52,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
@@ -77,6 +85,11 @@ public class BlazingGames extends JavaPlugin {
     private boolean computersEnabled = false;
     private ComputerPrivileges computerPrivileges = ComputerPrivileges.minimal();
 
+    // Resource pack
+    private PackConfig packConfig;
+    private File packFile;
+    private byte[] sha1;
+
     @Override
     public void onEnable() {
         // Config
@@ -90,11 +103,11 @@ public class BlazingGames extends JavaPlugin {
         notifyOpsOnError = config.getBoolean("logging.notify-ops-on-error");
 
         // Computers
-        computersEnabled = !config.getBoolean("computing-local.disable-computers");
+        computersEnabled = !config.getBoolean("computing.disable-computers");
         if (computersEnabled) {
             computerPrivileges = new ComputerPrivileges(
-                    config.getBoolean("computing-local.privileges.chunkloading"),
-                    config.getBoolean("computing-local.privileges.net")
+                    config.getBoolean("computing.privileges.chunkloading"),
+                    config.getBoolean("computing.privileges.net")
             );
         }
 
@@ -121,20 +134,19 @@ public class BlazingGames extends JavaPlugin {
         CustomRecipes.loadRecipes();
 
         // Computers
-        if (!config.getBoolean("computing.local.disable-computers") && (
-                config.getBoolean("computing.services.blazing-api.enabled") ||
-                config.getBoolean("computing.services.blazing-wss.enabled")
-        )) {
+        if (config.getBoolean("services.blazing-api.enabled") ||
+            config.getBoolean("services.blazing-wss.enabled")
+        ) {
             log("API or WSS enabled, starting...");
 
             // Load JWT
-            String existingKey = config.getString("computing.jwt.secret-key");
-            boolean isPassword = config.getBoolean("computing.jwt.secret-key-is-password");
+            String existingKey = config.getString("authorization.jwt.secret-key");
+            boolean isPassword = config.getBoolean("authorization.jwt.secret-key-is-password");
             SecretKey key;
             if (existingKey == null || existingKey.equals("randomize-on-server-start")) {
                 SecretKey newKey = SIG.HS256.key().build();
-                config.set("computing.jwt.secret-key", Encoders.BASE64.encode(newKey.getEncoded()));
-                config.set("computing.jwt.secret-key-is-password", false);
+                config.set("authorization.jwt.secret-key", Encoders.BASE64.encode(newKey.getEncoded()));
+                config.set("authorization.jwt.secret-key-is-password", false);
                 key = newKey;
                 saveConfig();
             } else if (isPassword) {
@@ -149,16 +161,20 @@ public class BlazingGames extends JavaPlugin {
             }
 
             // Microsoft
-            boolean spoofMsServer = config.getBoolean("computing.microsoft.spoof-ms-server");
-            String clientId = config.getString("computing.microsoft.client-id");
-            String clientSecret = config.getString("computing.microsoft.client-secret");
+            boolean spoofMsServer = config.getBoolean("authorization.microsoft.spoof-ms-server");
+            String clientId = config.getString("authorization.microsoft.client-id");
+            String clientSecret = config.getString("authorization.microsoft.client-secret");
 
             if (key != null) {
-                var apiConfig = ComputingAPI.WebsiteConfig.auto(config, "computing.services.blazing-api");
-                var wssConfig = ComputingAPI.WebsiteConfig.auto(config, "computing.services.blazing-wss");
+                var apiConfig = BlazingAPI.WebsiteConfig.auto(config, "services.blazing-api");
+                var wssConfig = BlazingAPI.WebsiteConfig.auto(config, "services.blazing-wss");
 
-                ComputingAPI.setConfig(new ComputingAPI.Config(spoofMsServer, clientId, clientSecret, key, apiConfig, wssConfig));
-                API_AVAILABLE = ComputingAPI.startAll();
+                ArrayList<RequiredFeature> features = new ArrayList<>();
+                if (computersEnabled) features.add(RequiredFeature.COMPUTERS);
+                if (config.getBoolean("resource-packs.enabled")) features.add(RequiredFeature.RESOURCE_PACK);
+
+                BlazingAPI.setConfig(new BlazingAPI.Config(spoofMsServer, clientId, clientSecret, key, apiConfig, wssConfig, List.copyOf(features)));
+                API_AVAILABLE = BlazingAPI.startAll();
 
                 if (API_AVAILABLE) {
                     log("API and/or WSS started");
@@ -171,6 +187,18 @@ public class BlazingGames extends JavaPlugin {
             }
         } else {
             API_AVAILABLE = false;
+        }
+
+        // Resource pack
+        if (config.getBoolean("resource-packs.enabled") && API_AVAILABLE) {
+            this.packConfig = new PackConfig(
+                config.getString("resource-packs.metadata.description"),
+                UUID.fromString(config.getString("resource-packs.metadata.uuid"))
+            );
+
+            rebuildPack();
+        } else if (config.getBoolean("resource-packs.enabled") && !API_AVAILABLE) {
+            getLogger().severe("The resource pack is enabled, but the API is not available!");
         }
 
         // Commands
@@ -225,7 +253,7 @@ public class BlazingGames extends JavaPlugin {
         CustomRecipes.unloadRecipes();
 
         // Computers
-        ComputingAPI.stopAll();
+        BlazingAPI.stopAll();
         API_AVAILABLE = false; // reset value
     }
 
@@ -290,5 +318,26 @@ public class BlazingGames extends JavaPlugin {
 
     public boolean isApiAvailable() {
         return API_AVAILABLE;
+    }
+
+    public PackConfig getPackConfig() {
+        return packConfig;
+    }
+
+    public File getPackFile() {
+        return packFile;
+    }
+
+    public byte[] getPackSha1() {
+        return sha1;
+    }
+
+    public void rebuildPack() {
+        var file = ResourcePackManager.build(getLogger(), packConfig);
+        if (file != null) {
+            this.packFile = file;
+            this.sha1 = ResourcePackManager.getFileHash(packFile);
+            getLogger().info("Resource pack rebuilt");
+        }
     }
 }

@@ -15,8 +15,11 @@
  */
 package de.blazemcworld.blazinggames.events;
 
+import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.discord.DiscordApp;
 import de.blazemcworld.blazinggames.discord.DiscordNotification;
+
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -25,5 +28,9 @@ public class QuitEventListener implements Listener {
     @EventHandler
     public void join(PlayerQuitEvent event) {
         DiscordApp.send(DiscordNotification.playerLeave(event.getPlayer()));
+
+        if (Bukkit.getOnlinePlayers().size() == 1) {
+            BlazingGames.get().rebuildPack();
+        }
     }
 }

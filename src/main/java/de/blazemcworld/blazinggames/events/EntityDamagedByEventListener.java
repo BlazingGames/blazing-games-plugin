@@ -20,6 +20,7 @@ import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantment;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
+import de.blazemcworld.blazinggames.items.ContextlessItem;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.CustomItems;
 import de.blazemcworld.blazinggames.utils.InventoryUtils;
@@ -110,11 +111,19 @@ public class EntityDamagedByEventListener implements Listener {
                     }
                 });
 
-                CustomItem slab = CustomItems.getByKey(BlazingGames.get().key(slabType + "_slab"));
-                if (slab == null) return;
-                if (p.getGameMode() != GameMode.CREATIVE) {
-                    InventoryUtils.collectableDrop(p, blockLocation, slab.create());
+                CustomItem<?> slab = CustomItems.getByKey(BlazingGames.get().key(slabType + "_slab"));
+
+                if(slab instanceof ContextlessItem contextlessSlab)
+                {
+                    if (p.getGameMode() != GameMode.CREATIVE) {
+                        InventoryUtils.collectableDrop(p, blockLocation, contextlessSlab.create());
+                    }
                 }
+                else
+                {
+                    return;
+                }
+
                 p.getWorld().playSound(blockLocation, breakSound, 1, 1);
 
                 if (p.getWorld().getNearbyEntitiesByType(Shulker.class, blockLocation, 0.5).isEmpty())

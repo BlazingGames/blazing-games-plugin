@@ -12,11 +12,18 @@ logging:
   notify-ops-on-error: true
 
 computing:
-  local:
-    disable-computers: false
-    privileges:
-      chunkloading: false
-      net: false
+  disable-computers: false
+  privileges:
+    chunkloading: false
+    net: false
+
+resource-packs:
+  enabled: false
+  metadata:
+    description: blazing-games
+    uuid: 9404e6fe-9563-4615-9eed-d7385b5504d7
+
+authorization:
   microsoft:
     spoof-ms-server: true
     client-id: "chat is this real"
@@ -24,37 +31,38 @@ computing:
   jwt:
     secret-key: randomize-on-server-start
     secret-key-is-password: false
-  services:
-    blazing-api:
-      enabled: false
-      find-at: "http://localhost:8080"
-      bind:
-        port: 8080
-        https:
-          enabled: false
-          password: "enter super secret and secure password here"
-          file: localhost.p12
-      proxy:
-        in-use: false
-        ip-address-header: CF-Connecting-IP
-        allow-all: false
-        allowed-ipv4: []
-        allowed-ipv6: []
-    blazing-wss:
-      enabled: false
-      find-at: "http://localhost:9090"
-      bind:
-        port: 9090
-        https:
-          enabled: false
-          password: "enter super secret and secure password here"
-          file: localhost.p12
-      proxy:
-        in-use: false
-        ip-address-header: CF-Connecting-IP
-        allow-all: false
-        allowed-ipv4: []
-        allowed-ipv6: []
+
+services:
+  blazing-api:
+    enabled: false
+    find-at: "http://localhost:8080"
+    bind:
+      port: 8080
+      https:
+        enabled: false
+        password: "enter super secret and secure password here"
+        file: localhost.p12
+    proxy:
+      in-use: false
+      ip-address-header: CF-Connecting-IP
+      allow-all: false
+      allowed-ipv4: []
+      allowed-ipv6: []
+  blazing-wss:
+    enabled: false
+    find-at: "http://localhost:9090"
+    bind:
+      port: 9090
+      https:
+        enabled: false
+        password: "enter super secret and secure password here"
+        file: localhost.p12
+    proxy:
+      in-use: false
+      ip-address-header: CF-Connecting-IP
+      allow-all: false
+      allowed-ipv4: []
+      allowed-ipv6: []
 
 docs:
   official-instance:
