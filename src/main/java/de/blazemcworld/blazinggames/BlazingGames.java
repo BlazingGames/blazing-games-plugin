@@ -192,19 +192,12 @@ public final class BlazingGames extends JavaPlugin {
 
         // Resource pack
         if (config.getBoolean("resource-packs.enabled") && API_AVAILABLE) {
-            var resourcePackConfig = new PackConfig(
+            this.packConfig = new PackConfig(
                 config.getString("resource-packs.metadata.description"),
                 UUID.fromString(config.getString("resource-packs.metadata.uuid"))
             );
 
-            this.packFile = ResourcePackManager.build(getLogger(), resourcePackConfig);
-            if (packFile != null) {
-                this.packConfig = resourcePackConfig;
-                this.sha1 = ResourcePackManager.getFileHash(packFile);
-                getLogger().info("Resource pack built");
-            } else {
-                this.packConfig = null;
-            }
+            rebuildPack();
         } else if (config.getBoolean("resource-packs.enabled") && !API_AVAILABLE) {
             getLogger().severe("The resource pack is enabled, but the API is not available!");
         }
@@ -338,5 +331,14 @@ public final class BlazingGames extends JavaPlugin {
 
     public byte[] getPackSha1() {
         return sha1;
+    }
+
+    public void rebuildPack() {
+        var file = ResourcePackManager.build(getLogger(), packConfig);
+        if (file != null) {
+            this.packFile = file;
+            this.sha1 = ResourcePackManager.getFileHash(packFile);
+            getLogger().info("Resource pack rebuilt");
+        }
     }
 }
