@@ -22,7 +22,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.computing.api.ComputingAPI;
+import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -35,7 +35,7 @@ public class JWTUtils {
     }
 
     private static SecretKey key() {
-        return ComputingAPI.getConfig().jwtSecretKey();
+        return BlazingAPI.getConfig().jwtSecretKey();
     }
 
     public static String sign(JsonElement body, String issuer, TimeUnit unit, long duration) {

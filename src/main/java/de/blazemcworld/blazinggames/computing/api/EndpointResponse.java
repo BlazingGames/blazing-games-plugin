@@ -17,6 +17,9 @@ package de.blazemcworld.blazinggames.computing.api;
 
 import com.google.gson.JsonObject;
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.computing.api.body.BasicBodyOutput;
+import de.blazemcworld.blazinggames.computing.api.body.BodyOutput;
+import de.blazemcworld.blazinggames.computing.api.body.EmptyBodyOutput;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -32,13 +35,13 @@ import java.util.TimeZone;
 public class EndpointResponse {
     final int status;
     final Map<String, String> headers;
-    final String body;
+    final BodyOutput body;
     private static final Configuration config = new Configuration(Configuration.VERSION_2_3_33);
 
-    public EndpointResponse(int status, HashMap<String, String> headers, String body) {
+    public EndpointResponse(int status, HashMap<String, String> headers, BodyOutput body) {
         this.status = status;
         this.headers = Map.copyOf(headers);
-        this.body = body == null ? "" : body;
+        this.body = body == null ? new EmptyBodyOutput() : body;
     }
 
     public static EndpointResponse.Builder builder(int status) {
@@ -122,7 +125,7 @@ public class EndpointResponse {
     public static class Builder {
         private int status;
         private HashMap<String, String> headers = new HashMap<>();
-        private String body = null;
+        private BodyOutput body = null;
 
         public Builder(int status) {
             this.status = status;
@@ -156,11 +159,21 @@ public class EndpointResponse {
             return this;
         }
 
-        public String body() {
+        public BodyOutput body() {
             return this.body;
         }
 
         public EndpointResponse.Builder body(String body) {
+            this.body = new BasicBodyOutput(body);
+            return this;
+        }
+
+        public EndpointResponse.Builder body(byte[] body) {
+            this.body = new BasicBodyOutput(body);
+            return this;
+        }
+
+        public EndpointResponse.Builder body(BodyOutput body) {
             this.body = body;
             return this;
         }

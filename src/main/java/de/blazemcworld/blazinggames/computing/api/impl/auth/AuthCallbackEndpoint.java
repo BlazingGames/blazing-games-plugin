@@ -24,7 +24,7 @@ import com.google.gson.JsonParser;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.api.APIDocs;
 import de.blazemcworld.blazinggames.computing.api.TokenManager;
-import de.blazemcworld.blazinggames.computing.api.ComputingAPI;
+import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
 import de.blazemcworld.blazinggames.computing.api.Endpoint;
 import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
@@ -73,7 +73,7 @@ public class AuthCallbackEndpoint implements Endpoint {
                     TokenManager.updateCodeAuthState(state, new TokenManager.Errored());
                 }
 
-                if (ComputingAPI.getConfig().spoofMicrosoftServer()) {
+                if (BlazingAPI.getConfig().spoofMicrosoftServer()) {
                     return EndpointResponse.authError("Bad username/UUID", "Or you didn't provide any.");
                 }
 
@@ -142,7 +142,7 @@ public class AuthCallbackEndpoint implements Endpoint {
     }
 
     private TokenManager.Profile microsoftAuthenticationDance(String code) {
-        ComputingAPI.Config config = ComputingAPI.getConfig();
+        BlazingAPI.Config config = BlazingAPI.getConfig();
         if (config.spoofMicrosoftServer()) {
             String[] parts = code.split("\\.");
             if (parts.length != 2) {

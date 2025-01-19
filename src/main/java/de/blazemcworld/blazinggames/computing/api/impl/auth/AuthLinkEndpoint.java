@@ -17,7 +17,7 @@ package de.blazemcworld.blazinggames.computing.api.impl.auth;
 
 import de.blazemcworld.blazinggames.computing.api.APIDocs;
 import de.blazemcworld.blazinggames.computing.api.TokenManager;
-import de.blazemcworld.blazinggames.computing.api.ComputingAPI;
+import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
 import de.blazemcworld.blazinggames.computing.api.Endpoint;
 import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
@@ -37,10 +37,10 @@ public class AuthLinkEndpoint implements Endpoint {
     }
 
     public static String generateMicrosoftLoginURL(String code) {
-        ComputingAPI.Config config = ComputingAPI.getConfig();
+        BlazingAPI.Config config = BlazingAPI.getConfig();
         return BASE_URL + "?response_type=code&approval_prompt=auto&scope=" + SCOPES
             + "&client_id="
-            + ComputingAPI.getConfig().microsoftClientID()
+            + BlazingAPI.getConfig().microsoftClientID()
             + "&redirect_uri="
             + URLEncoder.encode(config.apiConfig().findAt() + AuthCallbackEndpoint.PATH, Charset.defaultCharset())
             + "&state="
@@ -61,7 +61,7 @@ public class AuthLinkEndpoint implements Endpoint {
                     if (TokenManager.isCodeNotStarted(code.toUpperCase())) {
                         TokenManager.updateCodeAuthState(code.toUpperCase(), new TokenManager.UserLoggingIn());
 
-                        var config = ComputingAPI.getConfig();
+                        var config = BlazingAPI.getConfig();
                         if (config.spoofMicrosoftServer()) {
                             String username = context.requireCleanCustom("mcname", body.getString("mcname"), 2, 16);
                             String uuid = context.requireCleanCustom("mcuuid", body.getString("mcuuid"), 36, 36);
@@ -79,7 +79,7 @@ public class AuthLinkEndpoint implements Endpoint {
 
         HashMap<String, Object> data = new HashMap<>();
         data.put("error", invalidCode);
-        data.put("offline", ComputingAPI.getConfig().spoofMicrosoftServer());
+        data.put("offline", BlazingAPI.getConfig().spoofMicrosoftServer());
         return EndpointResponse.ofHTML("codeinput.html", data);
     }
 
