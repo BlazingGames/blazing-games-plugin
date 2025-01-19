@@ -18,7 +18,9 @@ package de.blazemcworld.blazinggames.items;
 
 import java.util.Set;
 
-public interface ItemProvider {
+import de.blazemcworld.blazinggames.packs.PackBuildHook;
+
+public interface ItemProvider extends PackBuildHook {
     default Set<CustomItem<?>> getItems() {
         return Set.of();
     }

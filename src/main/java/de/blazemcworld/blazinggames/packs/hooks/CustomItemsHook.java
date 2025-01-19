@@ -15,43 +15,18 @@
  */
 package de.blazemcworld.blazinggames.packs.hooks;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.logging.Logger;
 
-import com.google.gson.JsonObject;
-
-import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.CustomItems;
+import de.blazemcworld.blazinggames.items.ItemProvider;
 import de.blazemcworld.blazinggames.packs.HookContext;
 import de.blazemcworld.blazinggames.packs.PackBuildHook;
 
-public class CustomItemsHook extends PackBuildHook {
+public class CustomItemsHook implements PackBuildHook {
     @Override
     public void run(Logger logger, HookContext context) {
-        for (CustomItem<?> item : new CustomItems().getItems()) {
-            // install texture
-            try (InputStream stream = item.getClass().getResourceAsStream("/customitems/" + item.getKey().getKey() + ".png")) {
-                if (stream != null) context.installTexture(item.getKey(), stream.readAllBytes());
-            } catch (IOException e) {
-                BlazingGames.get().log(e);
-            }
-
-            // install model
-            try (InputStream stream = item.getClass().getResourceAsStream("/customitems/" + item.getKey().getKey() + ".json")) {
-                if (stream != null) context.installModel(item.getKey(), stream.readAllBytes());
-            } catch (IOException e) {
-                BlazingGames.get().log(e);
-            }
-
-            // create items data
-            JsonObject root = new JsonObject();
-            JsonObject model = new JsonObject();
-            model.addProperty("type", "minecraft:model");
-            model.addProperty("model", item.getKey().toString());
-            root.add("model", model);
-            context.writeFile("/assets/" + item.getKey().getNamespace() + "/items/" + item.getKey().getKey() + ".json", root);
+        for (ItemProvider provider : CustomItems.getItemProviders()) {
+            provider.run(logger, context);
         }
     }
 }

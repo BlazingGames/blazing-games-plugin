@@ -16,6 +16,7 @@
 package de.blazemcworld.blazinggames.items;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.packs.HookContext;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -25,6 +26,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 public class CustomSlabs implements ItemProvider {
     private static final List<Material> blockedMaterials = List.of(
@@ -131,5 +133,10 @@ public class CustomSlabs implements ItemProvider {
             // Remove the trailing space and return the result
             return formattedName.toString().trim();
         }
+    }
+
+    @Override
+    public void run(Logger logger, HookContext context) {
+        // TBD
     }
 }

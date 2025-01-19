@@ -17,6 +17,6 @@ package de.blazemcworld.blazinggames.packs;
 
 import java.util.logging.Logger;
 
-public abstract class PackBuildHook {
-    public abstract void run(Logger logger, HookContext context);
+public interface PackBuildHook {
+    void run(Logger logger, HookContext context);
 }

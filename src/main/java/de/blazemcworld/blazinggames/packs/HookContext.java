@@ -50,8 +50,8 @@ public class HookContext {
         writeFile(path, contents.toString().getBytes());
     }
 
-    public void installTexture(NamespacedKey namespace, byte[] texture) {
-        writeFile("assets/" + namespace.getNamespace() + "/textures/item/" + namespace.getKey() + ".png", texture);
+    public void installTexture(NamespacedKey namespace, String type, byte[] texture) {
+        writeFile("assets/" + namespace.getNamespace() + "/textures/" + type + "/" + namespace.getKey() + ".png", texture);
     }
 
     public void installModel(NamespacedKey namespace, byte[] model) {
