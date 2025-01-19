@@ -19,8 +19,8 @@ import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.discord.DiscordApp;
 import de.blazemcworld.blazinggames.discord.DiscordNotification;
-import de.blazemcworld.blazinggames.items.CustomRecipes;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
+import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
 import net.kyori.adventure.text.Component;
 
 import org.bukkit.event.EventHandler;

@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-public class TomeAltar extends CustomItem {
+public class TomeAltar extends ContextlessItem {
     @Override
     public @NotNull NamespacedKey getKey() {
         return BlazingGames.get().key("tome_altar");

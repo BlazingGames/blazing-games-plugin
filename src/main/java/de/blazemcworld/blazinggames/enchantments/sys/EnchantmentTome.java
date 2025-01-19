@@ -15,7 +15,7 @@
  */
 package de.blazemcworld.blazinggames.enchantments.sys;
 
-import de.blazemcworld.blazinggames.items.CustomItem;
+import de.blazemcworld.blazinggames.items.ContextlessItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class EnchantmentTome extends CustomItem {
+public class EnchantmentTome extends ContextlessItem {
     private final NamespacedKey tomeKey;
     private final String tomeName;
     private final EnchantmentWrapper wrapper;
@@ -51,11 +51,15 @@ public class EnchantmentTome extends CustomItem {
         ItemMeta meta = stack.getItemMeta();
 
         meta.setEnchantmentGlintOverride(true);
-        meta.lore(List.of(getComponent()));
 
         stack.setItemMeta(meta);
 
         return stack;
+    }
+
+    @Override
+    public @NotNull List<Component> lore(ItemStack stack) {
+        return List.of(getComponent());
     }
 
     protected Component getComponent() {
