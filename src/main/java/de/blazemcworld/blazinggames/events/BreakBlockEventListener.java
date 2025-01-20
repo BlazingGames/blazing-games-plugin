@@ -57,7 +57,8 @@ public class BreakBlockEventListener implements Listener {
             Material.SPRUCE_LOG,
             Material.CHERRY_LOG,
             Material.WARPED_STEM,
-            Material.CRIMSON_STEM
+            Material.CRIMSON_STEM,
+            Material.PALE_OAK_LOG
     );
 
     private final Set<Material> leaves = Set.of(
@@ -72,7 +73,8 @@ public class BreakBlockEventListener implements Listener {
             Material.AZALEA_LEAVES,
             Material.FLOWERING_AZALEA_LEAVES,
             Material.WARPED_WART_BLOCK,
-            Material.NETHER_WART_BLOCK
+            Material.NETHER_WART_BLOCK,
+            Material.PALE_OAK_LEAVES
     );
 
 
