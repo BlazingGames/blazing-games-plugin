@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -34,30 +33,33 @@ import java.util.logging.Logger;
 import com.google.gson.JsonObject;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import io.azam.ulidj.MonotonicULID;
 
 public class ResourcePackManager {
-    private static final MonotonicULID ulid = new MonotonicULID();
-    private static final File workingDirectory = new File(".packwork");
-    static {
-        workingDirectory.mkdirs();
-    }
-
     public static record PackConfig(
         String description,
         UUID uuid
     ) {}
 
     public static File build(Logger log, PackConfig config) {
-        File outputFile = new File(workingDirectory, ulid.generate() + ".zip");
-        Map<String, String> environment = new HashMap<>();
+        Map<String, Object> environment = new HashMap<>();
         environment.put("create", "true");
-        URI uri = URI.create("jar:file:" + outputFile.getAbsolutePath());
+        environment.put("useTempFile", Boolean.TRUE);
 
         log.info("Building resource pack...");
 
+        Path path;
+        try {
+            // this is in a seperate code block because it throws and IOException
+            // but it's not AutoCloseable, meaning it cannot be put in the try-with-resources :3
+            path = Files.createTempFile("blazinggames-packwork", ".zip");
+            path.toFile().delete(); // otherwise zipfs complains about no zip header
+        } catch (IOException e) {
+            BlazingGames.get().log(e);
+            return null;
+        }
+
         try (
-            FileSystem zip = FileSystems.newFileSystem(uri, environment);
+            FileSystem zip = FileSystems.newFileSystem(path, environment);
         ) {
             // create pack meta
             JsonObject root = new JsonObject();
@@ -80,7 +82,8 @@ public class ResourcePackManager {
             return null;
         }
 
-        return outputFile;
+        path.toFile().deleteOnExit();
+        return path.toFile();
     }
 
     public static void write(Path path, byte[] data) throws IOException {
