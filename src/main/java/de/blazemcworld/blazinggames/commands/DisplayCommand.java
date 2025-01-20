@@ -143,5 +143,6 @@ public class DisplayCommand implements CommandExecutor, TabCompleter {
             .append(Component.text(config.buildNameString(player.getName(), player.isOp())).color(NamedTextColor.WHITE)));
         player.sendMessage(Component.text("- Current discord name (short): ").color(colorSuccess)
             .append(Component.text(config.buildNameStringShort(player.getName())).color(NamedTextColor.WHITE)));
+        config.updatePlayer(player);
     }
 }

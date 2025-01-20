@@ -18,6 +18,8 @@ package de.blazemcworld.blazinggames.utils;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.bukkit.entity.Player;
+
 import de.blazemcworld.blazinggames.data.DataStorage;
 import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
 import de.blazemcworld.blazinggames.data.name.UUIDNameProvider;
@@ -50,6 +52,12 @@ public class PlayerConfig {
     }
 
 
+
+    public void updatePlayer(Player player) {
+        Component name = buildNameComponent(player.getName(), player.isOp());
+        player.displayName(name);
+        player.playerListName(name);
+    }
 
     public Component buildNameComponent(String playerName, boolean isOp) {
         Component username;

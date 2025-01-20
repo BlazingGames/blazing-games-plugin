@@ -20,6 +20,7 @@ import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.discord.DiscordApp;
 import de.blazemcworld.blazinggames.discord.DiscordNotification;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
+import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
 import net.kyori.adventure.text.Component;
 
@@ -44,5 +45,8 @@ public class JoinEventListener implements Listener {
                 true
             );
         }
+
+        PlayerConfig config = PlayerConfig.forPlayer(event.getPlayer().getUniqueId());
+        config.updatePlayer(event.getPlayer());
     }
 }
