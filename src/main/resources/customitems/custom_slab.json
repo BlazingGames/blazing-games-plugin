@@ -1,0 +1,8 @@
+{
+  "model": {
+    "type": "condition",
+    "property": "custom_model_data",
+    "on_false": "blazinggames:netherite_block_slab_bottom",
+    "on_true": "blazinggames:netherite_block_slab_top"
+  }
+}

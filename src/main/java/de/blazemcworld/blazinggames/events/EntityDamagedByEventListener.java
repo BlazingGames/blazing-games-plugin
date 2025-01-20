@@ -95,11 +95,10 @@ public class EntityDamagedByEventListener implements Listener {
                 event.setCancelled(true);
                 UUID displayBlockUUID = UUID.fromString(Objects.requireNonNull(container.get(BlazingGames.get().key("slab"), PersistentDataType.STRING)));
                 String slabType = container.get(BlazingGames.get().key("slab_type"), PersistentDataType.STRING);
-                BlockDisplay displayBlock = (BlockDisplay) p.getWorld().getEntity(displayBlockUUID);
+                ItemDisplay displayBlock = (ItemDisplay) p.getWorld().getEntity(displayBlockUUID);
 
                 if (displayBlock == null) return;
-                Location blockLocation = displayBlock.getLocation().toCenterLocation();
-                Sound breakSound = displayBlock.getBlock().getSoundGroup().getBreakSound();
+                Location blockLocation = victim.getLocation().toCenterLocation();
                 displayBlock.remove();
 
                 double y = victim.getY();
@@ -124,8 +123,9 @@ public class EntityDamagedByEventListener implements Listener {
                     return;
                 }
 
-                p.getWorld().playSound(blockLocation, breakSound, 1, 1);
+//                p.getWorld().playSound(blockLocation, breakSound, 1, 1);
 
+                System.out.println(blockLocation);
                 if (p.getWorld().getNearbyEntitiesByType(Shulker.class, blockLocation, 0.5).isEmpty())
                     Bukkit.getScheduler().runTask(BlazingGames.get(), () -> p.getWorld().getBlockAt(blockLocation).setType(Material.AIR));
             }

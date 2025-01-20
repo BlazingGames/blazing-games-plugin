@@ -15,6 +15,7 @@
  */
 package de.blazemcworld.blazinggames.items;
 
+import com.google.gson.JsonObject;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.packs.HookContext;
 import net.kyori.adventure.text.Component;
@@ -25,8 +26,13 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Logger;
+
+import static de.blazemcworld.blazinggames.BlazingGames.gson;
 
 public class CustomSlabs implements ItemProvider {
     private static final List<Material> blockedMaterials = List.of(
@@ -137,6 +143,58 @@ public class CustomSlabs implements ItemProvider {
 
     @Override
     public void runHook(Logger logger, HookContext context) {
-        // TBD
+        String customSlab = null, customTopSlab = null, customBottomSlab = null;
+        try {
+            InputStream customSlabStream = this.getClass().getResourceAsStream("/customitems/custom_slab.json");
+            customSlab = new String(customSlabStream.readAllBytes(), StandardCharsets.UTF_8);
+            customSlabStream.close();
+
+            InputStream customTopSlabStream = this.getClass().getResourceAsStream("/customitems/custom_slab_top.json");
+            customTopSlab = new String(customTopSlabStream.readAllBytes(), StandardCharsets.UTF_8);
+            customTopSlabStream.close();
+
+            InputStream customBottomSlabStream = this.getClass().getResourceAsStream("/customitems/custom_slab_bottom.json");
+            customBottomSlab = new String(customBottomSlabStream.readAllBytes(), StandardCharsets.UTF_8);
+            customBottomSlabStream.close();
+        } catch (IOException e) {
+            BlazingGames.get().log(e);
+        }
+        if (customSlab == null || customTopSlab == null || customBottomSlab == null) {
+            logger.warning("Failed to load custom slab models");
+            return;
+        }
+        for (CustomItem<?> item : getItems()) {
+            CustomSlab slab = (CustomSlab) item;
+            // install slab models
+            String[] jsons = new String[]{
+                    customBottomSlab,
+                    customTopSlab
+            };
+            for (int i = 0; i < jsons.length; i++) {
+                String json = jsons[i];
+
+                JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+
+                JsonObject textures = jsonObject.get("textures").getAsJsonObject();
+                textures.addProperty("bottom", "minecraft:block/" + slab.material.name().toLowerCase());
+                textures.addProperty("side", "minecraft:block/" + slab.material.name().toLowerCase());
+                textures.addProperty("top", "minecraft:block/" + slab.material.name().toLowerCase());
+
+                json = gson.toJson(jsonObject);
+
+                byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+
+                context.installModel(BlazingGames.get().key(slab.name + "_slab" + (i == 0 ? "_bottom" : "_top")), bytes);
+            }
+
+            //create item data
+            JsonObject jsonObject = gson.fromJson(customSlab, JsonObject.class);
+
+            JsonObject model = jsonObject.get("model").getAsJsonObject();
+            model.addProperty("on_true", "blazinggames:models/" + slab.material.name().toLowerCase() + "_slab_top");
+            model.addProperty("on_false", "blazinggames:models/" + slab.material.name().toLowerCase() + "_slab_bottom");
+
+            context.writeFile("/assets/" + item.getKey().getNamespace() + "/items/" + item.getKey().getKey() + ".json", jsonObject);
+        }
     }
 }
