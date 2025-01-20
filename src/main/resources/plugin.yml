@@ -50,9 +50,10 @@ commands:
   playtime:
     description: "See how much time you and your friends have wasted on this stupid server."
     usage: /playtime [player]
-  config:
-    description: "Change display settings for your player. Tab complete for available options."
-    usage: /config <param> [...value]
+  display:
+    description: "Change nameplate display settings for your player."
+    usage: /display [name|pronouns|color] [value]
+    aliases: [config, nick]
   setaltar:
     description: "Set altar with specific level at current location"
     usage: /setaltar <level>

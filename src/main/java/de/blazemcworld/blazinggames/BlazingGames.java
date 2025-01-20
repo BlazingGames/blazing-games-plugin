@@ -206,7 +206,7 @@ public class BlazingGames extends JavaPlugin {
         registerCommand("customgive", new CustomGiveCommand());
         registerCommand("killme", new KillMeCommand());
         registerCommand("playtime", new PlaytimeCommand());
-        registerCommand("config", new ConfigCommand());
+        registerCommand("display", new DisplayCommand());
         registerCommand("setaltar", new SetAltar());
 
         // Events
