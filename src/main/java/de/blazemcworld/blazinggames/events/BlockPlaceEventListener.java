@@ -83,49 +83,10 @@ public class BlockPlaceEventListener implements Listener {
                 event.getBlock().getLocation().getBlock().setType(Material.BARRIER);
 
                 Location loc = event.getBlock().getLocation().toCenterLocation();
-                loc.setY(loc.getY() - 0.5);
-                loc.setX(loc.getX() - 0.3125);
-                loc.setZ(loc.getZ() - 0.3125);
 
-                BlockData basePlateBlock = Material.POLISHED_DEEPSLATE.createBlockData();
-                BlockDisplay basePlate = (BlockDisplay) event.getBlock().getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
-                basePlate.setBlock(basePlateBlock);
-                Transformation transformation = new Transformation(new Vector3f(), new Quaternionf(),new Vector3f(0.625f, 0.0625f, 0.625f),new Quaternionf());
-                basePlate.setTransformation(transformation);
-
-                loc.setY(loc.getY() + 0.0625);
-                loc.setX(loc.getX() + 0.125);
-                loc.setZ(loc.getZ() + 0.125);
-                BlockData mainPillarBlock = Material.POLISHED_BLACKSTONE.createBlockData();
-                BlockDisplay mainPillar = (BlockDisplay) event.getBlock().getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
-                mainPillar.setBlock(mainPillarBlock);
-                transformation = new Transformation(new Vector3f(), new Quaternionf(),new Vector3f(0.375f, 0.625f, 0.375f),new Quaternionf());
-                mainPillar.setTransformation(transformation);
-
-                BlockData subPillarBlock = Material.POLISHED_BLACKSTONE_BRICKS.createBlockData();
-
-                loc.setY(loc.getY() + 0.5625);
-                loc.setX(loc.getX() - 0.0625);
-                loc.setZ(loc.getZ() - 0.0625);
-                BlockDisplay subPillar = (BlockDisplay) event.getBlock().getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
-                subPillar.setBlock(subPillarBlock);
-                transformation = new Transformation(new Vector3f(), new Quaternionf(),new Vector3f(0.125f, 0.25f, 0.125f),new Quaternionf());
-                subPillar.setTransformation(transformation);
-
-                loc.setX(loc.getX() + 0.375);
-                subPillar = (BlockDisplay) event.getBlock().getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
-                subPillar.setBlock(subPillarBlock);
-                subPillar.setTransformation(transformation);
-
-                loc.setZ(loc.getZ() + 0.375);
-                subPillar = (BlockDisplay) event.getBlock().getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
-                subPillar.setBlock(subPillarBlock);
-                subPillar.setTransformation(transformation);
-
-                loc.setX(loc.getX() - 0.375);
-                subPillar = (BlockDisplay) event.getBlock().getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
-                subPillar.setBlock(subPillarBlock);
-                subPillar.setTransformation(transformation);
+                ItemDisplay display = (ItemDisplay) event.getBlock().getWorld().spawnEntity(loc, EntityType.ITEM_DISPLAY);
+                ItemStack altarItem = CustomItems.TOME_ALTAR.create();
+                display.setItemStack(altarItem);
             });
         } else {
             boolean isSlab = CustomItem.getCustomItem(event.getItemInHand()) instanceof CustomSlabs.CustomSlab;

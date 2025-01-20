@@ -300,7 +300,6 @@ public class InteractEventListener implements Listener {
             if (TomeAltarStorage.isTomeAltar(block.getLocation())) {
                 event.setCancelled(true);
                 ItemStack tomeItem = TomeAltarStorage.getItem(block.getLocation());
-                BlazingGames.get().log(tomeItem);
                 if (tomeItem == null) tomeItem = new ItemStack(Material.AIR);
                 ItemStack finalTomeItem = tomeItem;
                 TomeAltarStorage.removeTomeAltar(block.getLocation());
@@ -345,8 +344,11 @@ public class InteractEventListener implements Listener {
                         for (Entity e : player.getWorld().getEntities()) {
                             Location eLoc = e.getLocation().toCenterLocation();
                             if (eLoc.getX() == bLoc.getX() && eLoc.getY() == bLoc.getY() && eLoc.getZ() == bLoc.getZ() && e.getType() == EntityType.ITEM_DISPLAY) {
-                                display = (ItemDisplay) e;
-                                break;
+                                PersistentDataContainer container = e.getPersistentDataContainer();
+                                if (container.has(BlazingGames.get().key("spin"), PersistentDataType.BOOLEAN)) {
+                                    display = (ItemDisplay) e;
+                                    break;
+                                }
                             }
                         }
                         if (display == null) {
@@ -356,6 +358,8 @@ public class InteractEventListener implements Listener {
                             loc.setZ(loc.getZ());
 
                             display = (ItemDisplay) block.getWorld().spawnEntity(loc, EntityType.ITEM_DISPLAY);
+                            PersistentDataContainer container = display.getPersistentDataContainer();
+                            container.set(BlazingGames.get().key("spin"), PersistentDataType.BOOLEAN, true);
                             display.setItemStack(setItem);
                             Transformation transformation = new Transformation(new Vector3f(), new Quaternionf(),new Vector3f(0.25f, 0.25f, 0.25f),new Quaternionf());
                             display.setTransformation(transformation);
