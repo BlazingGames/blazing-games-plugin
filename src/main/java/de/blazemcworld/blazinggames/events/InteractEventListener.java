@@ -206,8 +206,16 @@ public class InteractEventListener implements Listener {
 
         if(block != null && event.getAction() == Action.RIGHT_CLICK_BLOCK && event.useInteractedBlock() != Event.Result.DENY) {
             if (block.getType() == Material.ENCHANTING_TABLE) {
-                player.openInventory(new AltarInterface(BlazingGames.get(), block.getState()).getInventory());
-                event.setCancelled(true);
+                if (CustomItems.BLUEPRINT.matchItem(eventItem)) {
+                    event.setCancelled(true);
+                    if (!player.hasCooldown(eventItem)) {
+                        CustomItems.BLUEPRINT.outputMultiBlockProgress(player, block.getLocation());
+                        player.setCooldown(eventItem, 40);
+                    }
+                } else {
+                    player.openInventory(new AltarInterface(BlazingGames.get(), block.getState()).getInventory());
+                    event.setCancelled(true);
+                }
             }
         }
 
@@ -252,12 +260,6 @@ public class InteractEventListener implements Listener {
                         player.setCooldown(eventItem, 5);
                         player.getWorld().playSound(player, Sound.ENTITY_CHICKEN_STEP, 1, 1.25f);
                     }
-                }
-            }
-            if(CustomItems.BLUEPRINT.matchItem(eventItem)) {
-                if(!player.hasCooldown(eventItem)) {
-                    CustomItems.BLUEPRINT.outputMultiBlockProgress(player, block.getLocation());
-                    player.setCooldown(eventItem, 40);
                 }
             }
             if (block.getType() == Material.SPAWNER)
