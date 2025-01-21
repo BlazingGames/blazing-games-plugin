@@ -357,7 +357,7 @@ public class BreakBlockEventListener implements Listener {
 
         net.minecraft.world.level.block.state.BlockState nmsBlockState = craftBlock.getNMS();
         BlockPos pos = craftBlock.getPosition();
-        ServerLevel level = ((CraftBlock) block).getCraftWorld().getHandle();
+        ServerLevel level = craftBlock.getCraftWorld().getHandle();
 
         return nmsBlockState.getBlock().getExpDrop(nmsBlockState, level, pos, CraftItemStack.asNMSCopy(tool), true);
     }
