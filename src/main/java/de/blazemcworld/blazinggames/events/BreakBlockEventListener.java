@@ -23,16 +23,26 @@ import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
 import de.blazemcworld.blazinggames.items.recipes.RecipeHelper;
 import de.blazemcworld.blazinggames.teleportanchor.LodestoneStorage;
+import de.blazemcworld.blazinggames.utils.Drops;
 import de.blazemcworld.blazinggames.utils.InventoryUtils;
 import de.blazemcworld.blazinggames.utils.ItemUtils;
 import de.blazemcworld.blazinggames.utils.Pair;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.*;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.block.data.type.Leaves;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.block.CraftBlock;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -57,7 +67,8 @@ public class BreakBlockEventListener implements Listener {
             Material.SPRUCE_LOG,
             Material.CHERRY_LOG,
             Material.WARPED_STEM,
-            Material.CRIMSON_STEM
+            Material.CRIMSON_STEM,
+            Material.PALE_OAK_LOG
     );
 
     private final Set<Material> leaves = Set.of(
@@ -72,7 +83,8 @@ public class BreakBlockEventListener implements Listener {
             Material.AZALEA_LEAVES,
             Material.FLOWERING_AZALEA_LEAVES,
             Material.WARPED_WART_BLOCK,
-            Material.NETHER_WART_BLOCK
+            Material.NETHER_WART_BLOCK,
+            Material.PALE_OAK_LEAVES
     );
 
 
@@ -95,11 +107,7 @@ public class BreakBlockEventListener implements Listener {
             }
         }
 
-        Collection<ItemStack> drops = getBlockDrops(player, event.getBlock());
-
-        onAnyBlockBreak(event.getBlock());
-
-        InventoryUtils.collectableDrop(player, event.getBlock().getLocation(), drops);
+        fakeBreakBlock(player, event.getBlock(), false);
 
         if (EnchantmentHelper.hasActiveCustomEnchantment(mainHand, CustomEnchantments.TREE_FELLER)) {
             if (logs.contains(event.getBlock().getType())) {
@@ -219,15 +227,17 @@ public class BreakBlockEventListener implements Listener {
         Bukkit.getScheduler().runTaskLater(BlazingGames.get(), () -> treeFeller(player, blocksToBreak), 1);
     }
 
-    public static Collection<ItemStack> getBlockDrops(Player player, Block block) {
+    public static Drops getBlockDrops(Player player, Block block) {
         ItemStack mainHand = player.getInventory().getItemInMainHand();
 
         return getBlockDrops(mainHand, block);
     }
 
-    public static Collection<ItemStack> getBlockDrops(ItemStack mainHand, Block block) {
+    public static Drops getBlockDrops(ItemStack mainHand, Block block) {
         BlockState state = block.getState();
-        Collection<ItemStack> drops = block.getDrops(mainHand);
+        Drops drops = new Drops(block.getDrops(mainHand));
+
+        drops.addExperience(getDroppedExp(block, mainHand));
 
         if (block.getType() == Material.CHISELED_BOOKSHELF) {
             if (mainHand.getEnchantmentLevel(Enchantment.SILK_TOUCH) <= 0) {
@@ -244,6 +254,7 @@ public class BreakBlockEventListener implements Listener {
                 mainHand.getType() == Material.DIAMOND_PICKAXE ||
                 mainHand.getType() == Material.NETHERITE_PICKAXE
             )) {
+                drops.setExperience(0);
                 CreatureSpawner spawner = (CreatureSpawner) block.getState();
                 ItemStack item = new ItemStack(Material.SPAWNER);
                 BlockStateMeta meta = (BlockStateMeta) item.getItemMeta();
@@ -297,22 +308,26 @@ public class BreakBlockEventListener implements Listener {
 
         if (ComputerRegistry.getComputerByLocationRounded(block.getLocation()) != null) {
             BootedComputer computer = ComputerRegistry.getComputerByLocationRounded(block.getLocation());
-            return List.of(ComputerRegistry.addAttributes(computer.getType().getType().getDisplayItem(computer), computer));
+            return new Drops(ComputerRegistry.addAttributes(computer.getType().getType().getDisplayItem(computer), computer));
         } else {
             return drops;
         }
     }
 
     public static void fakeBreakBlock(Player player, Block block) {
+        fakeBreakBlock(player, block, true);
+    }
+
+    public static void fakeBreakBlock(Player player, Block block, boolean playEffects) {
         if (block.isEmpty() || block.getType().getHardness() < 0 || block.isLiquid()) {
             return;
         }
 
-        Collection<ItemStack> drops = getBlockDrops(player, block);
+        Drops drops = getBlockDrops(player, block);
 
         onAnyBlockBreak(block);
 
-        block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getBlockData());
+        if(playEffects) block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getBlockData());
 
         boolean waterlogged = false;
 
@@ -335,5 +350,24 @@ public class BreakBlockEventListener implements Listener {
             BootedComputer computer = ComputerRegistry.getComputerByLocationRounded(block.getLocation());
             ComputerRegistry.unload(computer.getId());
         }
+    }
+
+    private static int getDroppedExp(Block block, ItemStack tool) {
+        if (!(block instanceof CraftBlock craftBlock)) return 0;
+
+        net.minecraft.world.level.block.state.BlockState nmsBlockState = craftBlock.getNMS();
+        BlockPos pos = craftBlock.getPosition();
+        ServerLevel level = craftBlock.getCraftWorld().getHandle();
+
+        return nmsBlockState.getBlock().getExpDrop(nmsBlockState, level, pos, CraftItemStack.asNMSCopy(tool), true);
+    }
+
+    public static void awardBlock(Location location, int amount, Player trigger) {
+        if(!(location.getWorld() instanceof CraftWorld world)) { return; }
+        if(!(trigger instanceof CraftPlayer player)) { return; }
+
+        net.minecraft.world.entity.ExperienceOrb.award(
+                world.getHandle(), new Vec3(location.x(), location.y(), location.z()), amount,
+                ExperienceOrb.SpawnReason.BLOCK_BREAK, player.getHandleRaw());
     }
 }
