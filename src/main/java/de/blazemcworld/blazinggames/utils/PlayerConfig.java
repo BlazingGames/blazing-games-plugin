@@ -18,10 +18,15 @@ package de.blazemcworld.blazinggames.utils;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.bukkit.entity.Player;
+
 import de.blazemcworld.blazinggames.data.DataStorage;
 import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
 import de.blazemcworld.blazinggames.data.name.UUIDNameProvider;
 import de.blazemcworld.blazinggames.data.storage.PropertiesStorageProvider;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 
 public class PlayerConfig {
@@ -44,6 +49,68 @@ public class PlayerConfig {
 
     private void write() {
         dataStorage.storeData(uuid, props);
+    }
+
+
+
+    public void updatePlayer(Player player) {
+        Component name = buildNameComponent(player.getName(), player.isOp());
+        player.displayName(name);
+        player.playerListName(name);
+    }
+
+    public Component buildNameComponent(String playerName, boolean isOp) {
+        Component username;
+        if (getDisplayName() != null && !getDisplayName().equals(playerName)) {
+            username = Component.text(getDisplayName()).hoverEvent(HoverEvent.showText(Component.text("Real name: " + playerName)));
+        } else {
+            username = Component.text(playerName).hoverEvent(HoverEvent.showText(Component.text("Real name: " + playerName)));
+        }
+
+        if (getNameColor() != null) {
+            username = username.color(getNameColor());
+        }
+
+        if (getPronouns() != null) {
+            username = username.appendSpace().append(Component.text("(" + getPronouns() + ")")
+                .color(NamedTextColor.GRAY).hoverEvent(HoverEvent.showText(Component.text("Pronouns"))));
+        }
+
+        if (isOp) {
+            username = username.appendSpace().append(Component.text("\u266E").color(NamedTextColor.RED)
+                .hoverEvent(HoverEvent.showText(Component.text("Server Operator"))));
+        }
+
+        return username;
+    }
+
+    public Component buildNameComponentShort(String playerName, boolean isOp) {
+        return Component.text(getDisplayName() != null ? getDisplayName() : playerName)
+            .color(getNameColor() != null ? getNameColor() : NamedTextColor.WHITE)
+            .hoverEvent(HoverEvent.showText(Component.text("Real name: " + playerName)
+            .appendNewline().append(Component.text("Pronouns: " + (getPronouns() != null ? getPronouns() : "None specified")))
+            .appendNewline().append(Component.text("Server Operator: " + (isOp ? "Yes" : "No")))));
+    }
+
+    public String buildNameString(String playerName, boolean isOp) {
+        StringBuilder username = new StringBuilder();
+        if (getDisplayName() != null && !getDisplayName().equals(playerName)) {
+            username.append(getDisplayName()).append(" [aka ").append(playerName).append("]");
+        } else {
+            username.append(playerName);
+        }
+        if (getPronouns() != null) {
+            username.append(" (").append(getPronouns()).append(")");
+        }
+        if (isOp) {
+            username.append(" \u266E");
+        }
+
+        return username.toString();
+    }
+
+    public String buildNameStringShort(String playerName) {
+        return getDisplayName() != null ? getDisplayName() : playerName;
     }
 
 

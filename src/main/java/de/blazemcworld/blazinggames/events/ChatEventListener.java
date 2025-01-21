@@ -22,7 +22,6 @@ import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.util.ArrayList;
@@ -43,43 +42,14 @@ public class ChatEventListener implements Listener, ChatRenderer {
 
     @Override
     public @NotNull Component render(@NotNull Player source, @NotNull Component sourceDisplayName, @NotNull Component message, @NotNull Audience viewer) {
-        // format username
-        Component username;
         PlayerConfig config = PlayerConfig.forPlayer(source.getUniqueId());
-        if (config.getDisplayName() != null && !config.getDisplayName().equals(source.getName())) {
-            username = Component.text(config.getDisplayName()).hoverEvent(HoverEvent.showText(Component.text("Real name: " + source.getName())));
-        } else {
-            username = Component.text(source.getName()).hoverEvent(HoverEvent.showText(Component.text("Real name: " + source.getName())));
-        }
-
-        if (config.getNameColor() != null) {
-            username = username.color(config.getNameColor());
-        }
-
-
-        if (config.getPronouns() != null) {
-            username = username.appendSpace().append(Component.text("(" + config.getPronouns() + ")")
-                .color(NamedTextColor.GRAY).hoverEvent(HoverEvent.showText(Component.text("Pronouns"))));
-        }
-
-        if (source.isOp()) {
-            username = username.appendSpace().append(Component.text("\u266E").color(NamedTextColor.RED)
-                .hoverEvent(HoverEvent.showText(Component.text("Server Operator"))));
-        }
-
-        // custom formatting
+        Component username = config.buildNameComponent(source.getName(), source.isOp());
         String rawMessage = TextUtils.componentToString(message);
         if (meFormat(rawMessage) != null) {
             // me when a oneliner needs to be multiline
-            Component minimalUsername = Component.text(config.getDisplayName() != null ? config.getDisplayName() : source.getName())
-                .color(config.getNameColor() != null ? config.getNameColor() : NamedTextColor.WHITE)
-                .hoverEvent(HoverEvent.showText(Component.text("Real name: " + source.getName())
-                    .appendNewline().append(Component.text("Pronouns: " + config.getPronouns() != null ? config.getPronouns() : "None specified"))
-                    .appendNewline().append(Component.text("Server Operator: " + (source.isOp() ? "Yes" : "No")))));
-            
             return Component.text("*").color(NamedTextColor.WHITE)
                 .appendSpace()
-                .append(minimalUsername)
+                .append(config.buildNameComponentShort(source.getName(), source.isOp()))
                 .appendSpace()
                 .append(TextUtils.colorCodeParser(TextUtils.stringToComponent(meFormat(rawMessage))).color(NamedTextColor.WHITE));
         } else if (greentextFormat(rawMessage) != null) {

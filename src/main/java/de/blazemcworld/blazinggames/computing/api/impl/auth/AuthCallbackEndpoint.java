@@ -24,6 +24,9 @@ import com.google.gson.JsonParser;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.api.APIDocs;
 import de.blazemcworld.blazinggames.computing.api.TokenManager;
+import de.blazemcworld.blazinggames.testing.CoveredByTests;
+import de.blazemcworld.blazinggames.testing.tests.LoginFlowTest;
+import de.blazemcworld.blazinggames.testing.tests.UnlinkFlowTest;
 import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
 import de.blazemcworld.blazinggames.computing.api.Endpoint;
@@ -41,6 +44,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.FormBody.Builder;
 
+@CoveredByTests({LoginFlowTest.class, UnlinkFlowTest.class})
 public class AuthCallbackEndpoint implements Endpoint {
     public static final String PATH = "/auth/callback";
     private final OkHttpClient client = new OkHttpClient();

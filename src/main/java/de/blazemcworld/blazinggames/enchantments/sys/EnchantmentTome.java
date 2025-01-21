@@ -20,7 +20,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -44,17 +43,6 @@ public class EnchantmentTome extends ContextlessItem {
     @Override
     protected @NotNull Component itemName() {
         return Component.text(tomeName).color(NamedTextColor.LIGHT_PURPLE);
-    }
-
-    @Override
-    protected @NotNull ItemStack modifyMaterial(ItemStack stack) {
-        ItemMeta meta = stack.getItemMeta();
-
-        meta.setEnchantmentGlintOverride(true);
-
-        stack.setItemMeta(meta);
-
-        return stack;
     }
 
     @Override

@@ -62,8 +62,7 @@ import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
-@SuppressWarnings("unused")
-public final class BlazingGames extends JavaPlugin {
+public class BlazingGames extends JavaPlugin {
     public boolean API_AVAILABLE = false;
 
     // Gson
@@ -207,7 +206,7 @@ public final class BlazingGames extends JavaPlugin {
         registerCommand("customgive", new CustomGiveCommand());
         registerCommand("killme", new KillMeCommand());
         registerCommand("playtime", new PlaytimeCommand());
-        registerCommand("config", new ConfigCommand());
+        registerCommand("display", new DisplayCommand());
         registerCommand("setaltar", new SetAltar());
 
         // Events

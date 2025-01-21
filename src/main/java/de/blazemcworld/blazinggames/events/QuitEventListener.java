@@ -18,6 +18,9 @@ package de.blazemcworld.blazinggames.events;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.discord.DiscordApp;
 import de.blazemcworld.blazinggames.discord.DiscordNotification;
+import de.blazemcworld.blazinggames.utils.PlayerConfig;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -25,12 +28,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class QuitEventListener implements Listener {
+    public static final TextColor color = TextColor.color(0xF99490);
+
     @EventHandler
     public void join(PlayerQuitEvent event) {
         DiscordApp.send(DiscordNotification.playerLeave(event.getPlayer()));
 
-        if (Bukkit.getOnlinePlayers().size() == 1) {
+        if (Bukkit.getOnlinePlayers().size() == 1 && BlazingGames.get().getPackConfig() != null) {
             BlazingGames.get().rebuildPack();
         }
+
+        Component name = PlayerConfig.forPlayer(event.getPlayer().getUniqueId())
+            .buildNameComponent(event.getPlayer().getName(), event.getPlayer().isOp());
+        event.quitMessage(Component.empty().append(name).append(Component.text(" left the game").color(color)));
     }
 }
