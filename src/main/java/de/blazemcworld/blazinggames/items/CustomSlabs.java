@@ -21,6 +21,9 @@ import de.blazemcworld.blazinggames.packs.HookContext;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Orientable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
@@ -46,7 +49,36 @@ public class CustomSlabs implements ItemProvider {
             Material.BEDROCK,
             Material.SUSPICIOUS_GRAVEL,
             Material.SUSPICIOUS_SAND,
-            Material.REINFORCED_DEEPSLATE
+            Material.REINFORCED_DEEPSLATE,
+
+            // Temporarily Disabled
+            Material.TARGET,
+            Material.WAXED_EXPOSED_CHISELED_COPPER,
+            Material.SNOW_BLOCK,
+            Material.MANGROVE_ROOTS,
+            Material.INFESTED_CHISELED_STONE_BRICKS,
+            Material.SCULK_CATALYST,
+            Material.WAXED_COPPER_BLOCK,
+            Material.MYCELIUM,
+            Material.WAXED_OXIDIZED_COPPER,
+            Material.WAXED_OXIDIZED_CHISELED_COPPER,
+            Material.INFESTED_MOSSY_STONE_BRICKS,
+            Material.INFESTED_STONE,
+            Material.INFESTED_STONE_BRICKS,
+            Material.INFESTED_CRACKED_STONE_BRICKS,
+            Material.MAGMA_BLOCK,
+            Material.DRIED_KELP_BLOCK,
+            Material.MELON,
+            Material.WAXED_EXPOSED_COPPER,
+            Material.ANCIENT_DEBRIS,
+            Material.GRASS_BLOCK,
+            Material.PODZOL,
+            Material.QUARTZ_BLOCK,
+            Material.WAXED_CHISELED_COPPER,
+            Material.INFESTED_COBBLESTONE,
+            Material.WAXED_WEATHERED_COPPER,
+            Material.WAXED_WEATHERED_CHISELED_COPPER,
+            Material.LODESTONE
     );
 
     public final ArrayList<CustomSlab> slabs = new ArrayList<>();
@@ -55,11 +87,16 @@ public class CustomSlabs implements ItemProvider {
         List<String> materialNames = Arrays.stream(Material.values()).map(Material::name).toList();
         for (Material material : Material.values()) {
             if (!blockedMaterials.contains(material) && material.isBlock() && material.isItem() && !material.isInteractable() && material.isOccluding() && material.isCollidable() && material.isSolid() && !material.name().contains("_PLANKS") && !material.name().contains("_SLAB") && !materialNames.contains(material.name() + "_SLAB")) {
-                if (material.name().endsWith("S")) {
-                    if (materialNames.contains(material.name().substring(0, material.name().length() - 1) + "_SLAB"))
-                        continue;
+                BlockData blockData = material.createBlockData();
+
+                //Temporarily Disabled
+                if (!(blockData instanceof Directional) && !(blockData instanceof Orientable)) {
+                    if (material.name().endsWith("S")) {
+                        if (materialNames.contains(material.name().substring(0, material.name().length() - 1) + "_SLAB"))
+                            continue;
+                    }
+                    slabs.add(new CustomSlab(material));
                 }
-                slabs.add(new CustomSlab(material));
             }
         }
     }
@@ -191,8 +228,16 @@ public class CustomSlabs implements ItemProvider {
             JsonObject jsonObject = gson.fromJson(customSlab, JsonObject.class);
 
             JsonObject model = jsonObject.get("model").getAsJsonObject();
-            model.addProperty("on_true", "blazinggames:models/" + slab.material.name().toLowerCase() + "_slab_top");
-            model.addProperty("on_false", "blazinggames:models/" + slab.material.name().toLowerCase() + "_slab_bottom");
+
+            JsonObject onTrue = new JsonObject();
+            onTrue.addProperty("type", "minecraft:model");
+            onTrue.addProperty("model", "blazinggames:" + slab.material.name().toLowerCase() + "_slab_top");
+            model.add("on_true", onTrue);
+
+            JsonObject onFalse = new JsonObject();
+            onFalse.addProperty("type", "minecraft:model");
+            onFalse.addProperty("model", "blazinggames:" + slab.material.name().toLowerCase() + "_slab_bottom");
+            model.add("on_false", onFalse);
 
             context.writeFile("/assets/" + item.getKey().getNamespace() + "/items/" + item.getKey().getKey() + ".json", jsonObject);
         }

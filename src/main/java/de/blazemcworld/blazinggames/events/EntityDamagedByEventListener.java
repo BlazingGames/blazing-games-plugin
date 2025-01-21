@@ -99,6 +99,7 @@ public class EntityDamagedByEventListener implements Listener {
 
                 if (displayBlock == null) return;
                 Location blockLocation = victim.getLocation().toCenterLocation();
+                Sound breakSound = displayBlock.getItemStack().getType().createBlockData().getSoundGroup().getBreakSound();
                 displayBlock.remove();
 
                 double y = victim.getY();
@@ -123,9 +124,8 @@ public class EntityDamagedByEventListener implements Listener {
                     return;
                 }
 
-//                p.getWorld().playSound(blockLocation, breakSound, 1, 1);
+                p.getWorld().playSound(blockLocation, breakSound, 1, 1);
 
-                System.out.println(blockLocation);
                 if (p.getWorld().getNearbyEntitiesByType(Shulker.class, blockLocation, 0.5).isEmpty())
                     Bukkit.getScheduler().runTask(BlazingGames.get(), () -> p.getWorld().getBlockAt(blockLocation).setType(Material.AIR));
             }

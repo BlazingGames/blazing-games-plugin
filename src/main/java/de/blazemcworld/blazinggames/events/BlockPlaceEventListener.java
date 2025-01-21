@@ -24,11 +24,10 @@ import de.blazemcworld.blazinggames.items.CustomItems;
 import de.blazemcworld.blazinggames.items.CustomSlabs;
 import de.blazemcworld.blazinggames.utils.TextLocation;
 import de.blazemcworld.blazinggames.utils.TomeAltarStorage;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.CustomModelData;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.CreatureSpawner;
@@ -38,7 +37,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.RayTraceResult;
@@ -217,14 +215,16 @@ public class BlockPlaceEventListener implements Listener {
             loc.getBlock().setType(Material.MOVING_PISTON);
             loc.setY(loc.getY() + (isTop ? 0.5 : 0));
 
+            Sound breakSound = item.material.createBlockData().getSoundGroup().getBreakSound();
+            location.getWorld().playSound(loc, breakSound, 1, 1);
+
 //            BlockData blockData = item.material.createBlockData();
             ItemDisplay itemDisplay = (ItemDisplay) loc.getBlock().getWorld().spawnEntity(loc, EntityType.ITEM_DISPLAY);
-            itemDisplay.setItemStack(item.create());
-//            if (isTop) {
-            ItemMeta meta = itemDisplay.getItemStack().getItemMeta();
-            meta.setCustomModelData(1);
-            itemDisplay.getItemStack().setItemMeta(meta);
-//            }
+            ItemStack itemStack = item.create();
+            if (isTop) {
+                itemStack.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData().addFlag(true).build());
+            }
+            itemDisplay.setItemStack(itemStack);
             loc.subtract(0.5, 0.5, 0.5);
 //            if (blockData instanceof Directional || blockData instanceof Orientable) {
 //                double yaw = direction.getYaw();

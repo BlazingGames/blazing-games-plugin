@@ -380,6 +380,7 @@ public class InteractEventListener implements Listener {
         }
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && block != null && hand != null) {
+            if (player.getTargetEntity(5) != null) return;
             Vector v = face.getDirection();
             Location nextBlock = block.getLocation().add(v).toCenterLocation();
             Collection<Shulker> shulkers = nextBlock.getNearbyEntitiesByType(Shulker.class, 0.5);
