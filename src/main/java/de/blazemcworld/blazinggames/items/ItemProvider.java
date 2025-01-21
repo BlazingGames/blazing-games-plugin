@@ -16,12 +16,47 @@
 
 package de.blazemcworld.blazinggames.items;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Set;
+import java.util.logging.Logger;
 
+import com.google.gson.JsonObject;
+
+import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.packs.HookContext;
 import de.blazemcworld.blazinggames.packs.PackBuildHook;
 
 public interface ItemProvider extends PackBuildHook {
     default Set<CustomItem<?>> getItems() {
         return Set.of();
+    }
+
+    @Override
+    default void runHook(Logger logger, HookContext context) {
+        String directory = "/" + getClass().getSimpleName().toLowerCase() + "/";
+        for (CustomItem<?> item : getItems()) {
+            // install texture
+            try (InputStream stream = item.getClass().getResourceAsStream(directory + item.getKey().getKey() + ".png")) {
+                if (stream != null) context.installTexture(item.getKey(), "item", stream.readAllBytes());
+            } catch (IOException e) {
+                BlazingGames.get().log(e);
+            }
+
+            // install model
+            try (InputStream stream = item.getClass().getResourceAsStream(directory + item.getKey().getKey() + ".json")) {
+                if (stream != null) context.installModel(item.getKey(), stream.readAllBytes());
+            } catch (IOException e) {
+                BlazingGames.get().log(e);
+            }
+
+            // create items data
+            JsonObject root = new JsonObject();
+            JsonObject model = new JsonObject();
+            model.addProperty("type", "minecraft:model");
+            model.addProperty("model", item.getKey().toString());
+            root.add("model", model);
+            context.writeFile("/assets/" + item.getKey().getNamespace() + "/items/" + item.getKey().getKey() + ".json", root);
+        }
     }
 }
