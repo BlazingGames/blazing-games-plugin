@@ -174,22 +174,9 @@ public class DiscordApp extends ListenerAdapter {
 
     private void sendDiscordMessage(Player player, String content) {
         PlayerConfig config = PlayerConfig.forPlayer(player.getUniqueId());
-        StringBuilder username = new StringBuilder();
-        if (config.getDisplayName() != null && !config.getDisplayName().equals(player.getName())) {
-            username.append(config.getDisplayName()).append(" [aka ").append(player.getName()).append("]");
-        } else {
-            username.append(player.getName());
-        }
-        if (config.getPronouns() != null) {
-            username.append(" (").append(config.getPronouns()).append(")");
-        }
-        if (player.isOp()) {
-            username.append(" \u266E");
-        }
-        
         String out;
         if (ChatEventListener.meFormat(content) != null) {
-            out = ((config.getDisplayName() != null) ? config.getDisplayName() : player.getName()) + " " + ChatEventListener.meFormat(content);
+            out = config.buildNameStringShort(player.getName()) + " " + ChatEventListener.meFormat(content);
         } else if (ChatEventListener.greentextFormat(content) != null) {
             StringBuilder builder = new StringBuilder();
             String[] parts = ChatEventListener.greentextFormat(content);
@@ -202,7 +189,7 @@ public class DiscordApp extends ListenerAdapter {
         }
 
         WebhookMessage message = new WebhookMessageBuilder()
-                .setUsername(username.toString())
+                .setUsername(config.buildNameString(player.getName(), player.isOp()))
                 .setAvatarUrl("https://cravatar.eu/helmavatar/" + player.getUniqueId() + "/128.png")
                 .setContent(out)
                 .build();

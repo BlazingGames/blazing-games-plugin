@@ -20,14 +20,18 @@ import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.discord.DiscordApp;
 import de.blazemcworld.blazinggames.discord.DiscordNotification;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
+import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class JoinEventListener implements Listener {
+    public static final TextColor color = TextColor.color(0xD1F990);
+
     @EventHandler
     public void join(PlayerJoinEvent event) {
         event.getPlayer().discoverRecipes(CustomRecipes.getAllRecipes().keySet());
@@ -44,5 +48,10 @@ public class JoinEventListener implements Listener {
                 true
             );
         }
+
+        PlayerConfig config = PlayerConfig.forPlayer(event.getPlayer().getUniqueId());
+        config.updatePlayer(event.getPlayer());
+        Component name = config.buildNameComponent(event.getPlayer().getName(), event.getPlayer().isOp());
+        event.joinMessage(Component.empty().append(name).append(Component.text(" joined the game").color(color)));
     }
 }

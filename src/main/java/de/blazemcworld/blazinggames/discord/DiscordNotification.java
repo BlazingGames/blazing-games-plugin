@@ -15,6 +15,7 @@
  */
 package de.blazemcworld.blazinggames.discord;
 
+import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import de.blazemcworld.blazinggames.utils.TextUtils;
 import io.papermc.paper.advancement.AdvancementDisplay;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -88,10 +89,13 @@ public record DiscordNotification(
         builder.setTitle("Notification");
         builder.setColor(Color.ORANGE);
 
-        if (player != null) builder.setAuthor(
-                player.getName(), null,
-                "http://cravatar.eu/helmhead/" + player.getUniqueId() + "/128.png"
-        );
+        if (player != null) {
+            PlayerConfig config = PlayerConfig.forPlayer(player.getUniqueId());
+            builder.setAuthor(
+                    config.buildNameString(player.getName(), player.isOp()), null,
+                    "http://cravatar.eu/helmhead/" + player.getUniqueId() + "/128.png"
+            );
+        }
         if (title != null) builder.setTitle(title);
         if (description != null) builder.setDescription(description);
         if (color != null) builder.setColor(color);
