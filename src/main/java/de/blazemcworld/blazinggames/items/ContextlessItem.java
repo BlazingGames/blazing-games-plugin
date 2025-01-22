@@ -17,8 +17,8 @@ public abstract class ContextlessItem extends CustomItem<EmptyItemContext> {
     }
 
     @Override
-    protected EmptyItemContext parseRawContext(Player player, String string) throws ParseException {
-        return EmptyItemContext.parse(player, string);
+    protected EmptyItemContext parseRawContext(Player player, String raw) throws ParseException {
+        return EmptyItemContext.parse(player, raw);
     }
 
     protected @NotNull ItemStack modifyMaterial(ItemStack stack) {

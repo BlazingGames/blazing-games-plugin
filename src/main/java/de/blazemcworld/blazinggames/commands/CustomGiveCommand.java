@@ -84,11 +84,13 @@ public class CustomGiveCommand implements CommandExecutor, TabCompleter {
                             + parsingException.getMessage()
                             + " at " + parsingException.getErrorOffset())
                     .color(NamedTextColor.RED));
+            BlazingGames.get().debugLog(parsingException);
         }
         catch(Exception exception) {
             commandSender.sendMessage(Component.text(exception.getClass().getName() + ": "
                             + exception.getMessage())
                     .color(NamedTextColor.RED));
+            BlazingGames.get().debugLog(exception);
         }
 
         return true;
