@@ -20,16 +20,20 @@ import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.CustomItems;
 import de.blazemcworld.blazinggames.items.contexts.ItemContext;
+import de.blazemcworld.blazinggames.utils.TextLocation;
+import io.azam.ulidj.ULID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.ParseException;
 import java.util.List;
 
 public class DeathCrateKey extends CustomItem<DeathCrateKey.DeathCrateKeyContext> {
@@ -79,6 +83,11 @@ public class DeathCrateKey extends CustomItem<DeathCrateKey.DeathCrateKeyContext
         );
     }
 
+    @Override
+    protected DeathCrateKeyContext parseContext(Player player, String string) throws ParseException {
+        return DeathCrateKeyContext.parse(player, string);
+    }
+
     public static String getKeyULID(ItemStack item) {
         if(CustomItems.DEATH_CRATE_KEY.matchItem(item))
         {
@@ -89,5 +98,28 @@ public class DeathCrateKey extends CustomItem<DeathCrateKey.DeathCrateKeyContext
     }
 
     public record DeathCrateKeyContext(String crateId) implements ItemContext {
+        public static DeathCrateKeyContext parse(Player player, String string) throws ParseException {
+            if (!string.contains(":")) {
+                string = "ulid:" + string;
+            }
+
+            String[] split = string.split(":", 2);
+
+            switch (split[0]) {
+                case "ulid" -> {
+                    if (!ULID.isValid(split[1])) {
+                        throw new ParseException("Invalid ULID!", string.length());
+                    }
+                    return new DeathCrateKeyContext(split[1]);
+                }
+                case "loc" -> {
+                    Location loc = TextLocation.deserializeUserInput(player.getWorld(), split[1]);
+
+                    return new DeathCrateKeyContext(CrateManager.getKeyULID(loc));
+                }
+            }
+
+            throw new ParseException("Invalid type '" + split[0] + "'", split[0].length() - 1);
+        }
     }
 }

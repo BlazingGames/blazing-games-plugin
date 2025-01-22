@@ -16,7 +16,6 @@
 package de.blazemcworld.blazinggames.commands;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.items.ContextlessItem;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.CustomItems;
 import net.kyori.adventure.text.Component;
@@ -30,6 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,15 +49,10 @@ public class CustomGiveCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if(strings.length > 2) {
-            CommandHelper.sendUsage(commandSender, command);
-            return true;
-        }
-
         CustomItem<?> itemType = CustomItems.getByKey(BlazingGames.get().key(strings[0]));
         int count = 1;
 
-        if(!(itemType instanceof ContextlessItem contextlessItemType))
+        if(itemType == null)
         {
             commandSender.sendMessage(Component.text("Unknown custom item: " + strings[0] + "!").color(NamedTextColor.RED));
             return true;
@@ -67,10 +62,34 @@ public class CustomGiveCommand implements CommandExecutor, TabCompleter {
             count = Integer.parseInt(strings[1]);
         }
 
-        ItemStack item = contextlessItemType.create();
-        item.setAmount(count);
+        String unparsedContext = "";
 
-        p.getInventory().addItem(item);
+        if(strings.length > 2)
+        {
+            List<String> contextStrings = new ArrayList<>(List.of(strings));
+            contextStrings.removeFirst();
+            contextStrings.removeFirst();
+
+            unparsedContext = String.join(" ", contextStrings);
+        }
+
+        try {
+            ItemStack item = itemType.createWithUnparsed(p, unparsedContext);
+            item.setAmount(count);
+
+            p.getInventory().addItem(item);
+        }
+        catch(ParseException parsingException) {
+            commandSender.sendMessage(Component.text("Parsing Exception: "
+                            + parsingException.getMessage()
+                            + " at " + parsingException.getErrorOffset())
+                    .color(NamedTextColor.RED));
+        }
+        catch(NumberFormatException numberException) {
+            commandSender.sendMessage(Component.text("Number Format Exception: "
+                            + numberException.getMessage())
+                    .color(NamedTextColor.RED));
+        }
 
         return true;
     }
@@ -81,12 +100,7 @@ public class CustomGiveCommand implements CommandExecutor, TabCompleter {
         List<String> tabs = new ArrayList<>();
 
         if(strings.length == 1) {
-            CustomItems.getAllItems().forEach(itemType -> {
-                if(itemType instanceof ContextlessItem)
-                {
-                    tabs.add(itemType.getKey().getKey());
-                }
-            });
+            CustomItems.getAllItems().forEach(itemType -> tabs.add(itemType.getKey().getKey()));
         }
 
         return tabs;
