@@ -16,6 +16,19 @@
 
 package de.blazemcworld.blazinggames.items.contexts;
 
+import org.bukkit.entity.Player;
+
+import java.text.ParseException;
+
 public class EmptyItemContext implements ItemContext {
     public static EmptyItemContext instance = new EmptyItemContext();
+
+    public static EmptyItemContext parse(Player player, String raw) throws ParseException {
+        if(raw.isBlank())
+        {
+            return instance;
+        }
+
+        throw new ParseException("Do mention that this item's context is empty.", raw.length());
+    }
 }
