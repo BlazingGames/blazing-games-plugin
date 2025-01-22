@@ -84,7 +84,7 @@ public class DeathCrateKey extends CustomItem<DeathCrateKey.DeathCrateKeyContext
     }
 
     @Override
-    protected DeathCrateKeyContext parseContext(Player player, String string) throws ParseException {
+    protected DeathCrateKeyContext parseRawContext(Player player, String string) throws ParseException {
         return DeathCrateKeyContext.parse(player, string);
     }
 
@@ -105,17 +105,30 @@ public class DeathCrateKey extends CustomItem<DeathCrateKey.DeathCrateKeyContext
 
             String[] split = string.split(":", 2);
 
-            switch (split[0]) {
+            switch (split[0].toLowerCase()) {
                 case "ulid" -> {
                     if (!ULID.isValid(split[1])) {
                         throw new ParseException("Invalid ULID!", string.length());
+                    }
+                    if(CrateManager.readCrate(split[1]) == null) {
+                        throw new ParseException("Crate does not exist!", string.length());
                     }
                     return new DeathCrateKeyContext(split[1]);
                 }
                 case "loc" -> {
                     Location loc = TextLocation.deserializeUserInput(player.getWorld(), split[1]);
 
-                    return new DeathCrateKeyContext(CrateManager.getKeyULID(loc));
+                    if(loc == null) {
+                        throw new ParseException("Location could not be parsed!", string.length());
+                    }
+
+                    String ulid = CrateManager.getKeyULID(loc);
+
+                    if(ulid == null) {
+                        throw new ParseException("A crate does not exist at this location!", string.length());
+                    }
+
+                    return new DeathCrateKeyContext(ulid);
                 }
             }
 

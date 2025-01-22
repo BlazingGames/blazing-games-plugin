@@ -62,7 +62,7 @@ public class CustomGiveCommand implements CommandExecutor, TabCompleter {
             count = Integer.parseInt(strings[1]);
         }
 
-        String unparsedContext = "";
+        String rawContext = "";
 
         if(strings.length > 2)
         {
@@ -70,11 +70,11 @@ public class CustomGiveCommand implements CommandExecutor, TabCompleter {
             contextStrings.removeFirst();
             contextStrings.removeFirst();
 
-            unparsedContext = String.join(" ", contextStrings);
+            rawContext = String.join(" ", contextStrings);
         }
 
         try {
-            ItemStack item = itemType.createWithUnparsed(p, unparsedContext);
+            ItemStack item = itemType.createWithRawContext(p, rawContext);
             item.setAmount(count);
 
             p.getInventory().addItem(item);
@@ -85,9 +85,9 @@ public class CustomGiveCommand implements CommandExecutor, TabCompleter {
                             + " at " + parsingException.getErrorOffset())
                     .color(NamedTextColor.RED));
         }
-        catch(NumberFormatException numberException) {
-            commandSender.sendMessage(Component.text("Number Format Exception: "
-                            + numberException.getMessage())
+        catch(Exception exception) {
+            commandSender.sendMessage(Component.text(exception.getClass().getName() + ": "
+                            + exception.getMessage())
                     .color(NamedTextColor.RED));
         }
 

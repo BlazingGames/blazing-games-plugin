@@ -96,8 +96,8 @@ public abstract class CustomItem<T extends ItemContext> implements RecipeProvide
         return ItemChangeProviders.update(result);
     }
 
-    public final @NotNull ItemStack createWithUnparsed(Player player, String string) throws ParseException {
-        return create(parseContext(player, string));
+    public final @NotNull ItemStack createWithRawContext(Player player, String string) throws ParseException {
+        return create(parseRawContext(player, string));
     }
 
     public ItemStack update(ItemStack stack) {
@@ -136,5 +136,5 @@ public abstract class CustomItem<T extends ItemContext> implements RecipeProvide
         return List.of();
     }
 
-    protected abstract T parseContext(Player player, String string) throws ParseException;
+    protected abstract T parseRawContext(Player player, String string) throws ParseException;
 }
