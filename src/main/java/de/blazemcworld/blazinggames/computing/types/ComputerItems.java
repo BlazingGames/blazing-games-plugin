@@ -15,25 +15,15 @@
  */
 package de.blazemcworld.blazinggames.computing.types;
 
-import de.blazemcworld.blazinggames.computing.BootedComputer;
-import de.blazemcworld.blazinggames.computing.functions.JSFunctionalClass;
-import de.blazemcworld.blazinggames.computing.motor.IComputerMotor;
-import net.kyori.adventure.text.Component;
+import java.util.Arrays;
+import java.util.Set;
 
-import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.CraftingRecipe;
-import org.bukkit.inventory.ItemStack;
+import de.blazemcworld.blazinggames.items.CustomItem;
+import de.blazemcworld.blazinggames.items.ItemProvider;
 
-public interface IComputerType {
-    Component getName();
-    
-    String getDescription();
-
-    CraftingRecipe getRecipe(NamespacedKey key, ItemStack result);
-
-    IComputerMotor getMotor();
-
-    JSFunctionalClass[] getFunctions(BootedComputer computer);
-
-    String[] getDefaultUpgrades();
+public class ComputerItems implements ItemProvider {
+    @Override
+    public Set<CustomItem<?>> getItems() {
+        return Arrays.stream(ComputerTypes.values()).map(ComputerTypes::item).collect(java.util.stream.Collectors.toSet());
+    }
 }

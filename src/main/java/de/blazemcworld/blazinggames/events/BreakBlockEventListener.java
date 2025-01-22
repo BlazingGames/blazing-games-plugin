@@ -308,10 +308,10 @@ public class BreakBlockEventListener implements Listener {
 
         if (ComputerRegistry.getComputerByLocationRounded(block.getLocation()) != null) {
             BootedComputer computer = ComputerRegistry.getComputerByLocationRounded(block.getLocation());
-            return new Drops(ComputerRegistry.addAttributes(computer.getType().getType().getDisplayItem(computer), computer));
-        } else {
-            return drops;
+            return new Drops(computer.getType().item().create(computer.getMetadata().createContext()));
         }
+        
+        return drops;
     }
 
     public static void fakeBreakBlock(Player player, Block block) {

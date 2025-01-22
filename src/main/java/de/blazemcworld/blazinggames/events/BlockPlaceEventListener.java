@@ -18,7 +18,7 @@ package de.blazemcworld.blazinggames.events;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.BootedComputer;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
-import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
+import de.blazemcworld.blazinggames.computing.types.ComputerItemWrapper;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.CustomItems;
 import de.blazemcworld.blazinggames.items.CustomSlabs;
@@ -39,7 +39,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Transformation;
@@ -149,20 +148,9 @@ public class BlockPlaceEventListener implements Listener {
 
         ItemStack handItem = event.getItemInHand();
         if (handItem.hasItemMeta()) {
-            PersistentDataContainer container = handItem.getItemMeta().getPersistentDataContainer();
-            String computerTypeString = container.getOrDefault(ComputerRegistry.NAMESPACEDKEY_COMPUTER_TYPE, PersistentDataType.STRING, "");
-            if (!computerTypeString.isEmpty()) {
+            if (CustomItem.getCustomItem(handItem) instanceof ComputerItemWrapper computerItem) {
                 event.setCancelled(true);
-
-                ComputerTypes computerTypes;
-                try {
-                    computerTypes = ComputerTypes.valueOf(computerTypeString);
-                } catch (IllegalArgumentException ignored) {
-                    event.getPlayer().sendMessage("This computer type doesn't exist?");
-                    return;
-                }
-
-                String computerId = container.getOrDefault(ComputerRegistry.NAMESPACEDKEY_COMPUTER_ID, PersistentDataType.STRING, "");
+                String computerId = computerItem.useContext(handItem).ulid;
                 Location placeLocation = event.getBlockPlaced().getLocation();
                 UUID uuid = event.getPlayer().getUniqueId();
                 if (event.getItemInHand().getAmount() > 1) {
@@ -172,10 +160,10 @@ public class BlockPlaceEventListener implements Listener {
                 } else {
                     event.getPlayer().getInventory().setItem(event.getHand(), new ItemStack(Material.AIR));
                 }
-                if (computerId.isEmpty()) {
+                if (computerId == null) {
                     ComputerRegistry.placeNewComputer(
                         placeLocation,
-                        computerTypes,
+                        computerItem.type,
                         uuid,
                         computer -> {
                             Player player = Bukkit.getPlayer(uuid);

@@ -18,7 +18,6 @@ package de.blazemcworld.blazinggames;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.blazemcworld.blazinggames.commands.*;
-import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry.ComputerPrivileges;
 import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.computing.api.RequiredFeature;
@@ -55,7 +54,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -130,7 +128,6 @@ public class BlazingGames extends JavaPlugin {
         }
 
         // Recipes
-        if (computersEnabled) ComputerRegistry.registerAllRecipes();
         CustomRecipes.loadRecipes();
 
         // Computers

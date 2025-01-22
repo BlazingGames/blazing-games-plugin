@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.computing.types;
+package de.blazemcworld.blazinggames.computing.types.impl;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
@@ -21,18 +21,17 @@ import de.blazemcworld.blazinggames.computing.BootedComputer;
 import de.blazemcworld.blazinggames.computing.functions.JSFunctionalClass;
 import de.blazemcworld.blazinggames.computing.motor.HeadComputerMotor;
 import de.blazemcworld.blazinggames.computing.motor.IComputerMotor;
+import de.blazemcworld.blazinggames.computing.types.IComputerType;
+
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.CraftingRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.SkullMeta;
 
 public class ConsoleCT implements IComputerType {
     public static final String MINESKIN_USERNAME = "Computer";
@@ -46,13 +45,13 @@ public class ConsoleCT implements IComputerType {
     }
 
     @Override
-    public ItemStack getDisplayItem(BootedComputer computer) {
-        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
-        SkullMeta meta = (SkullMeta)item.getItemMeta();
-        meta.setPlayerProfile(makeProfile());
-        meta.displayName(((TextComponent)Component.text("Console").color(NamedTextColor.WHITE)).decoration(TextDecoration.ITALIC, false));
-        item.setItemMeta(meta);
-        return item;
+    public Component getName() {
+        return Component.text("Console").color(TextColor.color(0x1BF97F));
+    }
+
+    @Override
+    public String getDescription() {
+        return "A computer allowing for basic operations without interactions.";
     }
 
     @Override

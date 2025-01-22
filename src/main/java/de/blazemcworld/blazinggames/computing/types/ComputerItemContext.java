@@ -15,25 +15,16 @@
  */
 package de.blazemcworld.blazinggames.computing.types;
 
-import de.blazemcworld.blazinggames.computing.BootedComputer;
-import de.blazemcworld.blazinggames.computing.functions.JSFunctionalClass;
-import de.blazemcworld.blazinggames.computing.motor.IComputerMotor;
-import net.kyori.adventure.text.Component;
+import de.blazemcworld.blazinggames.items.contexts.ItemContext;
 
-import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.CraftingRecipe;
-import org.bukkit.inventory.ItemStack;
+public class ComputerItemContext implements ItemContext {
+    public String ulid;
 
-public interface IComputerType {
-    Component getName();
-    
-    String getDescription();
+    public ComputerItemContext(String ulid) {
+        this.ulid = ulid;
+    }
 
-    CraftingRecipe getRecipe(NamespacedKey key, ItemStack result);
-
-    IComputerMotor getMotor();
-
-    JSFunctionalClass[] getFunctions(BootedComputer computer);
-
-    String[] getDefaultUpgrades();
+    public static ComputerItemContext defaultContext() {
+        return new ComputerItemContext(null);
+    }
 }

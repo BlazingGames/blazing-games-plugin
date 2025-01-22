@@ -24,6 +24,7 @@ import org.bukkit.Location;
 
 import com.google.gson.JsonObject;
 
+import de.blazemcworld.blazinggames.computing.types.ComputerItemContext;
 import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
 import de.blazemcworld.blazinggames.utils.GetGson;
 import de.blazemcworld.blazinggames.utils.TextLocation;
@@ -110,5 +111,9 @@ public class ComputerMetadata {
      */
     public boolean isUpgradePresentForType(String upgrade) {
         return List.of(type.getType().getDefaultUpgrades()).contains(upgrade);
+    }
+
+    public ComputerItemContext createContext() {
+        return new ComputerItemContext(id);
     }
 }

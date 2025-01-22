@@ -61,7 +61,7 @@ public class HeadComputerMotor implements IComputerMotor {
 
     @Override
     public void applyPropsToBlock(Block block) {
-        Skull state = (Skull)block.getState();
+        Skull state = (Skull) block.getState();
         state.setPlayerProfile(this.profile);
         state.update();
     }

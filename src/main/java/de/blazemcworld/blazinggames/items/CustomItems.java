@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableSet;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.builderwand.BuilderWand;
+import de.blazemcworld.blazinggames.computing.types.ComputerItems;
 import de.blazemcworld.blazinggames.crates.DeathCrateKey;
 import de.blazemcworld.blazinggames.crates.SkeletonKey;
 import de.blazemcworld.blazinggames.crates.ToGoBoxItem;
@@ -89,6 +90,7 @@ public class CustomItems implements ItemProvider {
 
         providers.add(new CustomItems());
         providers.add(CUSTOM_SLABS);
+        providers.add(new ComputerItems());
 
         return providers.build();
     }
