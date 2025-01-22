@@ -41,7 +41,7 @@ public class ScavengerEnchantment extends CustomTreasureEnchantment {
     public AltarRecipe getRecipe(int level) {
         return new AltarRecipe(
                 level, level*8,
-                64, switch(level) {
+                level == 3 ? 1 : 16, switch(level) {
                     case 2 -> new MaterialItemPredicate(Material.DIAMOND);
                     case 3 -> new MaterialItemPredicate(Material.NETHERITE_SCRAP);
                     default -> new MaterialItemPredicate(Material.GOLD_INGOT);
@@ -56,6 +56,13 @@ public class ScavengerEnchantment extends CustomTreasureEnchantment {
 
     public ItemPredicate getItemTarget() {
         return PaperEnchantmentTarget.WEAPON;
+    }
+
+    @Override
+    public int maxLevelAvailableInAltar(int altarTier) {
+        if(altarTier < 2) return 0;
+
+        return altarTier - 1;
     }
 
     public int getMaxLevel() {
