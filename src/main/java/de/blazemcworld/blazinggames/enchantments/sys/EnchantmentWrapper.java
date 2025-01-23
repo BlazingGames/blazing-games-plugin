@@ -33,7 +33,6 @@ import java.util.List;
 public interface EnchantmentWrapper {
     ItemStack apply(ItemStack tool, int level);
     int getLevel(ItemStack tool);
-    int getMaxLevel();
     boolean canEnchantItem(ItemStack tool);
     boolean canGoOnItem(ItemStack tool);
 
@@ -63,7 +62,7 @@ public interface EnchantmentWrapper {
         return null;
     }
 
-    int maxLevelAvailableInAltar(int altarTier);
+    //int maxLevelAvailableInAltar(int altarTier);
 
     ItemStack getPreIcon();
 
@@ -75,7 +74,9 @@ public interface EnchantmentWrapper {
         List<Component> lore = new ArrayList<>();
 
         if(level < getMaxLevel()) {
-            if(level >= maxLevelAvailableInAltar(tier)) {
+            AltarRecipe recipe = getRecipe(level + 1);
+
+            if(tier < recipe.tier()) {
                 lore.add(Component.text("Can't upgrade any more with this tier of altar!")
                         .color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
             }
@@ -85,8 +86,6 @@ public interface EnchantmentWrapper {
                         .append(Component.text(":"))
                         .color(NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false)
                 );
-
-                AltarRecipe recipe = getRecipe(level + 1);
 
                 Component name = recipe.itemRequirement().getDescription();
 
@@ -137,5 +136,17 @@ public interface EnchantmentWrapper {
 
     boolean isTreasure();
 
-    AltarRecipe getRecipe(int level);
+    List<AltarRecipe> getRecipes();
+    default AltarRecipe getRecipe(int level) {
+        List<AltarRecipe> recipes = getRecipes();
+
+        if(level < 1) return recipes.getFirst();
+
+        if(level > recipes.size()) return recipes.getLast();
+
+        return recipes.get(level - 1);
+    }
+    default int getMaxLevel() {
+        return getRecipes().size();
+    }
 }

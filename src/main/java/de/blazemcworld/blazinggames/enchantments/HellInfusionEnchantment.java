@@ -30,6 +30,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class HellInfusionEnchantment extends CustomEnchantment {
     @Override
     public @NotNull NamespacedKey getKey() {
@@ -43,10 +45,6 @@ public class HellInfusionEnchantment extends CustomEnchantment {
 
     public ItemPredicate getItemTarget() {
         return PaperEnchantmentTarget.WEAPON;
-    }
-
-    public int getMaxLevel() {
-        return 3;
     }
 
     public double getDamageIncrease(Entity victim, int level) {
@@ -68,24 +66,16 @@ public class HellInfusionEnchantment extends CustomEnchantment {
     }
 
     @Override
-    public int maxLevelAvailableInAltar(int altarTier) {
-        if(altarTier <= 1) return 0;
-        return altarTier - 1;
-    }
-
-    @Override
     public ItemStack getPreIcon() {
         return new ItemStack(Material.MAGMA_BLOCK);
     }
 
     @Override
-    public AltarRecipe getRecipe(int level) {
-        return new AltarRecipe(
-                level, level * 4, level == 3 ? 64 : 32, switch(level) {
-                    case 2 -> new MaterialItemPredicate(Material.MAGMA_BLOCK);
-                    case 3 -> new MaterialItemPredicate(Material.BLAZE_POWDER);
-                    default -> new MaterialItemPredicate(Material.MAGMA_CREAM);
-                }
+    public List<AltarRecipe> getRecipes() {
+        return List.of(
+                new AltarRecipe(2, 1, 4, 32, new MaterialItemPredicate(Material.MAGMA_CREAM)),
+                new AltarRecipe(3, 2, 8, 32, new MaterialItemPredicate(Material.MAGMA_BLOCK)),
+                new AltarRecipe(4, 3, 12, 64, new MaterialItemPredicate(Material.BLAZE_POWDER))
         );
     }
 }

@@ -162,7 +162,7 @@ public class BreakBlockEventListener implements Listener {
         int pattern = EnchantmentHelper.getActiveCustomEnchantmentLevel(mainHand, CustomEnchantments.PATTERN);
 
         if (pattern > 0 && face != null) {
-            Pair<Integer, Integer> dimensions = PatternEnchantment.dimensions.get(pattern - 1).left2();
+            Pair<Integer, Integer> dimensions = PatternEnchantment.dimensions.get(pattern - 1);
 
             for (int i = 0; i < dimensions.left; i++) {
                 int x = -dimensions.left / 2 + i;

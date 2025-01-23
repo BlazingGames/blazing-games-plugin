@@ -45,11 +45,6 @@ public abstract class CustomEnchantment implements EnchantmentWrapper {
         return EnchantmentHelper.getCustomEnchantmentLevel(tool, this);
     }
 
-    @Override
-    public int getMaxLevel() {
-        return 1;
-    }
-
     public ItemPredicate getItemTarget() {
         return PaperEnchantmentTarget.BREAKABLE;
     }
@@ -94,14 +89,6 @@ public abstract class CustomEnchantment implements EnchantmentWrapper {
     public boolean canGoOnItem(ItemStack tool) {
         return getItemTarget().matchItem(tool) || tool.getType() == Material.BOOK
                 || tool.getType() == Material.ENCHANTED_BOOK;
-    }
-
-    public int maxLevelAvailableInAltar(int altarTier) {
-        if(altarTier == 4) {
-            return getMaxLevel();
-        }
-
-        return Math.min(getMaxLevel(), altarTier);
     }
 
     public boolean canUpgradeLevel(int currentLevel) {

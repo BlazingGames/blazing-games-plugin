@@ -22,7 +22,7 @@ import de.blazemcworld.blazinggames.enchantments.sys.PaperEnchantmentTarget;
 import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarRecipe;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import de.blazemcworld.blazinggames.items.predicates.MaterialItemPredicate;
-import de.blazemcworld.blazinggames.utils.Triple;
+import de.blazemcworld.blazinggames.utils.Pair;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -31,10 +31,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class PatternEnchantment extends CustomEnchantment {
-    public static List<Triple<Integer, Integer, Material>> dimensions = List.of(
-            new Triple<>(1,2, Material.WOODEN_PICKAXE),
-            new Triple<>(2,2, Material.STONE_PICKAXE),
-            new Triple<>(3,3, Material.IRON_PICKAXE)
+    public static List<Pair<Integer, Integer>> dimensions = List.of(
+            new Pair<>(1,2),
+            new Pair<>(2,2),
+            new Pair<>(3,3)
     );
 
     @Override
@@ -48,16 +48,12 @@ public class PatternEnchantment extends CustomEnchantment {
     }
 
     @Override
-    public AltarRecipe getRecipe(int level) {
-        if(level <= 0) {
-            return getRecipe(1);
-        }
-
-        if(level > dimensions.size()) {
-            return getRecipe(dimensions.size());
-        }
-
-        return new AltarRecipe(level, level * 4, new MaterialItemPredicate(dimensions.get(level-1).right));
+    public List<AltarRecipe> getRecipes() {
+        return List.of(
+                new AltarRecipe(1, 1, 4, new MaterialItemPredicate(Material.WOODEN_PICKAXE)),
+                new AltarRecipe(1, 2, 8, new MaterialItemPredicate(Material.STONE_PICKAXE)),
+                new AltarRecipe(1, 3, 12, new MaterialItemPredicate(Material.IRON_PICKAXE))
+        );
     }
 
     @Override
@@ -70,15 +66,11 @@ public class PatternEnchantment extends CustomEnchantment {
             return super.getDisplayLevel(level);
         }
 
-        return dimensions.get(level-1).left + "x" + dimensions.get(level-1).middle;
+        return dimensions.get(level-1).left + "x" + dimensions.get(level-1).right;
     }
 
     public ItemPredicate getItemTarget() {
         return PaperEnchantmentTarget.TOOL;
-    }
-
-    public int getMaxLevel() {
-        return 3;
     }
 
     public boolean conflictsWith(@NotNull CustomEnchantment enchantment) {
