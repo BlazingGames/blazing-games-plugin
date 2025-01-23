@@ -139,7 +139,7 @@ public class AltarInterface extends UserInterface {
 
         Set<EnchantmentWrapper> result = EnchantmentWrappers.list();
 
-        result.removeIf((wrapper) -> wrapper.maxLevelAvailableInAltar(tier) <= 0);
+        result.removeIf((wrapper) -> wrapper.getRecipe(1).tier() > tier);
 
         if(altars != null) {
             for(ItemStack tome : altars.values()) {

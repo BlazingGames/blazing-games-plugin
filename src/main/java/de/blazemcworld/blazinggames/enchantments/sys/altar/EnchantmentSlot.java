@@ -81,7 +81,7 @@ public class EnchantmentSlot implements UserInterfaceSlot {
                     return false;
                 }
 
-                if(level >= wrapper.maxLevelAvailableInAltar(altarInterface.getTier())) {
+                if(altarInterface.getTier() < wrapper.getRecipe(level).tier()) {
                     return false;
                 }
 
