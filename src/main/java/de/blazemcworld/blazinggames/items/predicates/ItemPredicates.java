@@ -16,10 +16,11 @@
 
 package de.blazemcworld.blazinggames.items.predicates;
 
+import de.blazemcworld.blazinggames.enchantments.sys.BlazingEnchantmentTarget;
 import de.blazemcworld.blazinggames.enchantments.sys.PaperEnchantmentTarget;
 
 public class ItemPredicates {
     public static final ItemPredicate enchantability = new AlternativeItemPredicate("Any Enchantable Item",
-            BreakableItemPredicate.instance, PaperEnchantmentTarget.ALL
+            BreakableItemPredicate.instance, PaperEnchantmentTarget.ALL, BlazingEnchantmentTarget.BOW_ROCKET
     );
 }

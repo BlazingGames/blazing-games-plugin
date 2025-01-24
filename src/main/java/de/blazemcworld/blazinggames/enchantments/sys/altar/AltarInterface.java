@@ -137,7 +137,7 @@ public class AltarInterface extends UserInterface {
     public Set<EnchantmentWrapper> getAvailable() {
         ItemStack tool = getItem(1,1);
 
-        Set<EnchantmentWrapper> result = EnchantmentWrappers.list();
+        Set<EnchantmentWrapper> result = EnchantmentWrappers.list(true);
 
         result.removeIf((wrapper) -> wrapper.getRecipe(1).tier() > tier);
 

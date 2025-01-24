@@ -72,7 +72,7 @@ public class InventoryUtils {
     }
 
     public static void collectableDrop(Player player, Location location, Drops drops) {
-        if (EnchantmentHelper.hasActiveCustomEnchantment(player.getInventory().getItemInMainHand(), CustomEnchantments.COLLECTABLE)) {
+        if (EnchantmentHelper.hasActiveEnchantmentWrapper(player.getInventory().getItemInMainHand(), CustomEnchantments.COLLECTABLE)) {
             player.giveExp(drops.getExperienceDropped(), true);
 
             for (ItemStack drop : drops) {

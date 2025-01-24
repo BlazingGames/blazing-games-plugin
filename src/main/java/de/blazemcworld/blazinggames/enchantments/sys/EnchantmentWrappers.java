@@ -17,6 +17,7 @@ package de.blazemcworld.blazinggames.enchantments.sys;
 
 import de.blazemcworld.blazinggames.enchantments.sys.VanillaEnchantmentWrapper.Warning;
 import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarRecipe;
+import de.blazemcworld.blazinggames.items.predicates.BreakableItemPredicate;
 import de.blazemcworld.blazinggames.items.predicates.ColorlessItemPredicate;
 import de.blazemcworld.blazinggames.items.CustomItems;
 import de.blazemcworld.blazinggames.items.predicates.MaterialItemPredicate;
@@ -113,7 +114,8 @@ public class EnchantmentWrappers {
                     new AltarRecipe(4,4, 4, 32, new MaterialItemPredicate(Material.BLAZE_POWDER))
             );
     public static VanillaEnchantmentWrapper MENDING =
-            new VanillaEnchantmentWrapper(Enchantment.MENDING, () -> new ItemStack(Material.SHULKER_SHELL),
+            new OverridableVanillaEnchantmentWrapper(Enchantment.MENDING, () -> new ItemStack(Material.SHULKER_SHELL),
+                    new OverridableVanillaEnchantmentWrapper.VanillaEnchantmentOverrides().conflicts(),
                     new AltarRecipe(4,10, 15, CustomItems.NETHER_STAR_CHUNK)
             );
     public static VanillaEnchantmentWrapper LOYALTY =
@@ -209,7 +211,8 @@ public class EnchantmentWrappers {
                     new AltarRecipe(3,2, 8, 32, new MaterialItemPredicate(Material.BLAZE_POWDER))
             );
     public static VanillaEnchantmentWrapper UNBREAKING =
-            new VanillaEnchantmentWrapper(Enchantment.UNBREAKING, () -> new ItemStack(Material.BEDROCK),
+            new OverridableVanillaEnchantmentWrapper(Enchantment.UNBREAKING, () -> new ItemStack(Material.BEDROCK),
+                    new OverridableVanillaEnchantmentWrapper.VanillaEnchantmentOverrides().target(BreakableItemPredicate.instance),
                     new AltarRecipe(2,1, 2, 32, new MaterialItemPredicate(Material.IRON_INGOT)),
                     new AltarRecipe(3,2, 4, 32, new MaterialItemPredicate(Material.OBSIDIAN)),
                     new AltarRecipe(4,3, 8, 2, new MaterialItemPredicate(Material.NETHERITE_SCRAP))
@@ -225,7 +228,9 @@ public class EnchantmentWrappers {
                     new AltarRecipe(3,3, 4, 16, new MaterialItemPredicate(Material.PUFFERFISH))
             );
     public static VanillaEnchantmentWrapper INFINITY =
-            new VanillaEnchantmentWrapper(Enchantment.INFINITY, () -> new ItemStack(Material.CHORUS_FLOWER),
+            new OverridableVanillaEnchantmentWrapper(Enchantment.INFINITY, () -> new ItemStack(Material.CHORUS_FLOWER),
+                    new OverridableVanillaEnchantmentWrapper.VanillaEnchantmentOverrides().target(BlazingEnchantmentTarget.BOW_ROCKET)
+                            .conflicts(),
                     new AltarRecipe(4,1, 8, 64, new MaterialItemPredicate(Material.ARROW))
             );
     public static VanillaEnchantmentWrapper EFFICIENCY =
@@ -299,18 +304,20 @@ public class EnchantmentWrappers {
         );
     }
 
-    public static Set<EnchantmentWrapper> list() {
+    public static Set<EnchantmentWrapper> list(boolean removeTreasure) {
         Set<EnchantmentWrapper> wrappers = new HashSet<>(CustomEnchantments.list());
 
         wrappers.addAll(vanilla());
 
-        wrappers.removeIf(EnchantmentWrapper::isTreasure);
+        if(removeTreasure) {
+            wrappers.removeIf(EnchantmentWrapper::isTreasure);
+        }
 
         return wrappers;
     }
 
     public static @Nullable EnchantmentWrapper getByKey(NamespacedKey key) {
-        for(EnchantmentWrapper curr : list()) {
+        for(EnchantmentWrapper curr : list(false)) {
             if(curr.getKey().equals(key)) {
                 return curr;
             }

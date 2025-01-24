@@ -21,15 +21,11 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
 import java.util.Set;
 
 public abstract class CustomEnchantment implements EnchantmentWrapper {
@@ -47,42 +43,6 @@ public abstract class CustomEnchantment implements EnchantmentWrapper {
 
     public ItemPredicate getItemTarget() {
         return PaperEnchantmentTarget.BREAKABLE;
-    }
-
-    public boolean canEnchantItem(@NotNull ItemStack itemStack) {
-        Map<CustomEnchantment, Integer> customEnchantmentLevels = EnchantmentHelper.getCustomEnchantments(itemStack);
-
-        for(Map.Entry<CustomEnchantment, Integer> entry : customEnchantmentLevels.entrySet()) {
-            if(conflictsWith(entry.getKey()) || entry.getKey().conflictsWith(this)) {
-                return false;
-            }
-        }
-
-        ItemMeta meta = itemStack.getItemMeta();
-
-        Map<Enchantment, Integer> enchantmentLevels = Map.of();
-
-        if(meta != null) {
-            enchantmentLevels = itemStack.getItemMeta().getEnchants();
-        }
-
-        for(Map.Entry<Enchantment, Integer> entry : enchantmentLevels.entrySet()) {
-            if(conflictsWith(entry.getKey())) {
-                return false;
-            }
-        }
-
-        if(itemStack.getItemMeta() instanceof EnchantmentStorageMeta esm) {
-            Map<Enchantment, Integer> storedEnchantmentLevels = esm.getStoredEnchants();
-
-            for(Map.Entry<Enchantment, Integer> entry : storedEnchantmentLevels.entrySet()) {
-                if(conflictsWith(entry.getKey())) {
-                    return false;
-                }
-            }
-        }
-
-        return canGoOnItem(itemStack);
     }
 
     @Override
@@ -129,12 +89,17 @@ public abstract class CustomEnchantment implements EnchantmentWrapper {
     }
 
     @Override
-    public Component getLevelessComponent() {
+    public Component getDescription() {
         return Component.text(getDisplayName()).color(getEnchantmentType().getColor()).decoration(TextDecoration.ITALIC, false);
     }
 
     @Override
     public boolean isTreasure() {
         return false;
+    }
+
+    @Override
+    public boolean canBeRemoved() {
+        return getEnchantmentType().canBeRemoved();
     }
 }

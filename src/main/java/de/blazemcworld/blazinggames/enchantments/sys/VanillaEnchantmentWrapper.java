@@ -24,10 +24,8 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
@@ -68,36 +66,6 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
     }
 
     @Override
-    public boolean canEnchantItem(ItemStack tool) {
-        Map<CustomEnchantment, Integer> customEnchantmentLevels = EnchantmentHelper.getCustomEnchantments(tool);
-
-        for(Map.Entry<CustomEnchantment, Integer> entry : customEnchantmentLevels.entrySet()) {
-            if(entry.getKey().conflictsWith(enchantment)) {
-                return false;
-            }
-        }
-
-        if(tool.getItemMeta() != null && tool.getItemMeta().hasConflictingEnchant(enchantment)) {
-            for(Map.Entry<Enchantment, Integer> entry : tool.getItemMeta().getEnchants().entrySet()) {
-                if(entry.getKey().equals(enchantment)) {
-                    continue;
-                }
-                if(entry.getKey().conflictsWith(enchantment)) {
-                    return false;
-                }
-            }
-        }
-
-        if(tool.getItemMeta() instanceof EnchantmentStorageMeta esm) {
-            if(esm.hasConflictingStoredEnchant(enchantment)) {
-                return false;
-            }
-        }
-
-        return canGoOnItem(tool);
-    }
-
-    @Override
     public boolean canGoOnItem(ItemStack tool) {
         return enchantment.canEnchantItem(tool) || tool.getType() == Material.BOOK
                 || tool.getType() == Material.ENCHANTED_BOOK;
@@ -124,7 +92,7 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
     }
 
     @Override
-    public Component getLevelessComponent() {
+    public Component getDescription() {
         TextColor color = NamedTextColor.GRAY;
 
         if(enchantment.isCursed()) {
@@ -147,6 +115,11 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
     @Override
     public List<AltarRecipe> getRecipes() {
         return recipes;
+    }
+
+    @Override
+    public boolean canBeRemoved() {
+        return enchantment.isCursed();
     }
 
     public Enchantment getEnchantment() {

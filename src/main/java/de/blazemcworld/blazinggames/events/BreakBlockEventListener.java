@@ -109,7 +109,7 @@ public class BreakBlockEventListener implements Listener {
 
         fakeBreakBlock(player, event.getBlock(), false);
 
-        if (EnchantmentHelper.hasActiveCustomEnchantment(mainHand, CustomEnchantments.TREE_FELLER)) {
+        if (EnchantmentHelper.hasActiveEnchantmentWrapper(mainHand, CustomEnchantments.TREE_FELLER)) {
             if (logs.contains(event.getBlock().getType())) {
                 if (player.getFoodLevel() <= 6) {
                     return;
@@ -117,7 +117,7 @@ public class BreakBlockEventListener implements Listener {
 
                 ItemStack axe = player.getInventory().getItemInMainHand();
 
-                int treeFeller = EnchantmentHelper.getActiveCustomEnchantmentLevel(axe, CustomEnchantments.TREE_FELLER);
+                int treeFeller = EnchantmentHelper.getActiveEnchantmentWrapperLevel(axe, CustomEnchantments.TREE_FELLER);
 
                 if (treeFeller <= 0) {
                     return;
@@ -159,7 +159,7 @@ public class BreakBlockEventListener implements Listener {
             }
         }
 
-        int pattern = EnchantmentHelper.getActiveCustomEnchantmentLevel(mainHand, CustomEnchantments.PATTERN);
+        int pattern = EnchantmentHelper.getActiveEnchantmentWrapperLevel(mainHand, CustomEnchantments.PATTERN);
 
         if (pattern > 0 && face != null) {
             Pair<Integer, Integer> dimensions = PatternEnchantment.dimensions.get(pattern - 1);
@@ -203,7 +203,7 @@ public class BreakBlockEventListener implements Listener {
 
         ItemStack axe = player.getInventory().getItemInMainHand();
 
-        int treeFeller = EnchantmentHelper.getActiveCustomEnchantmentLevel(axe, CustomEnchantments.TREE_FELLER);
+        int treeFeller = EnchantmentHelper.getActiveEnchantmentWrapperLevel(axe, CustomEnchantments.TREE_FELLER);
 
         if (treeFeller <= 0) {
             return;
@@ -285,7 +285,7 @@ public class BreakBlockEventListener implements Listener {
             }
         }
 
-        if (EnchantmentHelper.hasActiveCustomEnchantment(mainHand, CustomEnchantments.FLAME_TOUCH)) {
+        if (EnchantmentHelper.hasActiveEnchantmentWrapper(mainHand, CustomEnchantments.FLAME_TOUCH)) {
             Iterator<ItemStack> iter = drops.iterator();
             List<ItemStack> smeltedDrops = new ArrayList<>();
 

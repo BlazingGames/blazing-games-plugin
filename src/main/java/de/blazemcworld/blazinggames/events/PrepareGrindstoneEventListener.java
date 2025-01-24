@@ -91,9 +91,6 @@ public class PrepareGrindstoneEventListener implements Listener {
     }
 
     public ItemStack grindstoneItem(ItemStack up, ItemStack down, ItemStack result) {
-        if(CustomItem.isCustomItem(up)) return ItemStack.empty();
-        if(CustomItem.isCustomItem(down)) return ItemStack.empty();
-
         if(up == null || up.isEmpty()) {
             ItemStack swap = down;
             down = up;
@@ -105,12 +102,12 @@ public class PrepareGrindstoneEventListener implements Listener {
         else if(down != null && !down.isEmpty())
         {
             // double
-            if(down.getType() == Material.SPONGE || down.getType() == Material.WET_SPONGE) {
+            if(!CustomItem.isCustomItem(down) && (down.getType() == Material.SPONGE || down.getType() == Material.WET_SPONGE)) {
                 if(EnchantmentHelper.canEnchantItem(up)) {
                     return scrub(up, down);
                 }
             }
-            if(up.getType() == Material.SPONGE || up.getType() == Material.WET_SPONGE) {
+            if(!CustomItem.isCustomItem(down) && (up.getType() == Material.SPONGE || up.getType() == Material.WET_SPONGE)) {
                 if(EnchantmentHelper.canEnchantItem(down)) {
                     return scrub(down, up);
                 }
@@ -129,7 +126,7 @@ public class PrepareGrindstoneEventListener implements Listener {
             return null;
         }
 
-        result = EnchantmentHelper.removeCustomEnchantments(result);
+        result = EnchantmentHelper.removeEnchantments(result);
 
         if(result.equals(up)) {
             return null;

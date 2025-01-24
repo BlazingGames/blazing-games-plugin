@@ -29,19 +29,39 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public interface EnchantmentWrapper {
     ItemStack apply(ItemStack tool, int level);
     int getLevel(ItemStack tool);
-    boolean canEnchantItem(ItemStack tool);
     boolean canGoOnItem(ItemStack tool);
+
+    default boolean canEnchantItem(ItemStack tool) {
+        for(Map.Entry<EnchantmentWrapper, Integer> entry : EnchantmentHelper.getEnchantmentWrappers(tool).entrySet()) {
+            if(this.conflictsWith(entry.getKey()))
+            {
+                return false;
+            }
+
+            if(entry.getKey().conflictsWith(this))
+            {
+                return false;
+            }
+        }
+
+        return this.canGoOnItem(tool);
+    }
+
+    default ItemStack remove(ItemStack tool) {
+        return apply(tool, 0);
+    }
 
     default boolean conflictsWith(EnchantmentWrapper wrapper) {
         if(wrapper instanceof VanillaEnchantmentWrapper vanilla) {
             return conflictsWith(vanilla.getEnchantment());
         }
         if(wrapper instanceof CustomEnchantment custom) {
-            conflictsWith(custom);
+            return conflictsWith(custom);
         }
         return false;
     }
@@ -56,7 +76,7 @@ public interface EnchantmentWrapper {
 
     NamespacedKey getKey();
     Component getComponent(int level);
-    Component getLevelessComponent();
+    Component getDescription();
 
     default String getWarning(int level) {
         return null;
@@ -122,7 +142,7 @@ public interface EnchantmentWrapper {
         meta.setMaxStackSize(getMaxLevel());
         meta.setHideTooltip(false);
         meta.setEnchantmentGlintOverride(level > 0);
-        meta.itemName(level > 0 ? getComponent(level) : getLevelessComponent());
+        meta.itemName(level > 0 ? getComponent(level) : getDescription());
         meta.lore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
         result.setItemMeta(meta);
@@ -149,4 +169,10 @@ public interface EnchantmentWrapper {
     default int getMaxLevel() {
         return getRecipes().size();
     }
+
+    default boolean has(ItemStack stack) {
+        return getLevel(stack) != 0;
+    }
+
+    boolean canBeRemoved();
 }
