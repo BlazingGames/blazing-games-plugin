@@ -206,8 +206,16 @@ public class InteractEventListener implements Listener {
 
         if(block != null && event.getAction() == Action.RIGHT_CLICK_BLOCK && event.useInteractedBlock() != Event.Result.DENY) {
             if (block.getType() == Material.ENCHANTING_TABLE) {
-                player.openInventory(new AltarInterface(BlazingGames.get(), block.getState()).getInventory());
-                event.setCancelled(true);
+                if (CustomItems.BLUEPRINT.matchItem(eventItem)) {
+                    event.setCancelled(true);
+                    if (!player.hasCooldown(eventItem)) {
+                        CustomItems.BLUEPRINT.outputMultiBlockProgress(player, block.getLocation());
+                        player.setCooldown(eventItem, 40);
+                    }
+                } else {
+                    player.openInventory(new AltarInterface(BlazingGames.get(), block.getState()).getInventory());
+                    event.setCancelled(true);
+                }
             }
         }
 
@@ -254,12 +262,6 @@ public class InteractEventListener implements Listener {
                     }
                 }
             }
-            if(CustomItems.BLUEPRINT.matchItem(eventItem)) {
-                if(!player.hasCooldown(eventItem)) {
-                    CustomItems.BLUEPRINT.outputMultiBlockProgress(player, block.getLocation());
-                    player.setCooldown(eventItem, 40);
-                }
-            }
             if (block.getType() == Material.SPAWNER)
                 spawnerInteractions(player, hand, eventItem, (CreatureSpawner) block.getState());
         }
@@ -300,7 +302,6 @@ public class InteractEventListener implements Listener {
             if (TomeAltarStorage.isTomeAltar(block.getLocation())) {
                 event.setCancelled(true);
                 ItemStack tomeItem = TomeAltarStorage.getItem(block.getLocation());
-                BlazingGames.get().log(tomeItem);
                 if (tomeItem == null) tomeItem = new ItemStack(Material.AIR);
                 ItemStack finalTomeItem = tomeItem;
                 TomeAltarStorage.removeTomeAltar(block.getLocation());
@@ -345,8 +346,11 @@ public class InteractEventListener implements Listener {
                         for (Entity e : player.getWorld().getEntities()) {
                             Location eLoc = e.getLocation().toCenterLocation();
                             if (eLoc.getX() == bLoc.getX() && eLoc.getY() == bLoc.getY() && eLoc.getZ() == bLoc.getZ() && e.getType() == EntityType.ITEM_DISPLAY) {
-                                display = (ItemDisplay) e;
-                                break;
+                                PersistentDataContainer container = e.getPersistentDataContainer();
+                                if (container.has(BlazingGames.get().key("spin"), PersistentDataType.BOOLEAN)) {
+                                    display = (ItemDisplay) e;
+                                    break;
+                                }
                             }
                         }
                         if (display == null) {
@@ -356,6 +360,8 @@ public class InteractEventListener implements Listener {
                             loc.setZ(loc.getZ());
 
                             display = (ItemDisplay) block.getWorld().spawnEntity(loc, EntityType.ITEM_DISPLAY);
+                            PersistentDataContainer container = display.getPersistentDataContainer();
+                            container.set(BlazingGames.get().key("spin"), PersistentDataType.BOOLEAN, true);
                             display.setItemStack(setItem);
                             Transformation transformation = new Transformation(new Vector3f(), new Quaternionf(),new Vector3f(0.25f, 0.25f, 0.25f),new Quaternionf());
                             display.setTransformation(transformation);
@@ -374,6 +380,7 @@ public class InteractEventListener implements Listener {
         }
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && block != null && hand != null) {
+            if (player.getTargetEntity(5) != null) return;
             Vector v = face.getDirection();
             Location nextBlock = block.getLocation().add(v).toCenterLocation();
             Collection<Shulker> shulkers = nextBlock.getNearbyEntitiesByType(Shulker.class, 0.5);

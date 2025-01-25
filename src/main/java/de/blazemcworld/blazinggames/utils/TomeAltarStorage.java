@@ -19,10 +19,9 @@ import de.blazemcworld.blazinggames.data.DataStorage;
 import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
 import de.blazemcworld.blazinggames.data.name.ArbitraryNameProvider;
 import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
-
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
+
 import java.util.List;
 
 public class TomeAltarStorage {
@@ -52,12 +51,6 @@ public class TomeAltarStorage {
 
     public static void removeTomeAltar(Location location) {
         dataStorage.deleteData(TextLocation.serializeRounded(location));
-    }
-
-    public static List<Location> getAll(World world) {
-        return dataStorage.queryIdentifiers(i -> {
-            return world.equals(TextLocation.deserialize(i).getWorld());
-        }).stream().map(TextLocation::deserialize).toList();
     }
 
     public static List<Location> getNear(Location loc, int radius) {

@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "blazinggames:item/skeleton_key"
+  },
+  "display": {
+    "firstperson_righthand": {
+      "rotation": [0, 0, 270]
+    }
+  }
+}
