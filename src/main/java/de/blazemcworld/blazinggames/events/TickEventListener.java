@@ -20,7 +20,6 @@ import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
 import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
-import de.blazemcworld.blazinggames.utils.TomeAltarStorage;
 import io.papermc.paper.scoreboard.numbers.NumberFormat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -42,7 +41,6 @@ import org.bukkit.scoreboard.*;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class TickEventListener {
@@ -53,7 +51,6 @@ public class TickEventListener {
         stupidrotate += 8;
 
         for(World world : Bukkit.getServer().getWorlds()) {
-            ArrayList<Location> altars = new ArrayList<>(TomeAltarStorage.getAll(world));
             for(Entity entity : world.getEntities()) {
                 // rotate the altars
                 if (entity instanceof ItemDisplay display) {
