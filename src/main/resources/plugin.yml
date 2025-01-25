@@ -41,7 +41,7 @@ commands:
     permission: blazinggames.customenchant
   customgive:
     description: "Gives you a specific custom item with a specified count"
-    usage: /customgive <custom item> [count]
+    usage: /customgive <custom item> [count] [context]
     permission: blazinggames.customgive
   killme:
     description: "Kills you. Painfully."
