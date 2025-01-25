@@ -24,15 +24,13 @@ import de.blazemcworld.blazinggames.items.CustomItems;
 import de.blazemcworld.blazinggames.items.CustomSlabs;
 import de.blazemcworld.blazinggames.utils.TextLocation;
 import de.blazemcworld.blazinggames.utils.TomeAltarStorage;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.CustomModelData;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.CreatureSpawner;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Directional;
-import org.bukkit.block.data.Orientable;
-import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -42,10 +40,7 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.RayTraceResult;
-import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -83,49 +78,10 @@ public class BlockPlaceEventListener implements Listener {
                 event.getBlock().getLocation().getBlock().setType(Material.BARRIER);
 
                 Location loc = event.getBlock().getLocation().toCenterLocation();
-                loc.setY(loc.getY() - 0.5);
-                loc.setX(loc.getX() - 0.3125);
-                loc.setZ(loc.getZ() - 0.3125);
 
-                BlockData basePlateBlock = Material.POLISHED_DEEPSLATE.createBlockData();
-                BlockDisplay basePlate = (BlockDisplay) event.getBlock().getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
-                basePlate.setBlock(basePlateBlock);
-                Transformation transformation = new Transformation(new Vector3f(), new Quaternionf(),new Vector3f(0.625f, 0.0625f, 0.625f),new Quaternionf());
-                basePlate.setTransformation(transformation);
-
-                loc.setY(loc.getY() + 0.0625);
-                loc.setX(loc.getX() + 0.125);
-                loc.setZ(loc.getZ() + 0.125);
-                BlockData mainPillarBlock = Material.POLISHED_BLACKSTONE.createBlockData();
-                BlockDisplay mainPillar = (BlockDisplay) event.getBlock().getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
-                mainPillar.setBlock(mainPillarBlock);
-                transformation = new Transformation(new Vector3f(), new Quaternionf(),new Vector3f(0.375f, 0.625f, 0.375f),new Quaternionf());
-                mainPillar.setTransformation(transformation);
-
-                BlockData subPillarBlock = Material.POLISHED_BLACKSTONE_BRICKS.createBlockData();
-
-                loc.setY(loc.getY() + 0.5625);
-                loc.setX(loc.getX() - 0.0625);
-                loc.setZ(loc.getZ() - 0.0625);
-                BlockDisplay subPillar = (BlockDisplay) event.getBlock().getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
-                subPillar.setBlock(subPillarBlock);
-                transformation = new Transformation(new Vector3f(), new Quaternionf(),new Vector3f(0.125f, 0.25f, 0.125f),new Quaternionf());
-                subPillar.setTransformation(transformation);
-
-                loc.setX(loc.getX() + 0.375);
-                subPillar = (BlockDisplay) event.getBlock().getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
-                subPillar.setBlock(subPillarBlock);
-                subPillar.setTransformation(transformation);
-
-                loc.setZ(loc.getZ() + 0.375);
-                subPillar = (BlockDisplay) event.getBlock().getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
-                subPillar.setBlock(subPillarBlock);
-                subPillar.setTransformation(transformation);
-
-                loc.setX(loc.getX() - 0.375);
-                subPillar = (BlockDisplay) event.getBlock().getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
-                subPillar.setBlock(subPillarBlock);
-                subPillar.setTransformation(transformation);
+                ItemDisplay display = (ItemDisplay) event.getBlock().getWorld().spawnEntity(loc, EntityType.ITEM_DISPLAY);
+                ItemStack altarItem = CustomItems.TOME_ALTAR.create();
+                display.setItemStack(altarItem);
             });
         } else {
             boolean isSlab = CustomItem.getCustomItem(event.getItemInHand()) instanceof CustomSlabs.CustomSlab;
@@ -257,49 +213,54 @@ public class BlockPlaceEventListener implements Listener {
             boolean isTop = isTop(originalLoc.getY());
             Location loc = originalLoc.clone().toCenterLocation();
             loc.getBlock().setType(Material.MOVING_PISTON);
-            loc.setX(loc.getX() - 0.5);
-            loc.setZ(loc.getZ() - 0.5);
-            loc.setY(loc.getY() - (isTop ? 0 : 0.5));
+            loc.setY(loc.getY() + (isTop ? 0.5 : 0));
 
-            BlockData blockData = item.material.createBlockData();
-            BlockDisplay blockDisplay = (BlockDisplay) loc.getBlock().getWorld().spawnEntity(loc, EntityType.BLOCK_DISPLAY);
-            if (blockData instanceof Directional || blockData instanceof Orientable) {
-                double yaw = direction.getYaw();
-                BlockFace face = BlockFace.SOUTH;
-                StructureRotation rotation = StructureRotation.CLOCKWISE_90;
-                if (yaw >= -135 && yaw < -45) {
-                    face = BlockFace.WEST;
-                    rotation = StructureRotation.NONE;
-                }
-                if (yaw >= -45 && yaw < 45) {
-                    face = BlockFace.NORTH;
-                    rotation = StructureRotation.COUNTERCLOCKWISE_90;
-                }
-                if (yaw >= 45 && yaw < 135) {
-                    face = BlockFace.EAST;
-                    rotation = StructureRotation.CLOCKWISE_180;
-                }
-                if (blockData instanceof Directional directional) directional.setFacing(face);
-                if (blockData instanceof Orientable orientable) {
-                    orientable.setAxis((blockFace == BlockFace.UP || blockFace == BlockFace.DOWN) ? Axis.Y : Axis.X);
-                    orientable.rotate(rotation);
-                }
+            Sound breakSound = item.material.createBlockData().getSoundGroup().getBreakSound();
+            location.getWorld().playSound(loc, breakSound, 1, 1);
+
+//            BlockData blockData = item.material.createBlockData();
+            ItemDisplay itemDisplay = (ItemDisplay) loc.getBlock().getWorld().spawnEntity(loc, EntityType.ITEM_DISPLAY);
+            ItemStack itemStack = item.create();
+            if (isTop) {
+                itemStack.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData().addFlag(true).build());
             }
-            blockDisplay.setBlock(blockData);
-            Transformation transformation = new Transformation(new Vector3f(), new Quaternionf(), new Vector3f(1f, 0.5f, 1f), new Quaternionf());
-            blockDisplay.setTransformation(transformation);
+            itemDisplay.setItemStack(itemStack);
+            loc.subtract(0.5, 0.5, 0.5);
+//            if (blockData instanceof Directional || blockData instanceof Orientable) {
+//                double yaw = direction.getYaw();
+//                BlockFace face = BlockFace.SOUTH;
+//                StructureRotation rotation = StructureRotation.CLOCKWISE_90;
+//                if (yaw >= -135 && yaw < -45) {
+//                    face = BlockFace.WEST;
+//                    rotation = StructureRotation.NONE;
+//                }
+//                if (yaw >= -45 && yaw < 45) {
+//                    face = BlockFace.NORTH;
+//                    rotation = StructureRotation.COUNTERCLOCKWISE_90;
+//                }
+//                if (yaw >= 45 && yaw < 135) {
+//                    face = BlockFace.EAST;
+//                    rotation = StructureRotation.CLOCKWISE_180;
+//                }
+//                if (blockData instanceof Directional directional) directional.setFacing(face);
+//                if (blockData instanceof Orientable orientable) {
+//                    orientable.setAxis((blockFace == BlockFace.UP || blockFace == BlockFace.DOWN) ? Axis.Y : Axis.X);
+//                    orientable.rotate(rotation);
+//                }
+//            }
+//            blockDisplay.setBlock(blockData);
 
             loc = loc.add(0.25, 0, 0.25);
-            summonArmorstand(loc, item.name, blockDisplay.getUniqueId());
+            summonArmorstand(loc, item.name, itemDisplay.getUniqueId());
 
             loc = loc.add(0.5, 0, 0);
-            summonArmorstand(loc, item.name, blockDisplay.getUniqueId());
+            summonArmorstand(loc, item.name, itemDisplay.getUniqueId());
 
             loc = loc.add(0, 0, 0.5);
-            summonArmorstand(loc, item.name, blockDisplay.getUniqueId());
+            summonArmorstand(loc, item.name, itemDisplay.getUniqueId());
 
             loc = loc.add(-0.5, 0, 0);
-            summonArmorstand(loc, item.name, blockDisplay.getUniqueId());
+            summonArmorstand(loc, item.name, itemDisplay.getUniqueId());
         });
     }
 
