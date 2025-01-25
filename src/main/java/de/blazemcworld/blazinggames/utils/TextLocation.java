@@ -24,6 +24,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import org.bukkit.World;
 
 /**
  * Location represented as a string
@@ -69,6 +70,41 @@ public class TextLocation {
             float yaw = Float.parseFloat(split[4]);
             float pitch = Float.parseFloat(split[5]);
             return new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
+        } else {
+            return null;
+        }
+    }
+
+    public static Location deserializeUserInput(World world, String serialized) {
+        if (serialized != null && !serialized.isEmpty()) {
+            String[] split = serialized.split(" ");
+            switch (split.length) {
+                case 6: { // world, x, y, z, yaw, pitch
+                    String worldName = split[0];
+                    double x = Double.parseDouble(split[1]);
+                    double y = Double.parseDouble(split[2]);
+                    double z = Double.parseDouble(split[3]);
+                    float yaw = Float.parseFloat(split[4]);
+                    float pitch = Float.parseFloat(split[5]);
+                    return new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
+                }
+                case 4: { // world, x, y, z
+                    String worldName = split[0];
+                    double x = Double.parseDouble(split[1]);
+                    double y = Double.parseDouble(split[2]);
+                    double z = Double.parseDouble(split[3]);
+                    return new Location(Bukkit.getWorld(worldName), x, y, z);
+                }
+                case 3: { // x, y, z
+                    double x = Double.parseDouble(split[0]);
+                    double y = Double.parseDouble(split[1]);
+                    double z = Double.parseDouble(split[2]);
+                    return new Location(world, x, y, z);
+                }
+                default: {
+                    return null;
+                }
+            }
         } else {
             return null;
         }

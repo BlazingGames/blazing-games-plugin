@@ -18,6 +18,7 @@ package de.blazemcworld.blazinggames.utils;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
+import de.blazemcworld.blazinggames.events.BreakBlockEventListener;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -26,8 +27,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 
 public class InventoryUtils {
@@ -69,17 +68,21 @@ public class InventoryUtils {
     }
 
     public static void collectableDrop(Player player, Location location, ItemStack... drops) {
-        collectableDrop(player, location, Arrays.asList(drops));
+        collectableDrop(player, location, new Drops(drops));
     }
 
-    public static void collectableDrop(Player player, Location location, Collection<ItemStack> drops) {
+    public static void collectableDrop(Player player, Location location, Drops drops) {
         if (EnchantmentHelper.hasActiveCustomEnchantment(player.getInventory().getItemInMainHand(), CustomEnchantments.COLLECTABLE)) {
+            player.giveExp(drops.getExperienceDropped(), true);
+
             for (ItemStack drop : drops) {
                 for (Map.Entry<Integer, ItemStack> overflow : player.getInventory().addItem(drop).entrySet()) {
                     drop(player, location, overflow.getValue());
                 }
             }
         } else {
+            BreakBlockEventListener.awardBlock(location, drops.getExperienceDropped(), player);
+
             for (ItemStack drop : drops) {
                 drop(player, location, drop);
             }

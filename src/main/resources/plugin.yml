@@ -1,6 +1,6 @@
 name: blazinggames
 version: '${version}'
-main: de.blazemcworld.blazinggames.BlazingGames
+main: '${launchClass}'
 api-version: '1.21.4'
 prefix: BlazingGames
 authors: [BlazeMCworld, sbot50, 'Ivy Collective (ivyc.)', XTerPL]
@@ -41,7 +41,7 @@ commands:
     permission: blazinggames.customenchant
   customgive:
     description: "Gives you a specific custom item with a specified count"
-    usage: /customgive <custom item> [count]
+    usage: /customgive <custom item> [count] [context]
     permission: blazinggames.customgive
   killme:
     description: "Kills you. Painfully."
@@ -50,9 +50,10 @@ commands:
   playtime:
     description: "See how much time you and your friends have wasted on this stupid server."
     usage: /playtime [player]
-  config:
-    description: "Change display settings for your player. Tab complete for available options."
-    usage: /config <param> [...value]
+  display:
+    description: "Change nameplate display settings for your player."
+    usage: /display [name|pronouns|color] [value]
+    aliases: [config, nick]
   setaltar:
     description: "Set altar with specific level at current location"
     usage: /setaltar <level>

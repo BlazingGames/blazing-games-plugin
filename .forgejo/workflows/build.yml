@@ -1,11 +1,51 @@
-name: Build and Publish
+name: Build, Test and Publish
 on: 
   push:
     branches:
       - main
 jobs:
+  test:
+    runs-on: docker
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      
+      - name: Setup Gradle
+        uses: actions/gradle/setup-gradle@v4
+        with:
+          gradle-version: '8.12'
+      
+      - name: Setup Paper
+        run: |
+          mkdir testsrv
+          curl -o testsrv/server.jar https://api.papermc.io/v2/projects/paper/versions/1.21.4/builds/118/downloads/paper-1.21.4-118.jar
+          echo "eula=true" > testsrv/eula.txt
+
+      - name: Build test jar with Gradle
+        run: gradle -Pversion=test-${{ github.run_number }} -Ptest=true build
+
+      - name: Install plugin
+        run: |
+          mkdir testsrv/plugins
+          cp build/libs/blazinggames-test-${{ github.run_number }}.jar testsrv/plugins/blazinggames.jar
+
+      - name: Run unit tests
+        timeout-minutes: 30
+        run: |
+          cd testsrv && java -Xms2048M -Xmx2048M -jar server.jar nogui --nogui
+      
+      - name: Ensure tests passed
+        run: |
+          if [ "$(cat testsrv/TESTS_RESULT)" = "true" ]; then exit 0; else exit 1; fi
   build-and-publish:
     runs-on: docker
+    needs: test
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
