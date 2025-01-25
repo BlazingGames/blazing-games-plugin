@@ -15,7 +15,6 @@
  */
 package de.blazemcworld.blazinggames.enchantments.sys;
 
-import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarRecipe;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import org.bukkit.enchantments.Enchantment;
@@ -68,8 +67,6 @@ public class OverridableVanillaEnchantmentWrapper extends VanillaEnchantmentWrap
 
     @Override
     public boolean conflictsWith(Enchantment other) {
-        BlazingGames.get().log(overrides.conflicts);
-
         if(overrides.conflicts != null) {
             return overrides.conflicts.contains(other);
         }

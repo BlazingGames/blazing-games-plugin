@@ -115,7 +115,8 @@ public class EnchantmentWrappers {
             );
     public static VanillaEnchantmentWrapper MENDING =
             new OverridableVanillaEnchantmentWrapper(Enchantment.MENDING, () -> new ItemStack(Material.SHULKER_SHELL),
-                    new OverridableVanillaEnchantmentWrapper.VanillaEnchantmentOverrides().conflicts(),
+                    new OverridableVanillaEnchantmentWrapper.VanillaEnchantmentOverrides().target(BreakableItemPredicate.instance)
+                            .conflicts(),
                     new AltarRecipe(4,10, 15, CustomItems.NETHER_STAR_CHUNK)
             );
     public static VanillaEnchantmentWrapper LOYALTY =
@@ -297,7 +298,7 @@ public class EnchantmentWrappers {
     private static Set<VanillaEnchantmentWrapper> vanilla() {
         return Set.of(
                 MULTISHOT, PIERCING, SILK_TOUCH, VANISHING_CURSE, FROST_WALKER, FORTUNE, BINDING_CURSE, SHARPNESS, SWEEPING_EDGE,
-                RIPTIDE, QUICK_CHARGE, IMPALING, FIRE_PROTECTION, LOYALTY, LUCK_OF_THE_SEA, RESPIRATION, FLAME, PUNCH,
+                RIPTIDE, QUICK_CHARGE, IMPALING, FIRE_PROTECTION, MENDING, LOYALTY, LUCK_OF_THE_SEA, RESPIRATION, FLAME, PUNCH,
                 BLAST_PROTECTION, PROJECTILE_PROTECTION, PROTECTION, AQUA_AFFINITY, SMITE, POWER, THORNS, LOOTING,
                 FEATHER_FALLING, FIRE_ASPECT, UNBREAKING, CHANNELING, LURE, INFINITY, EFFICIENCY, DEPTH_STRIDER, KNOCKBACK,
                 SOUL_SPEED, SWIFT_SNEAK, BANE_OF_ARTHROPODS, WIND_BURST, BREACH, DENSITY

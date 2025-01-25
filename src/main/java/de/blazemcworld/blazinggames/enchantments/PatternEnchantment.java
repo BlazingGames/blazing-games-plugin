@@ -76,9 +76,4 @@ public class PatternEnchantment extends CustomEnchantment {
     public boolean conflictsWith(@NotNull CustomEnchantment enchantment) {
         return enchantment == CustomEnchantments.TREE_FELLER;
     }
-
-    @Override
-    public boolean canUpgradeLevel(int currentLevel) {
-        return false;
-    }
 }

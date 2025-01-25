@@ -23,8 +23,16 @@ public class TextUtils {
         return LegacyComponentSerializer.legacySection().serialize(component);
     }
 
+    public static String componentToAmpersandString(Component component) {
+        return LegacyComponentSerializer.legacyAmpersand().serialize(component);
+    }
+
     public static Component stringToComponent(String string) {
         return Component.text(string);
+    }
+
+    public static Component ampersandStringToComponent(String string) {
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(string);
     }
 
     public static Component colorCodeParser(Component message) {

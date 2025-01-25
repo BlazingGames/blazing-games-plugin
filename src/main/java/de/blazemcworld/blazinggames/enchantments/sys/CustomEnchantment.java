@@ -15,6 +15,7 @@
  */
 package de.blazemcworld.blazinggames.enchantments.sys;
 
+import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import de.blazemcworld.blazinggames.utils.NumberUtils;
 import net.kyori.adventure.text.Component;
@@ -47,12 +48,16 @@ public abstract class CustomEnchantment implements EnchantmentWrapper {
 
     @Override
     public boolean canGoOnItem(ItemStack tool) {
-        return getItemTarget().matchItem(tool) || tool.getType() == Material.BOOK
-                || tool.getType() == Material.ENCHANTED_BOOK;
-    }
+        if(getItemTarget().matchItem(tool)) {
+            return true;
+        }
 
-    public boolean canUpgradeLevel(int currentLevel) {
-        return true;
+        if(CustomItem.isCustomItem(tool)) {
+            return false;
+        }
+
+        return tool.getType() == Material.BOOK
+                || tool.getType() == Material.ENCHANTED_BOOK;
     }
 
     public @NotNull CustomEnchantmentType getEnchantmentType() {

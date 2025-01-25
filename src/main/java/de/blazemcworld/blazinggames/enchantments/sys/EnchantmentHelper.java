@@ -248,20 +248,23 @@ public class EnchantmentHelper implements ItemChangeProvider {
         return null;
     }
 
-    public static ItemStack enchantFromItem(ItemStack in, ItemStack enchantingItem) {
+    public static Pair<ItemStack, Integer> enchantFromItem(ItemStack in, ItemStack enchantingItem) {
         ItemStack result = in.clone();
 
         if(!canEnchantItem(result)) {
-            return result;
+            return new Pair<>(result, 0);
         }
+
+        int cost = 0;
 
         Map<EnchantmentWrapper, Integer> enchantmentLevels = getEnchantmentWrappers(enchantingItem);
 
         for(Map.Entry<EnchantmentWrapper, Integer> enchantment : enchantmentLevels.entrySet()) {
             result = enchantTool(result, enchantment.getKey(), enchantment.getValue());
+            cost++;
         }
 
-        return ItemChangeProviders.update(result);
+        return new Pair<>(ItemChangeProviders.update(result), cost);
     }
 
     public static boolean hasCustomEnchantments(ItemStack stack) {

@@ -1,12 +1,12 @@
 /*
  * Copyright 2025 The Blazing Games Maintainers
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,16 +24,12 @@ import de.blazemcworld.blazinggames.utils.InventoryUtils;
 import de.blazemcworld.blazinggames.utils.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
@@ -178,32 +174,6 @@ public class ClickInventorySlotEventListener implements Listener {
                                 }
 
                                 return;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if(inventory instanceof AnvilInventory anvil) {
-            if(event.getSlotType() == InventoryType.SlotType.RESULT) {
-                ItemStack result = anvil.getResult();
-                ItemStack book = anvil.getSecondItem();
-
-                if(book != null && book.getType() == Material.ENCHANTED_BOOK) {
-                    if(book.getItemMeta() instanceof EnchantmentStorageMeta esm) {
-                        if(esm.hasStoredEnchant(Enchantment.INFINITY)) {
-                            if(result != null && result.getType() == Material.FIREWORK_ROCKET
-                                    && result.getEnchantmentLevel(Enchantment.INFINITY) > 0) {
-                                if(giveItemStack(event, result)) {
-                                    anvil.setFirstItem(ItemStack.empty());
-                                    anvil.setSecondItem(ItemStack.empty());
-                                    anvil.setResult(ItemStack.empty());
-
-                                    HumanEntity p = event.getWhoClicked();
-
-                                    p.getWorld().playSound(p, Sound.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1, 1);
-                                }
                             }
                         }
                     }

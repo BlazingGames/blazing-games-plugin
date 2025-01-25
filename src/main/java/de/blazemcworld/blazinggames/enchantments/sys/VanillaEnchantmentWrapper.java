@@ -16,6 +16,8 @@
 package de.blazemcworld.blazinggames.enchantments.sys;
 
 import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarRecipe;
+import de.blazemcworld.blazinggames.items.CustomItem;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -55,6 +57,10 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
     public ItemStack apply(ItemStack tool, int level) {
         ItemStack result = tool.clone();
 
+        if(!CustomItem.isCustomItem(result) && result.getType() == Material.BOOK) {
+            result = result.withType(Material.ENCHANTED_BOOK);
+        }
+
         result.addUnsafeEnchantment(enchantment, level);
 
         return result;
@@ -62,11 +68,19 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
 
     @Override
     public int getLevel(ItemStack tool) {
+        if(tool.hasData(DataComponentTypes.STORED_ENCHANTMENTS)) {
+            return tool.getData(DataComponentTypes.STORED_ENCHANTMENTS).enchantments().getOrDefault(enchantment, 0);
+        }
+
         return tool.getEnchantmentLevel(enchantment);
     }
 
     @Override
     public boolean canGoOnItem(ItemStack tool) {
+        if(CustomItem.isCustomItem(tool)) {
+            return false;
+        }
+
         return enchantment.canEnchantItem(tool) || tool.getType() == Material.BOOK
                 || tool.getType() == Material.ENCHANTED_BOOK;
     }
