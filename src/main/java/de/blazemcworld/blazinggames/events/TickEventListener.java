@@ -20,7 +20,6 @@ import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
 import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
-import de.blazemcworld.blazinggames.utils.TextLocation;
 import de.blazemcworld.blazinggames.utils.TomeAltarStorage;
 import io.papermc.paper.scoreboard.numbers.NumberFormat;
 import net.kyori.adventure.text.Component;
@@ -60,11 +59,7 @@ public class TickEventListener {
                 if (entity instanceof ItemDisplay display) {
                     PersistentDataContainer container = display.getPersistentDataContainer();
                     if (container.has(BlazingGames.get().key("spin"), PersistentDataType.BOOLEAN)) {
-                        for (Location location : altars) {
-                            if (TextLocation.serializeRounded(location).equals(TextLocation.serializeRounded(display.getLocation()))) {
-                                display.setRotation(stupidrotate, 0);
-                            }
-                        }
+                        display.setRotation(stupidrotate, 0);
                     }
                 }
 
