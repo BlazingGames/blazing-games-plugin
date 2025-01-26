@@ -35,8 +35,9 @@ public class LodestoneInventoryClickEventListener implements Listener {
 
     @EventHandler
     public void onLodestoneClick(InventoryClickEvent event) {
-        if (event.getView().title().equals(Component.text("Teleportation Menu").color(NamedTextColor.AQUA)) && event.getCurrentItem() != null) {
+        if (event.getView().title().equals(Component.text("Teleportation Menu").color(NamedTextColor.AQUA))) {
             event.setCancelled(true);
+            if (event.getCurrentItem() == null) return;
             Player player = (Player) event.getWhoClicked();
             ItemMeta meta = event.getCurrentItem().getItemMeta();
 
