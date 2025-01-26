@@ -19,6 +19,9 @@ import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantment;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
 import de.blazemcworld.blazinggames.items.CustomItem;
+import de.blazemcworld.blazinggames.items.change.ItemChangeProviders;
+import de.blazemcworld.blazinggames.items.predicates.BreakableItemPredicate;
+import de.blazemcworld.blazinggames.items.predicates.ItemPredicates;
 import de.blazemcworld.blazinggames.utils.Pair;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -33,13 +36,8 @@ public class PrepareGrindstoneEventListener implements Listener {
     public void onGrindstonePrepare(PrepareGrindstoneEvent event) {
         ItemStack up = event.getInventory().getUpperItem();
         ItemStack down = event.getInventory().getLowerItem();
-        ItemStack result = event.getInventory().getResult();
 
-        result = grindstoneItem(up, down, result);
-
-        if(result == null) {
-            return;
-        }
+        ItemStack result = grindstoneItem(up, down);
 
         event.setResult(result);
     }
@@ -47,20 +45,17 @@ public class PrepareGrindstoneEventListener implements Listener {
     private ItemStack scrub(ItemStack tool, ItemStack sponge) {
         ItemStack result = tool.clone();
 
-        if(CustomItem.isCustomItem(result)) return null;
+        if(!EnchantmentHelper.canEnchantItem(tool)) return null;
 
-        if(result.getType() == Material.ENCHANTED_BOOK) {
-            int total = EnchantmentHelper.getCustomEnchantments(result).size();
-            if(result.getItemMeta() instanceof EnchantmentStorageMeta meta) {
-                total += meta.getStoredEnchants().size();
-            }
+        if(!CustomItem.isCustomItem(result) && result.getType() == Material.ENCHANTED_BOOK) {
+            int total = EnchantmentHelper.getEnchantmentWrappers(result).size();
 
             if(total <= 1) {
                 return null;
             }
         }
 
-        if(sponge.getType() == Material.SPONGE) {
+        if(!CustomItem.isCustomItem(sponge) && sponge.getType() == Material.SPONGE) {
             Pair<Enchantment, Integer> entry = EnchantmentHelper.getEnchantmentEntryByIndex(tool, sponge.getAmount());
 
             if(entry != null) {
@@ -73,7 +68,7 @@ public class PrepareGrindstoneEventListener implements Listener {
                 }
             }
         }
-        if(sponge.getType() == Material.WET_SPONGE) {
+        if(!CustomItem.isCustomItem(sponge) && sponge.getType() == Material.WET_SPONGE) {
             Pair<CustomEnchantment, Integer> entry = EnchantmentHelper.getCustomEnchantmentEntryByIndex(tool, sponge.getAmount());
 
             if(entry != null) {
@@ -87,10 +82,12 @@ public class PrepareGrindstoneEventListener implements Listener {
             return null;
         }
 
+        result = ItemChangeProviders.update(result);
+
         return result;
     }
 
-    public ItemStack grindstoneItem(ItemStack up, ItemStack down, ItemStack result) {
+    public ItemStack grindstoneItem(ItemStack up, ItemStack down) {
         if(up == null || up.isEmpty()) {
             ItemStack swap = down;
             down = up;
@@ -102,31 +99,49 @@ public class PrepareGrindstoneEventListener implements Listener {
         else if(down != null && !down.isEmpty())
         {
             // double
-            if(!CustomItem.isCustomItem(down) && (down.getType() == Material.SPONGE || down.getType() == Material.WET_SPONGE)) {
+            if(ItemPredicates.grindstoneScrubber.matchItem(down)) {
                 if(EnchantmentHelper.canEnchantItem(up)) {
                     return scrub(up, down);
                 }
             }
-            if(!CustomItem.isCustomItem(down) && (up.getType() == Material.SPONGE || up.getType() == Material.WET_SPONGE)) {
+            if(ItemPredicates.grindstoneScrubber.matchItem(up)) {
                 if(EnchantmentHelper.canEnchantItem(down)) {
                     return scrub(down, up);
                 }
             }
 
-            if(up.getType() != down.getType()) {
+            CustomItem<?> customItem = CustomItem.getCustomItem(up);
+            if(customItem != null) {
+                if(!customItem.matchItem(down)) {
+                    return null;
+                }
+            }
+            else if(up.getType() != down.getType()) {
                 return null;
             }
         }
 
-        if(result == null || result.isEmpty()) {
-            result = up.clone();
-        }
-
-        if(!EnchantmentHelper.hasCustomEnchantments(result)) {
-            return null;
-        }
-
+        ItemStack result = up.clone();
         result = EnchantmentHelper.removeEnchantments(result);
+
+        if(down != null && !down.isEmpty()) {
+            if(BreakableItemPredicate.instance.matchItem(result)) {
+                PrepareAnvilEventListener.repairByCombination(result, down, 5);
+            }
+            else if(result.isSimilar(EnchantmentHelper.removeEnchantments(down))) {
+                if(result.getAmount() + down.getAmount() > result.getMaxStackSize()) {
+                    return null;
+                }
+                result.add(down.getAmount());
+
+                if(result.isSimilar(down) && result.isSimilar(up)) {
+                    return null;
+                }
+            }
+            else {
+                return null;
+            }
+        }
 
         if(result.equals(up)) {
             return null;

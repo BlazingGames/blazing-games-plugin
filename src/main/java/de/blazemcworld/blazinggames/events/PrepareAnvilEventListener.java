@@ -47,18 +47,24 @@ public class PrepareAnvilEventListener implements Listener {
         event.getView().setRepairItemCountCost(0);
 
         int repairCost = result.getDataOrDefault(DataComponentTypes.REPAIR_COST, 0);
+        int minRepairCost = repairCost;
+
+        boolean increaseRepairCost = false;
 
         if(enchantingItem != null && !enchantingItem.isEmpty()) {
             repairCost += enchantingItem.getDataOrDefault(DataComponentTypes.REPAIR_COST, 0);
             if(CustomItem.isCustomItem(enchantingItem))
             {
-                if(EnchantmentHelper.canEnchantItem(result)) {
+                if(EnchantmentHelper.canEnchantItem(result) && result.getAmount() == 1) {
                     CustomItem<?> item = CustomItem.getCustomItem(enchantingItem);
 
                     if(item != null && item.matchItem(result)) {
                         Pair<ItemStack, Integer> enchantResult = EnchantmentHelper.enchantFromItem(result, enchantingItem);
                         result = enchantResult.left;
-                        repairCost += repairByCombination(result, enchantingItem) + enchantResult.right;
+                        repairCost += repairByCombination(result, enchantingItem, 12) + enchantResult.right;
+                        increaseRepairCost = true;
+
+                        minRepairCost = Math.min(minRepairCost, enchantingItem.getDataOrDefault(DataComponentTypes.REPAIR_COST, 0));
                     }
                 }
             }
@@ -89,19 +95,26 @@ public class PrepareAnvilEventListener implements Listener {
 
                         event.getView().setRepairItemCountCost(count);
                         repairCost += count;
+                        increaseRepairCost = true;
                     }
                 }
                 else {
-                    if(EnchantmentHelper.canEnchantItem(result)) {
+                    if(EnchantmentHelper.canEnchantItem(result) && result.getAmount() == 1) {
                         if(enchantingItem.getType() == Material.ENCHANTED_BOOK) {
                             Pair<ItemStack, Integer> enchantResult = EnchantmentHelper.enchantFromItem(result, enchantingItem);
                             result = enchantResult.left;
                             repairCost += enchantResult.right;
+                            increaseRepairCost = true;
+
+                            minRepairCost = Math.min(minRepairCost, enchantingItem.getDataOrDefault(DataComponentTypes.REPAIR_COST, 0));
                         }
                         else if(!CustomItem.isCustomItem(result) && enchantingItem.getType() == result.getType()) {
                             Pair<ItemStack, Integer> enchantResult = EnchantmentHelper.enchantFromItem(result, enchantingItem);
                             result = enchantResult.left;
-                            repairCost += repairByCombination(result, enchantingItem) + enchantResult.right;
+                            repairCost += repairByCombination(result, enchantingItem, 12) + enchantResult.right;
+                            increaseRepairCost = true;
+
+                            minRepairCost = Math.min(minRepairCost, enchantingItem.getDataOrDefault(DataComponentTypes.REPAIR_COST, 0));
                         }
                     }
                 }
@@ -128,11 +141,19 @@ public class PrepareAnvilEventListener implements Listener {
             return;
         }
 
+        if(increaseRepairCost) {
+            minRepairCost *= 2;
+            minRepairCost++;
+            result.setData(DataComponentTypes.REPAIR_COST, minRepairCost);
+        }
+
+        if(repairCost > 10) repairCost = 10;
+
         event.setResult(result);
         event.getView().setRepairCost(repairCost);
     }
 
-    private static int repairByCombination(ItemStack in, ItemStack repairer) {
+    public static int repairByCombination(ItemStack in, ItemStack repairer, int extraPercentage) {
         if(!in.hasData(DataComponentTypes.MAX_DAMAGE) ||
                 !in.hasData(DataComponentTypes.DAMAGE) ||
                 in.hasData(DataComponentTypes.UNBREAKABLE))
@@ -149,7 +170,7 @@ public class PrepareAnvilEventListener implements Listener {
         int inDurability = inMaxDamage - inDamage;
         int repairerDurability = repairerMaxDamage - repairerDamage;
 
-        int extraDurability = inMaxDamage * 12 / 100;
+        int extraDurability = inMaxDamage * extraPercentage / 100;
 
         int totalDurability = inDurability + repairerDurability + extraDurability;
         int newDamage = inMaxDamage - totalDurability;

@@ -18,9 +18,18 @@ package de.blazemcworld.blazinggames.items.predicates;
 
 import de.blazemcworld.blazinggames.enchantments.sys.BlazingEnchantmentTarget;
 import de.blazemcworld.blazinggames.enchantments.sys.PaperEnchantmentTarget;
+import org.bukkit.Material;
 
 public class ItemPredicates {
     public static final ItemPredicate enchantability = new AlternativeItemPredicate("Any Enchantable Item",
             BreakableItemPredicate.instance, PaperEnchantmentTarget.ALL, BlazingEnchantmentTarget.BOW_ROCKET
+    );
+
+    public static final ItemPredicate grindstoneScrubber = new AlternativeItemPredicate("Sponge or Wet Sponge",
+            new MaterialItemPredicate(Material.SPONGE), new MaterialItemPredicate(Material.WET_SPONGE));
+    // Controls whether the special code regarding the grindstone inventory is run.
+    public static final ItemPredicate grindstoneHandler = new AlternativeItemPredicate("Any Item that can be put in a grindstone",
+            new ComplexItemPredicate("N/A", new NegativeItemPredicate(BreakableItemPredicate.instance), enchantability),
+            grindstoneScrubber
     );
 }
