@@ -26,6 +26,8 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class UpdraftEnchantment extends CustomTreasureEnchantment {
     @Override
     public @NotNull NamespacedKey getKey() {
@@ -38,10 +40,10 @@ public class UpdraftEnchantment extends CustomTreasureEnchantment {
     }
 
     @Override
-    public AltarRecipe getRecipe(int level) {
-        return new AltarRecipe(
-                level, level * 8, 16, new MaterialItemPredicate(
-                        level == 2 ? Material.SOUL_CAMPFIRE : Material.CAMPFIRE)
+    public List<AltarRecipe> getRecipes() {
+        return List.of(
+                new AltarRecipe(2, 1, 8, 16, new MaterialItemPredicate(Material.CAMPFIRE)),
+                new AltarRecipe(3, 2, 16, 16, new MaterialItemPredicate(Material.SOUL_CAMPFIRE))
         );
     }
 
@@ -52,15 +54,5 @@ public class UpdraftEnchantment extends CustomTreasureEnchantment {
 
     public ItemPredicate getItemTarget() {
         return BlazingEnchantmentTarget.ELYTRA;
-    }
-
-    @Override
-    public int maxLevelAvailableInAltar(int altarTier) {
-        if(altarTier <= 1) return 0;
-        return altarTier - 1;
-    }
-
-    public int getMaxLevel() {
-        return 2;
     }
 }

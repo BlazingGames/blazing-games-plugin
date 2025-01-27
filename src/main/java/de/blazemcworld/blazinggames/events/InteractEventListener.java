@@ -244,7 +244,7 @@ public class InteractEventListener implements Listener {
             }
         }
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && block != null && hand != null && eventItem != null) {
-            if(EnchantmentHelper.hasActiveCustomEnchantment(eventItem, CustomEnchantments.NATURE_BLESSING)) {
+            if(EnchantmentHelper.hasActiveEnchantmentWrapper(eventItem, CustomEnchantments.NATURE_BLESSING)) {
                 if(!dirt.contains(block.getType()) || player.isSneaking()) {
                     if(block.applyBoneMeal(event.getBlockFace())) {
                         eventItem = eventItem.damage(1, player);

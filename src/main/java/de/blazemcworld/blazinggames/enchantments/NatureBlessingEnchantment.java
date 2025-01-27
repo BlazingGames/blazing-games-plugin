@@ -38,9 +38,9 @@ public class NatureBlessingEnchantment extends CustomSingleLeveledEnchantment {
     }
 
     @Override
-    public AltarRecipe getRecipe(int level) {
+    public AltarRecipe getRecipe() {
         return new AltarRecipe(
-                1, 4, 32, new MaterialItemPredicate(Material.BONE_BLOCK)
+                1, 1, 4, 32, new MaterialItemPredicate(Material.BONE_BLOCK)
         );
     }
 
@@ -51,10 +51,5 @@ public class NatureBlessingEnchantment extends CustomSingleLeveledEnchantment {
 
     public ItemPredicate getItemTarget() {
         return BlazingEnchantmentTarget.HOE;
-    }
-
-    @Override
-    protected boolean allowAltarTier(int altarTier) {
-        return true;
     }
 }

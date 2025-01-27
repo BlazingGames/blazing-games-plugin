@@ -28,6 +28,8 @@ import org.bukkit.entity.Illager;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class BaneOfIllagersEnchantment extends CustomEnchantment {
     @Override
     public @NotNull NamespacedKey getKey() {
@@ -43,10 +45,6 @@ public class BaneOfIllagersEnchantment extends CustomEnchantment {
         return PaperEnchantmentTarget.WEAPON;
     }
 
-    public int getMaxLevel() {
-        return 5;
-    }
-
     public double getDamageIncrease(Entity victim, int level) {
         if(victim instanceof Illager) {
             return level*2.5;
@@ -55,28 +53,18 @@ public class BaneOfIllagersEnchantment extends CustomEnchantment {
     }
 
     @Override
-    public int maxLevelAvailableInAltar(int altarTier) {
-        return altarTier + 1;
-    }
-
-    @Override
     public ItemStack getPreIcon() {
         return new ItemStack(Material.IRON_AXE);
     }
 
     @Override
-    public AltarRecipe getRecipe(int level) {
-        return new AltarRecipe(
-                level, level, switch(level) {
-                    case 3, 4 -> 16;
-                    default -> 1;
-                }, switch(level) {
-                    case 2 -> new MaterialItemPredicate(Material.IRON_AXE);
-                    case 3 -> new MaterialItemPredicate(Material.EMERALD);
-                    case 4 -> new MaterialItemPredicate(Material.EMERALD_BLOCK);
-                    case 5 -> new MaterialItemPredicate(Material.TOTEM_OF_UNDYING);
-                    default -> new MaterialItemPredicate(Material.SADDLE);
-                }
+    public List<AltarRecipe> getRecipes() {
+        return List.of(
+                new AltarRecipe(1, 1, 1, 1, new MaterialItemPredicate(Material.SADDLE)),
+                new AltarRecipe(2, 2, 2, 1, new MaterialItemPredicate(Material.IRON_AXE)),
+                new AltarRecipe(3, 3, 3, 16, new MaterialItemPredicate(Material.EMERALD)),
+                new AltarRecipe(4, 4, 4, 16, new MaterialItemPredicate(Material.EMERALD_BLOCK)),
+                new AltarRecipe(4, 5, 5, 1, new MaterialItemPredicate(Material.TOTEM_OF_UNDYING))
         );
     }
 }

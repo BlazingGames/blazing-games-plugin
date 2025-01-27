@@ -49,7 +49,7 @@ public class EntityDeathEventListener implements Listener {
 
         ItemStack mainHand = killer.getInventory().getItemInMainHand();
 
-        int capturing = EnchantmentHelper.getActiveCustomEnchantmentLevel(mainHand, CustomEnchantments.CAPTURING);
+        int capturing = EnchantmentHelper.getActiveEnchantmentWrapperLevel(mainHand, CustomEnchantments.CAPTURING);
 
         if (Math.random() < capturing * 0.03 && !victim.getEntitySpawnReason().equals(CreatureSpawnEvent.SpawnReason.SPAWNER)) {
             Material spawnEgg = Material.getMaterial(victim.getType().getKey().getKey().toUpperCase() + "_SPAWN_EGG");
@@ -60,7 +60,7 @@ public class EntityDeathEventListener implements Listener {
             }
         }
 
-        int scavenger = EnchantmentHelper.getActiveCustomEnchantmentLevel(mainHand, CustomEnchantments.SCAVENGER);
+        int scavenger = EnchantmentHelper.getActiveEnchantmentWrapperLevel(mainHand, CustomEnchantments.SCAVENGER);
 
         if(Math.random() < scavenger*0.01) {
             victim.getWorld().playSound(victim, Sound.BLOCK_CHISELED_BOOKSHELF_PICKUP_ENCHANTED, 1, 0.5f);

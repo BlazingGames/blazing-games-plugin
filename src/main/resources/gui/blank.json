@@ -1,0 +1,12 @@
+{
+	"parent": "minecraft:item/generated",
+	"textures": {
+		"layer0": "blazinggames:item/blank"
+	},
+	"display": {
+		"gui": {
+			"translation": [0,0,-80],
+			"scale": [1.125,1.125,1]
+		}
+	}
+}

@@ -29,7 +29,8 @@ public enum BlazingEnchantmentTarget implements ItemPredicate {
     HOE("Hoe", Material.WOODEN_HOE, Material.STONE_HOE, Material.IRON_HOE, Material.GOLDEN_HOE, Material.DIAMOND_HOE, Material.NETHERITE_HOE),
     SHIELD("Shield", Material.SHIELD), ELYTRA("Elytra", Material.ELYTRA),
     WEAPON_TRIDENT("Weapons OR Trident", Material.WOODEN_SWORD, Material.STONE_SWORD, Material.IRON_SWORD, Material.GOLDEN_SWORD,
-            Material.DIAMOND_SWORD, Material.NETHERITE_SWORD, Material.TRIDENT);
+            Material.DIAMOND_SWORD, Material.NETHERITE_SWORD, Material.TRIDENT),
+    BOW_ROCKET("Bow OR Firework Rocket", Material.BOW, Material.FIREWORK_ROCKET);
 
     final Set<Material> allowed;
     final String description;

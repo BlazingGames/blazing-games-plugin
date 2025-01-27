@@ -73,7 +73,7 @@ public class TickEventListener {
                         }
                     }
 
-                    int updraft = EnchantmentHelper.getActiveCustomEnchantmentLevel(chestplate,
+                    int updraft = EnchantmentHelper.getActiveEnchantmentWrapperLevel(chestplate,
                             CustomEnchantments.UPDRAFT);
                     if(updraft > 0) {
                         if(l.isGliding()) {

@@ -19,9 +19,9 @@ import de.blazemcworld.blazinggames.items.predicates.EmptyItemPredicate;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import org.bukkit.inventory.ItemStack;
 
-public record AltarRecipe(int lapisAmount, int expAmount, int itemAmount, ItemPredicate itemRequirement) {
-    public AltarRecipe(int lapisAmount, int expAmount, ItemPredicate itemRequirement) {
-        this(lapisAmount, expAmount, (itemRequirement instanceof EmptyItemPredicate) ? 0 : 1, itemRequirement);
+public record AltarRecipe(int tier, int lapisAmount, int expAmount, int itemAmount, ItemPredicate itemRequirement) {
+    public AltarRecipe(int tier, int lapisAmount, int expAmount, ItemPredicate itemRequirement) {
+        this(tier, lapisAmount, expAmount, (itemRequirement instanceof EmptyItemPredicate) ? 0 : 1, itemRequirement);
     }
 
     public boolean matchMaterial(ItemStack material) {

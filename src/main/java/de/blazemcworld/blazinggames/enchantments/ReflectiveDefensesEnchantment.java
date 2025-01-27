@@ -26,6 +26,8 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class ReflectiveDefensesEnchantment extends CustomEnchantment {
     @Override
     public @NotNull NamespacedKey getKey() {
@@ -41,33 +43,19 @@ public class ReflectiveDefensesEnchantment extends CustomEnchantment {
         return BlazingEnchantmentTarget.SHIELD;
     }
 
-    public int getMaxLevel() {
-        return 5;
-    }
-
-    @Override
-    public int maxLevelAvailableInAltar(int altarTier) {
-        return altarTier + 1;
-    }
-
     @Override
     public ItemStack getPreIcon() {
         return new ItemStack(Material.SHIELD);
     }
 
     @Override
-    public AltarRecipe getRecipe(int level) {
-        return new AltarRecipe(
-                level,
-                level * 2,
-                level == 5 ? 1 : 16,
-                switch(level) {
-                    case 2 -> new MaterialItemPredicate(Material.SWEET_BERRIES);
-                    case 3 -> new MaterialItemPredicate(Material.PRISMARINE_SHARD);
-                    case 4 -> new MaterialItemPredicate(Material.PRISMARINE_CRYSTALS);
-                    case 5 -> new MaterialItemPredicate(Material.DIAMOND_BLOCK);
-                    default -> new MaterialItemPredicate(Material.CACTUS);
-                }
+    public List<AltarRecipe> getRecipes() {
+        return List.of(
+                new AltarRecipe(1, 1, 2, 16, new MaterialItemPredicate(Material.CACTUS)),
+                new AltarRecipe(1, 2, 4, 16, new MaterialItemPredicate(Material.SWEET_BERRIES)),
+                new AltarRecipe(2, 3, 6, 16, new MaterialItemPredicate(Material.PRISMARINE_SHARD)),
+                new AltarRecipe(3, 4, 8, 16, new MaterialItemPredicate(Material.PRISMARINE_CRYSTALS)),
+                new AltarRecipe(4, 5, 10, 1, new MaterialItemPredicate(Material.DIAMOND_BLOCK))
         );
     }
 }

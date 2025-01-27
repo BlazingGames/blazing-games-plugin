@@ -75,7 +75,7 @@ public class AltarInterface extends UserInterface {
     public void preload() {
         StaticUserInterfaceSlot tool = new StaticUserInterfaceSlot(BlazingGames.get().key("tool_slot"));
         StaticUserInterfaceSlot randomMaterial = new StaticUserInterfaceSlot(BlazingGames.get().key("material_slot"));
-        StaticUserInterfaceSlot lapisLazuli = new StaticUserInterfaceSlot(BlazingGames.get().key("lazuli_slot"));
+        StaticUserInterfaceSlot lapisLazuli = new StaticUserInterfaceSlot(BlazingGames.get().key("lapis_lazuli_slot"));
 
         int index = 0;
         for(int y = 0; y < 5; y++) {
@@ -90,12 +90,12 @@ public class AltarInterface extends UserInterface {
         }
 
         addSlot(0, 1, tool);
-        addSlot(0, 2, randomMaterial);
-        addSlot(0, 3, lapisLazuli);
+        addSlot(0, 2, lapisLazuli);
+        addSlot(0, 3, randomMaterial);
 
         addSlot(1, 1, toolSlot);
-        addSlot(1, 2, materialSlot);
-        addSlot(1, 3, lapisSlot);
+        addSlot(1, 2, lapisSlot);
+        addSlot(1, 3, materialSlot);
     }
 
     @Override
@@ -137,9 +137,9 @@ public class AltarInterface extends UserInterface {
     public Set<EnchantmentWrapper> getAvailable() {
         ItemStack tool = getItem(1,1);
 
-        Set<EnchantmentWrapper> result = EnchantmentWrappers.list();
+        Set<EnchantmentWrapper> result = EnchantmentWrappers.list(true);
 
-        result.removeIf((wrapper) -> wrapper.maxLevelAvailableInAltar(tier) <= 0);
+        result.removeIf((wrapper) -> wrapper.getRecipe(1).tier() > tier);
 
         if(altars != null) {
             for(ItemStack tome : altars.values()) {

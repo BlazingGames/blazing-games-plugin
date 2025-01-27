@@ -26,6 +26,8 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class CapturingEnchantment extends CustomTreasureEnchantment {
     @Override
     public @NotNull NamespacedKey getKey() {
@@ -38,13 +40,11 @@ public class CapturingEnchantment extends CustomTreasureEnchantment {
     }
 
     @Override
-    public AltarRecipe getRecipe(int level) {
-        return new AltarRecipe(
-                level, level*4, 16, switch(level) {
-                    case 2 -> new MaterialItemPredicate(Material.SPIDER_EYE);
-                    case 3 -> new MaterialItemPredicate(Material.EGG);
-                    default -> new MaterialItemPredicate(Material.GUNPOWDER);
-                }
+    public List<AltarRecipe> getRecipes() {
+        return List.of(
+                new AltarRecipe(3, 1, 4, 16, new MaterialItemPredicate(Material.SPIDER_EYE)),
+                new AltarRecipe(3, 2, 8, 16, new MaterialItemPredicate(Material.EGG)),
+                new AltarRecipe(4, 3, 12, 16, new MaterialItemPredicate(Material.GUNPOWDER))
         );
     }
 
@@ -55,16 +55,5 @@ public class CapturingEnchantment extends CustomTreasureEnchantment {
 
     public ItemPredicate getItemTarget() {
         return PaperEnchantmentTarget.WEAPON;
-    }
-
-    @Override
-    public int maxLevelAvailableInAltar(int altarTier) {
-        if(altarTier <= 2) return 0;
-        if (altarTier == 4) return 3;
-        return altarTier - 1;
-    }
-
-    public int getMaxLevel() {
-        return 3;
     }
 }
