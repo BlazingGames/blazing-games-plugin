@@ -31,7 +31,7 @@ public class BlockExplodeEventListener implements Listener {
         List<Block> blocks = event.blockList();
         for (Block block : blocks) {
             if (block.getType() == Material.LODESTONE) {
-                LodestoneStorage.destoryLodestone(block.getLocation());
+                LodestoneStorage.destroyLodestone(block.getLocation());
                 LodestoneStorage.refreshAllInventories();
             }
         }
