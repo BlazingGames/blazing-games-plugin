@@ -16,10 +16,8 @@
 package de.blazemcworld.blazinggames.userinterfaces;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.utils.NamespacedKeyDataType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
@@ -28,7 +26,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -45,7 +42,7 @@ public abstract class UserInterface implements InventoryHolder {
         this.rows = rows;
 
         preload();
-        reload();
+        Bukkit.getScheduler().runTask(BlazingGames.get(), this::reload);
     }
 
     protected abstract void preload();
@@ -153,17 +150,6 @@ public abstract class UserInterface implements InventoryHolder {
         }
     }
 
-    public static ItemStack element(Material material, NamespacedKey elementKey) {
-        ItemStack element = new ItemStack(material);
-
-        ItemMeta meta = element.getItemMeta();
-        meta.getPersistentDataContainer().set(guiKey, NamespacedKeyDataType.instance, elementKey);
-        meta.setHideTooltip(true);
-        element.setItemMeta(meta);
-
-        return element;
-    }
-
     public final ItemStack getItem(int slot) {
         ItemStack result = inventory.getItem(slot);
         return result == null ? ItemStack.empty() : result;
@@ -181,6 +167,16 @@ public abstract class UserInterface implements InventoryHolder {
             throw new IllegalStateException("Can't have a slot outside bounds!");
         }
         slots.put(x+y*9, slot);
+    }
+
+    protected final void addSlot(int slotIndex, UserInterfaceSlot slot) {
+        if(slotIndex < 0) {
+            throw new IllegalStateException("Can't have a slot outside bounds!");
+        }
+        if(slotIndex >= rows * 9) {
+            throw new IllegalStateException("Can't have a slot outside bounds!");
+        }
+        slots.put(slotIndex, slot);
     }
 
     public void onDrag(InventoryDragEvent event) {

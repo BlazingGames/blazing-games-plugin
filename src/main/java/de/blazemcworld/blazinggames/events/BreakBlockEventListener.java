@@ -342,7 +342,7 @@ public class BreakBlockEventListener implements Listener {
 
     private static void onAnyBlockBreak(Block block) {
         if (block.getType() == Material.LODESTONE) {
-            LodestoneStorage.destoryLodestone(block.getLocation());
+            LodestoneStorage.destroyLodestone(block.getLocation());
             LodestoneStorage.refreshAllInventories();
         }
 

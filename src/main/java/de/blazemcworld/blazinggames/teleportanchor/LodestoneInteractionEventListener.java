@@ -17,10 +17,8 @@ package de.blazemcworld.blazinggames.teleportanchor;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.items.CustomItems;
-import de.blazemcworld.blazinggames.utils.TextLocation;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundOpenSignEditorPacket;
@@ -36,14 +34,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class LodestoneInteractionEventListener implements Listener {
     @EventHandler
@@ -97,30 +91,6 @@ public class LodestoneInteractionEventListener implements Listener {
     }
 
     public static void openTeleportAnchor(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, 54, Component.text("Teleportation Menu").color(NamedTextColor.AQUA));
-        Map<Location, String> lodestones = LodestoneStorage.getSavedLodestones(player.getUniqueId());
-        ItemStack[] items = new ItemStack[lodestones.size()];
-
-        int index = 0;
-        for (Location lodestoneLoc : lodestones.keySet()) {
-            String lodestoneName = lodestones.get(lodestoneLoc);
-            ItemStack lodeStoneItem = new ItemStack(Material.LODESTONE);
-            
-            ItemMeta meta = lodeStoneItem.getItemMeta();
-            meta.displayName(Component.text(lodestoneName).color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
-            
-            List<Component> lore = new ArrayList<>();
-            lore.add(Component.text("World: " + lodestoneLoc.getWorld().getName()).color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
-            lore.add(Component.text("X: " + lodestoneLoc.getBlockX() + " Y: " + lodestoneLoc.getBlockY() + " Z: " + lodestoneLoc.getBlockZ()).color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
-            meta.lore(lore);
-            
-            meta.getPersistentDataContainer().set(new NamespacedKey("blazinggames", "loc"), PersistentDataType.STRING, TextLocation.serializeRounded(lodestoneLoc));
-            
-            lodeStoneItem.setItemMeta(meta);
-            items[index] = lodeStoneItem;
-            index++;
-        }
-        inventory.setContents(items);
-        player.openInventory(inventory);
+        player.openInventory(new TeleportAnchorInterface(BlazingGames.get(), player).getInventory());
     }
 }
