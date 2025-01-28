@@ -54,7 +54,10 @@ public class LodestoneInteractionEventListener implements Listener {
                     signLines.add(Component.text(""));
                     signLines.add(Component.text("^^^^^^^^^^^^^^^"));
                     sendSignPacket(event.getPlayer(), signLocation, signLines);
-                } else openTeleportAnchor(event.getPlayer());
+                }
+                else {
+                    event.getPlayer().openInventory(new TeleportAnchorInterface(BlazingGames.get(), event.getPlayer()).getInventory());
+                }
             }
         }
     }
@@ -88,9 +91,5 @@ public class LodestoneInteractionEventListener implements Listener {
                 return true;
             });
         }, 1);
-    }
-
-    public static void openTeleportAnchor(Player player) {
-        player.openInventory(new TeleportAnchorInterface(BlazingGames.get(), player).getInventory());
     }
 }
