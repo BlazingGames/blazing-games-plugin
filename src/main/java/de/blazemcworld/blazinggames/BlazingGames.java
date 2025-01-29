@@ -18,6 +18,7 @@ package de.blazemcworld.blazinggames;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.blazemcworld.blazinggames.commands.*;
+import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry.ComputerPrivileges;
 import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.computing.api.RequiredFeature;
@@ -107,6 +108,11 @@ public class BlazingGames extends JavaPlugin {
                     config.getBoolean("computing.privileges.chunkloading"),
                     config.getBoolean("computing.privileges.net")
             );
+            ComputerRegistry.metadataStorage.forEach(metadata -> {
+                if (metadata.location != null) {
+                    ComputerRegistry.loadComputerIntoWorld(metadata.id);
+                }
+            });
         }
 
         // Discord
@@ -249,9 +255,14 @@ public class BlazingGames extends JavaPlugin {
         // Recipes
         CustomRecipes.unloadRecipes();
 
-        // Computers
+        // API
         BlazingAPI.stopAll();
         API_AVAILABLE = false; // reset value
+
+        // Computers
+        if (computersEnabled) {
+            ComputerRegistry.saveAllToDisk();
+        }
     }
 
     private void registerCommand(String name, CommandExecutor executor) {

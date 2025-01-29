@@ -229,6 +229,13 @@ public class ComputerRegistry {
         }
     }
 
+    public static void saveAllToDisk() {
+        for (BootedComputer computer : computers) {
+            saveToDisk(computer);
+        }
+        computers.clear();
+    }
+
     public static record ComputerPrivileges(boolean chunkloading, boolean network) {
         public static ComputerPrivileges minimal() {
             return new ComputerPrivileges(false, false);
