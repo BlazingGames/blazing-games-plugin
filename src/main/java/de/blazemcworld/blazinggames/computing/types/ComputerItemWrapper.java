@@ -15,6 +15,7 @@
  */
 package de.blazemcworld.blazinggames.computing.types;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -119,5 +121,13 @@ public class ComputerItemWrapper extends CustomItem<ComputerItemContext> {
         return Map.of(getKey(), type.getType().getRecipe(
             getKey(), create(ComputerItemContext.defaultContext())
         ));
+    }
+
+    @Override
+    protected ComputerItemContext parseRawContext(Player player, String raw) throws ParseException {
+        if (raw.isBlank()) {
+            return ComputerItemContext.defaultContext();
+        }
+        return BlazingGames.gson.fromJson(raw, ComputerItemContext.class);
     }
 }
