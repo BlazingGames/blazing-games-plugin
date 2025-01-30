@@ -29,6 +29,7 @@ import de.blazemcworld.blazinggames.utils.NameGenerator;
 import de.blazemcworld.blazinggames.utils.Pair;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -147,7 +148,7 @@ public class ComputerRegistry {
                     NameGenerator.generateName(),
                     UUID.randomUUID(),
                     type,
-                    new String[0],
+                    List.of(),
                     location,
                     ownerUUID,
                     new UUID[0],

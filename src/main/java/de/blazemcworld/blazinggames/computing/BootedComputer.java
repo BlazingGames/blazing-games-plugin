@@ -28,8 +28,11 @@ import de.blazemcworld.blazinggames.computing.functions.GlobalFunctions;
 import de.blazemcworld.blazinggames.computing.functions.JSFunctionalClass;
 import de.blazemcworld.blazinggames.computing.motor.IComputerMotor;
 import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
+import de.blazemcworld.blazinggames.computing.upgrades.UpgradeType;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -50,7 +53,7 @@ public class BootedComputer {
     private UUID address;
     private String name;
     private Location location;
-    private ArrayList<String> upgrades;
+    private ArrayList<UpgradeType> upgrades;
     private UUID owner;
     private ArrayList<UUID> collaborators;
     private boolean shouldRun;
@@ -78,7 +81,7 @@ public class BootedComputer {
         this.location = location;
         this.address = metadata.address;
         this.name = metadata.name;
-        this.upgrades = new ArrayList<>(List.of(metadata.upgrades));
+        this.upgrades = new ArrayList<>(metadata.upgrades);
         upgrades.addAll(List.of(type.getType().getDefaultUpgrades())); // add defaults
         upgrades = new ArrayList<>(upgrades.stream().distinct().collect(Collectors.toList())); // remove duplicates
         this.owner = metadata.owner;
@@ -157,48 +160,31 @@ public class BootedComputer {
             // unfreeze if frozen
             this.frozenTicks--;
         } else if (this.shouldRun) {
-            try {
-                V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime(this.state);
+            try (
+                V8Runtime runtime = V8Host.getV8Instance().createV8Runtime(this.state)
+            ) {
+                JavetStandardConsoleInterceptor console = new JavetStandardConsoleInterceptor(runtime);
+                console.register(new IV8ValueObject[]{runtime.getGlobalObject()});
 
-                GlobalFunctions functions = new GlobalFunctions(this, v8Runtime);
-                V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject();
-
-                try {
-                    v8Runtime.getGlobalObject().set(functions.getNamespace(), v8ValueObject);
-                    v8ValueObject.bind(functions);
-                } catch (Throwable t) {
-                    if (v8ValueObject != null) {
-                        try {
-                            v8ValueObject.close();
-                        } catch (Throwable tt) {
-                            t.addSuppressed(tt);
-                        }
-                    }
-
-                    throw t;
-                }
-
-                if (v8ValueObject != null) {
-                    v8ValueObject.close();
-                }
-
-                JavetStandardConsoleInterceptor console = new JavetStandardConsoleInterceptor(v8Runtime);
-                console.register(new IV8ValueObject[]{v8Runtime.getGlobalObject()});
-
-                for (JSFunctionalClass functionalClass : this.type.getType().getFunctions(this)) {
-                    V8ValueObject v8ValueObjectx = v8Runtime.createV8ValueObject();
-                    v8Runtime.getGlobalObject().set(functionalClass.getNamespace(), v8ValueObjectx);
-                    v8ValueObjectx.bind(functionalClass);
-                    if (v8ValueObjectx != null) {
-                        v8ValueObjectx.close();
+                Set<JSFunctionalClass> functionList = Set.of();
+                functionList.add(new GlobalFunctions(this, runtime));
+                Set<UpgradeType> upgradeList = Set.of(type.getType().getDefaultUpgrades());
+                upgradeList.addAll(upgrades);
+                for (UpgradeType type : upgradeList) {
+                    if (type.functions != null) {
+                        functionList.add(type.functions.apply(this));
                     }
                 }
 
-                v8Runtime.getExecutor(this.code).executeVoid();
 
-                if (v8Runtime != null) {
-                    v8Runtime.close();
+                for (JSFunctionalClass functionalClass : functionList) {
+                    V8ValueObject obj = runtime.createV8ValueObject();
+                    runtime.getGlobalObject().set(functionalClass.getNamespace(), obj);
+                    obj.bind(functionalClass);
+                    obj.close();
                 }
+
+                runtime.getExecutor(this.code).executeVoid();
             } catch (JavetException e) {
                 throw new RuntimeException(e);
             }
@@ -230,13 +216,13 @@ public class BootedComputer {
     }
 
     public ComputerMetadata getMetadata() {
-        List<String> defaultUpgrades = List.of(type.getType().getDefaultUpgrades());
+        List<UpgradeType> defaultUpgrades = List.of(type.getType().getDefaultUpgrades());
         return new ComputerMetadata(
             this.id,
             this.name,
             this.address,
             this.type,
-            this.upgrades.stream().filter(upgrade -> !defaultUpgrades.contains(upgrade)).toArray(String[]::new),
+            this.upgrades.stream().filter(upgrade -> !defaultUpgrades.contains(upgrade)).toList(),
             this.location,
             this.owner,
             this.collaborators.toArray(UUID[]::new),
@@ -263,7 +249,7 @@ public class BootedComputer {
         this.location = metadata.location;
         this.address = metadata.address;
         this.name = metadata.name;
-        this.upgrades = new ArrayList<>(List.of(metadata.upgrades));
+        this.upgrades = new ArrayList<>(metadata.upgrades);
         upgrades.addAll(List.of(type.getType().getDefaultUpgrades())); // add defaults
         upgrades = new ArrayList<>(upgrades.stream().distinct().collect(Collectors.toList())); // remove duplicates
         this.owner = metadata.owner;

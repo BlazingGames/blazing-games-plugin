@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.bukkit.Location;
 
@@ -26,6 +27,7 @@ import com.google.gson.JsonObject;
 
 import de.blazemcworld.blazinggames.computing.types.ComputerItemContext;
 import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
+import de.blazemcworld.blazinggames.computing.upgrades.UpgradeType;
 import de.blazemcworld.blazinggames.utils.GetGson;
 import de.blazemcworld.blazinggames.utils.TextLocation;
 
@@ -34,20 +36,20 @@ public class ComputerMetadata {
     public final String name;
     public final UUID address;
     public final ComputerTypes type;
-    public final String[] upgrades;
+    public final List<UpgradeType> upgrades;
     public final Location location;
     public final UUID owner;
     public final UUID[] collaborators;
     public final boolean shouldRun;
     public final int frozenTicks;
 
-    public ComputerMetadata(String id, String name, UUID address, ComputerTypes type, String[] upgrades,
+    public ComputerMetadata(String id, String name, UUID address, ComputerTypes type, List<UpgradeType> upgrades,
             Location location, UUID owner, UUID[] collaborators, boolean shouldRun, int frozenTicks) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.type = type;
-        this.upgrades = upgrades;
+        this.upgrades = List.copyOf(upgrades);
         this.location = location;
         this.owner = owner;
         this.collaborators = collaborators;
@@ -61,7 +63,7 @@ public class ComputerMetadata {
         this.name = GetGson.getString(json, "name", e.apply("name"));
         this.address = UUID.fromString(GetGson.getString(json, "address", e.apply("address")));
         this.type = ComputerTypes.valueOf(GetGson.getString(json, "type", e.apply("type")));
-        this.upgrades = GetGson.getString(json, "upgrades", e.apply("upgrades")).split(",");
+        this.upgrades = List.copyOf(Arrays.stream(GetGson.getString(json, "upgrades", e.apply("upgrades")).split(",")).map(UpgradeType::valueOf).collect(Collectors.toList()));
         this.location = TextLocation.deserialize(json.get("location").isJsonNull() ? null : json.get("location").getAsString());
         this.owner = UUID.fromString(GetGson.getString(json, "owner", e.apply("owner")));
         this.collaborators = Arrays.stream(GetGson.getString(json, "collaborators", e.apply("collaborators")).split(",")).filter(s -> !s.isEmpty()).map(UUID::fromString).toArray(UUID[]::new);
@@ -75,7 +77,7 @@ public class ComputerMetadata {
         object.addProperty("name", name);
         object.addProperty("address", address.toString());
         object.addProperty("type", type.name());
-        object.addProperty("upgrades", String.join(",", upgrades));
+        object.addProperty("upgrades", String.join(",", upgrades.stream().map(UpgradeType::name).toList()));
         object.addProperty("location", TextLocation.serialize(location));
         object.addProperty("owner", owner.toString());
         object.addProperty("collaborators", String.join(",", Arrays.stream(collaborators).map(UUID::toString).toArray(String[]::new)));
@@ -102,15 +104,21 @@ public class ComputerMetadata {
         return false;
     }
 
-    public boolean hasUpgrade(String upgrade) {
-        return List.of(upgrades).contains(upgrade);
+    public int getUpgradeCount(UpgradeType upgrade) {
+        for (UpgradeType type : upgrades) {
+            if (upgrade.incompatibilities.contains(type)) return 0;
+        }
+
+        if (upgrade.unique) return upgrades.stream().filter(type -> type == upgrade).findFirst().isPresent() ? 1 : 0;
+
+        return (int) upgrades.stream().filter(type -> type == upgrade).count();
     }
 
     /**
      * Checks if the type of computer being used already has the upgrade being added by default.
      */
-    public boolean isUpgradePresentForType(String upgrade) {
-        return List.of(type.getType().getDefaultUpgrades()).contains(upgrade);
+    public boolean isUpgradePresentForComputerType(UpgradeType upgrade) {
+        return List.of(type.getType().getDefaultUpgrades()).stream().anyMatch(type -> type == upgrade);
     }
 
     public ComputerItemContext createContext() {

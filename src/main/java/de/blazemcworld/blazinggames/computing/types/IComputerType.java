@@ -18,6 +18,7 @@ package de.blazemcworld.blazinggames.computing.types;
 import de.blazemcworld.blazinggames.computing.BootedComputer;
 import de.blazemcworld.blazinggames.computing.functions.JSFunctionalClass;
 import de.blazemcworld.blazinggames.computing.motor.IComputerMotor;
+import de.blazemcworld.blazinggames.computing.upgrades.UpgradeType;
 import net.kyori.adventure.text.Component;
 
 import org.bukkit.NamespacedKey;
@@ -35,5 +36,7 @@ public interface IComputerType {
 
     JSFunctionalClass[] getFunctions(BootedComputer computer);
 
-    String[] getDefaultUpgrades();
+    UpgradeType[] getDefaultUpgrades();
+
+    int getUpgradeSlots();
 }

@@ -19,7 +19,8 @@ import com.google.common.collect.ImmutableSet;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.builderwand.BuilderWand;
-import de.blazemcworld.blazinggames.computing.types.ComputerItems;
+import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
+import de.blazemcworld.blazinggames.computing.upgrades.UpgradeType;
 import de.blazemcworld.blazinggames.crates.DeathCrateKey;
 import de.blazemcworld.blazinggames.crates.SkeletonKey;
 import de.blazemcworld.blazinggames.crates.ToGoBoxItem;
@@ -27,6 +28,7 @@ import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentTome;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrappers;
 import de.blazemcworld.blazinggames.multiblocks.Blueprint;
+import de.blazemcworld.blazinggames.utils.AutomaticItemProvider;
 
 import org.bukkit.NamespacedKey;
 
@@ -90,7 +92,8 @@ public class CustomItems implements ItemProvider {
 
         providers.add(new CustomItems());
         providers.add(CUSTOM_SLABS);
-        providers.add(new ComputerItems());
+        providers.add(new AutomaticItemProvider(ComputerTypes.values(), new ComputerTypes.ComputerTypesProvider()));
+        providers.add(new AutomaticItemProvider(UpgradeType.values(), new UpgradeType.UpgradeTypeProvider()));
 
         return providers.build();
     }

@@ -22,6 +22,7 @@ import de.blazemcworld.blazinggames.computing.functions.JSFunctionalClass;
 import de.blazemcworld.blazinggames.computing.motor.HeadComputerMotor;
 import de.blazemcworld.blazinggames.computing.motor.IComputerMotor;
 import de.blazemcworld.blazinggames.computing.types.IComputerType;
+import de.blazemcworld.blazinggames.computing.upgrades.UpgradeType;
 
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
@@ -74,7 +75,12 @@ public class ConsoleCT implements IComputerType {
     }
 
     @Override
-    public String[] getDefaultUpgrades() {
-        return new String[0];
+    public UpgradeType[] getDefaultUpgrades() {
+        return new UpgradeType[0];
+    }
+
+    @Override
+    public int getUpgradeSlots() {
+        return 5;
     }
 }

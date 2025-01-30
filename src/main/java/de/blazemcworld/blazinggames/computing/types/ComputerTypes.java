@@ -20,6 +20,8 @@ import java.util.Arrays;
 import com.google.gson.annotations.SerializedName;
 
 import de.blazemcworld.blazinggames.computing.types.impl.ConsoleCT;
+import de.blazemcworld.blazinggames.items.CustomItem;
+import de.blazemcworld.blazinggames.utils.AutomaticItemProvider;
 
 public enum ComputerTypes {
     @SerializedName("CONSOLE")
@@ -46,5 +48,17 @@ public enum ComputerTypes {
 
     public static ComputerTypes valueOf(IComputerType computerType) {
         return Arrays.stream(values()).filter(type -> type.clazz.equals(computerType.getClass())).findFirst().orElse(null);
+    }
+
+    public static class ComputerTypesProvider implements AutomaticItemProvider.ItemBuilder<ComputerTypes> {
+        @Override
+        public CustomItem<?> item(ComputerTypes enumValue) {
+            return enumValue.item();
+        }
+
+        @Override
+        public String directoryName() {
+            return "computeritems";
+        }
     }
 }

@@ -34,8 +34,12 @@ public interface ItemProvider extends PackBuildHook {
 
     @Override
     default void runHook(Logger logger, HookContext context) {
-        String directory = "/" + getClass().getSimpleName().toLowerCase() + "/";
-        for (CustomItem<?> item : getItems()) {
+        installItems(getClass().getSimpleName(), this, logger, context);
+    }
+
+    public static void installItems(String directoryName, ItemProvider provider, Logger logger, HookContext context) {
+        String directory = "/" + directoryName + "/";
+        for (CustomItem<?> item : provider.getItems()) {
             // install texture
             try (InputStream stream = item.getClass().getResourceAsStream(directory + item.getKey().getKey() + ".png")) {
                 if (stream != null) context.installTexture(item.getKey(), "item", stream.readAllBytes());
