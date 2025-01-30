@@ -95,11 +95,11 @@ public class EntityDamagedByEventListener implements Listener {
                 event.setCancelled(true);
                 UUID displayBlockUUID = UUID.fromString(Objects.requireNonNull(container.get(BlazingGames.get().key("slab"), PersistentDataType.STRING)));
                 String slabType = container.get(BlazingGames.get().key("slab_type"), PersistentDataType.STRING);
-                BlockDisplay displayBlock = (BlockDisplay) p.getWorld().getEntity(displayBlockUUID);
+                ItemDisplay displayBlock = (ItemDisplay) p.getWorld().getEntity(displayBlockUUID);
 
                 if (displayBlock == null) return;
-                Location blockLocation = displayBlock.getLocation().toCenterLocation();
-                Sound breakSound = displayBlock.getBlock().getSoundGroup().getBreakSound();
+                Location blockLocation = victim.getLocation().toCenterLocation();
+                Sound breakSound = displayBlock.getItemStack().getType().createBlockData().getSoundGroup().getBreakSound();
                 displayBlock.remove();
 
                 double y = victim.getY();
