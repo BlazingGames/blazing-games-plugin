@@ -261,7 +261,7 @@ public class BlazingGames extends JavaPlugin {
 
         // Computers
         if (computersEnabled) {
-            ComputerRegistry.saveAllToDisk();
+            ComputerRegistry.shutdownHook();
         }
     }
 

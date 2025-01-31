@@ -17,13 +17,14 @@ package de.blazemcworld.blazinggames.computing.upgrades;
 
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+
+import com.caoccao.javet.interop.V8Runtime;
 
 import de.blazemcworld.blazinggames.computing.BootedComputer;
 import de.blazemcworld.blazinggames.computing.functions.JSFunctionalClass;
@@ -163,9 +164,9 @@ public enum UpgradeType {
     public final String description;
     public final boolean unique;
     public final BiFunction<ItemStack, NamespacedKey, Recipe> recipe;
-    public final Function<BootedComputer, JSFunctionalClass> functions;
+    public final BiFunction<BootedComputer, V8Runtime, JSFunctionalClass> functions;
     public final List<UpgradeType> incompatibilities;
-    UpgradeType(String displayName, TextColor color, String description, boolean unique, BiFunction<ItemStack, NamespacedKey, Recipe> recipe, Function<BootedComputer, JSFunctionalClass> functions, UpgradeType... incompatibilities) {
+    UpgradeType(String displayName, TextColor color, String description, boolean unique, BiFunction<ItemStack, NamespacedKey, Recipe> recipe, BiFunction<BootedComputer, V8Runtime, JSFunctionalClass> functions, UpgradeType... incompatibilities) {
         this.displayName = displayName;
         this.color = color;
         this.description = description;

@@ -26,7 +26,7 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.functions.GlobalFunctions;
 import de.blazemcworld.blazinggames.computing.functions.JSFunctionalClass;
-import de.blazemcworld.blazinggames.computing.motor.IComputerMotor;
+import de.blazemcworld.blazinggames.computing.types.ComputerItemContext;
 import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
 import de.blazemcworld.blazinggames.computing.upgrades.UpgradeType;
 
@@ -40,7 +40,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.ItemDisplay;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 public class BootedComputer {
     private String code;
@@ -62,9 +63,7 @@ public class BootedComputer {
     // Runtime data
     private DesiredState desiredState = DesiredState.NO_CHANGE;
     private boolean wantsStateReset = false;
-    UUID motorRuntimeEntityUUID;
-    int motorRuntimeEntityHits = 0;
-    UUID motorRuntimeEntityHitAttacker = null;
+    UUID runtimeEntityUUID;
 
     // State
     private V8RuntimeOptions state;
@@ -95,39 +94,22 @@ public class BootedComputer {
             this.state.setSnapshotBlob(state);
         }
 
-        IComputerMotor motor = type.getType().getMotor();
-        if (motor.usesBlock()) {
-            location.getBlock().setType(motor.blockMaterial());
-            motor.applyPropsToBlock(location.getBlock());
-        }
+        location.getBlock().setType(Material.BARRIER);
 
-        if (motor.usesActor()) {
-            Entity entity = location.getWorld().spawnEntity(location, motor.actorEntityType());
-            motor.applyActorProperties(entity);
-            this.motorRuntimeEntityUUID = entity.getUniqueId();
-        }
+        ItemDisplay display = location.getWorld().spawn(location.toCenterLocation(), ItemDisplay.class, SpawnReason.CUSTOM, (entity) -> {
+            entity.setItemStack(type.item().create(ComputerItemContext.defaultContext()));
+        });
+        this.runtimeEntityUUID = display.getUniqueId();
     }
 
     void hibernateNow() {
         this.stopCodeExecution();
-        IComputerMotor motor = this.type.getType().getMotor();
-        if (motor.usesBlock()) {
-            this.location.getBlock().setType(Material.AIR);
+        this.location.getBlock().setType(Material.AIR);
+        Entity entity = this.location.getWorld().getEntity(this.runtimeEntityUUID);
+        if (entity != null) {
+            entity.remove();
         }
-
-        if (motor.usesActor()) {
-            if (this.motorRuntimeEntityUUID == null) {
-                return;
-            }
-
-            Entity entity = this.location.getWorld().getEntity(this.motorRuntimeEntityUUID);
-            if (entity != null) {
-                entity.remove();
-            }
-
-            this.motorRuntimeEntityUUID = null;
-        }
-
+        this.runtimeEntityUUID = null;
         this.location = null;
     }
 
@@ -136,6 +118,8 @@ public class BootedComputer {
     }
 
     void tick() {
+        if (this.location == null) throw new IllegalStateException("tick() called after hibernateNow()");
+
         // switch state if needed
         if (this.desiredState == DesiredState.STOPPED) {
             this.shouldRun = false;
@@ -172,7 +156,7 @@ public class BootedComputer {
                 upgradeList.addAll(upgrades);
                 for (UpgradeType type : upgradeList) {
                     if (type.functions != null) {
-                        functionList.add(type.functions.apply(this));
+                        functionList.add(type.functions.apply(this, runtime));
                     }
                 }
 
@@ -231,36 +215,27 @@ public class BootedComputer {
         );
     }
 
-    void updateMetadata(final ComputerMetadata metadata) {
-        if (!metadata.location.equals(this.location) && metadata.location != null) {
+    void updateLocation(final Location newLocation) {
+        if (newLocation == null) throw new IllegalArgumentException("cannot move to a null location");
+
+        if (!newLocation.toCenterLocation().equals(this.location.toCenterLocation())) {
             Bukkit.getScheduler().runTask(BlazingGames.get(), () -> {
-                IComputerMotor motor = this.type.getType().getMotor();
-                if (motor.usesBlock()) {
-                    this.location.getBlock().setType(Material.AIR);
-                    metadata.location.getBlock().setType(motor.blockMaterial());
-                    motor.applyPropsToBlock(metadata.location.getBlock());
-                }
-        
-                if (motor.usesActor()) {
-                    motor.moveActor(this.location.getWorld().getEntity(this.motorRuntimeEntityUUID), metadata.location);
-                }
+                this.location.getBlock().setType(Material.AIR);
+                newLocation.getBlock().setType(Material.BARRIER);
+                this.location.getWorld().getEntity(this.runtimeEntityUUID).teleport(newLocation.toCenterLocation());
             });
         }
-        this.location = metadata.location;
+        this.location = newLocation;
+    }
+
+    void updateMetadata(final ComputerMetadata metadata) {
+        updateLocation(metadata.location);
         this.address = metadata.address;
         this.name = metadata.name;
         this.upgrades = new ArrayList<>(metadata.upgrades);
         upgrades.addAll(List.of(type.getType().getDefaultUpgrades())); // add defaults
         upgrades = new ArrayList<>(upgrades.stream().distinct().collect(Collectors.toList())); // remove duplicates
         this.owner = metadata.owner;
-    }
-
-    public byte[] getState() {
-        return this.state.getSnapshotBlob();
-    }
-
-    public String getCode() {
-        return this.code;
     }
 
     void updateCode(String newCode) {
@@ -271,17 +246,6 @@ public class BootedComputer {
         }
     }
 
-    public void damageHookAddHit(Player attacker) {
-        this.motorRuntimeEntityHitAttacker = attacker.getUniqueId();
-        this.motorRuntimeEntityHits++;
-    }
-
-    void damageHookRemoveHit() {
-        if (this.motorRuntimeEntityHits > 0) {
-            this.motorRuntimeEntityHits--;
-        }
-    }
-
     private static enum DesiredState {
         NO_CHANGE,
         RUNNING,
@@ -289,12 +253,19 @@ public class BootedComputer {
         RESTART;
     }
 
-
     public String getId() {
         return this.id;
     }
 
     public ComputerTypes getType() {
         return this.type;
+    }
+
+    public byte[] getState() {
+        return this.state.getSnapshotBlob();
+    }
+
+    public String getCode() {
+        return this.code;
     }
 }

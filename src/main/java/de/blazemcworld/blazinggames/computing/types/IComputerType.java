@@ -17,7 +17,6 @@ package de.blazemcworld.blazinggames.computing.types;
 
 import de.blazemcworld.blazinggames.computing.BootedComputer;
 import de.blazemcworld.blazinggames.computing.functions.JSFunctionalClass;
-import de.blazemcworld.blazinggames.computing.motor.IComputerMotor;
 import de.blazemcworld.blazinggames.computing.upgrades.UpgradeType;
 import net.kyori.adventure.text.Component;
 
@@ -31,8 +30,6 @@ public interface IComputerType {
     String getDescription();
 
     CraftingRecipe getRecipe(NamespacedKey key, ItemStack result);
-
-    IComputerMotor getMotor();
 
     JSFunctionalClass[] getFunctions(BootedComputer computer);
 

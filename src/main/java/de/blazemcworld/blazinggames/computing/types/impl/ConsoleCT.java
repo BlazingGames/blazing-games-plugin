@@ -15,19 +15,13 @@
  */
 package de.blazemcworld.blazinggames.computing.types.impl;
 
-import com.destroystokyo.paper.profile.PlayerProfile;
-import com.destroystokyo.paper.profile.ProfileProperty;
 import de.blazemcworld.blazinggames.computing.BootedComputer;
 import de.blazemcworld.blazinggames.computing.functions.JSFunctionalClass;
-import de.blazemcworld.blazinggames.computing.motor.HeadComputerMotor;
-import de.blazemcworld.blazinggames.computing.motor.IComputerMotor;
 import de.blazemcworld.blazinggames.computing.types.IComputerType;
 import de.blazemcworld.blazinggames.computing.upgrades.UpgradeType;
 
-import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.CraftingRecipe;
@@ -35,16 +29,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 
 public class ConsoleCT implements IComputerType {
-    public static final String MINESKIN_USERNAME = "Computer";
-    public static final UUID MINESKIN_UUID = UUID.fromString("ea238963-0dbe-45dd-b5a3-6c44da1e57c4");
-    public static final String MINESKIN_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjBmMTBlODU0MThlMzM0ZjgyNjczZWI0OTQwYjIwOGVjYWVlMGM5NWMyODc2ODVlOWVhZjI0NzUxYTMxNWJmYSJ9fX0=";
-
-    public static PlayerProfile makeProfile() {
-        PlayerProfile profile = Bukkit.createProfile(MINESKIN_UUID, MINESKIN_USERNAME);
-        profile.setProperty(new ProfileProperty("textures", MINESKIN_TEXTURE));
-        return profile;
-    }
-
     @Override
     public Component getName() {
         return Component.text("Console").color(TextColor.color(0x1BF97F));
@@ -62,11 +46,6 @@ public class ConsoleCT implements IComputerType {
         recipe.setIngredient('I', Material.IRON_INGOT);
         recipe.setIngredient('R', Material.REDSTONE_BLOCK);
         return recipe;
-    }
-
-    @Override
-    public IComputerMotor getMotor() {
-        return new HeadComputerMotor(makeProfile());
     }
 
     @Override

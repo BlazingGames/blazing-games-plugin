@@ -40,9 +40,6 @@ import org.bukkit.inventory.ItemStack;
 
 public class ComputerRegistry {
     private static final ArrayList<BootedComputer> computers = new ArrayList<>();
-    private static int tick = 0;
-    private static final int loopOnTick = 100;
-    private static final int hitsThreshold = 5;
     public static final String defaultCode = "// welcome to the editor!\n" +
             "// this uses JavaScript along with our custom methods to control computers\n// learn more in the documentation: ______";
 
@@ -195,10 +192,6 @@ public class ComputerRegistry {
         return computers.stream().filter(computer -> computer.getMetadata().location.equals(location)).findFirst().orElse(null);
     }
 
-    public static BootedComputer getComputerByActorUUID(UUID iAmTiredOfMakingTheseMethods) {
-        return computers.stream().filter(computer -> iAmTiredOfMakingTheseMethods.equals(computer.motorRuntimeEntityUUID)).findFirst().orElse(null);
-    }
-
     public static BootedComputer getComputerByLocationRounded(Location location) {
         Location loc = _roundLocation(location);
         return computers.stream().filter(computer -> _roundLocation(computer.getMetadata().location).equals(loc)).findFirst().orElse(null);
@@ -209,30 +202,15 @@ public class ComputerRegistry {
     }
 
     public static void tick() {
-        tick++;
-        if (tick >= loopOnTick) {
-            tick = 0;
-
-            for (BootedComputer computer : computers) {
-                if (computer.motorRuntimeEntityHits >= hitsThreshold) {
-                    Player player = Bukkit.getPlayer(computer.motorRuntimeEntityHitAttacker);
-                    dropComputer(computer, player);
-                    unload(computer.getId());
-                } else {
-                    computer.damageHookRemoveHit();
-                    computer.tick();
-                }
-            }
-        } else {
-            for (BootedComputer computerx : computers) {
-                computerx.tick();
-            }
+        for (BootedComputer computer : computers) {
+            computer.tick();
         }
     }
 
-    public static void saveAllToDisk() {
+    public static void shutdownHook() {
         for (BootedComputer computer : computers) {
-            saveToDisk(computer);
+            computer.hibernateNow();
+            unload(computer.getId());
         }
         computers.clear();
     }
