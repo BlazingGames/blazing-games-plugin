@@ -209,8 +209,8 @@ public class ComputerRegistry {
 
     public static void shutdownHook() {
         for (BootedComputer computer : computers) {
+            saveToDisk(computer);
             computer.hibernateNow();
-            unload(computer.getId());
         }
         computers.clear();
     }

@@ -34,7 +34,7 @@ public interface ItemProvider extends PackBuildHook {
 
     @Override
     default void runHook(Logger logger, HookContext context) {
-        installItems(getClass().getSimpleName(), this, logger, context);
+        installItems(getClass().getSimpleName().toLowerCase(), this, logger, context);
     }
 
     public static void installItems(String directoryName, ItemProvider provider, Logger logger, HookContext context) {

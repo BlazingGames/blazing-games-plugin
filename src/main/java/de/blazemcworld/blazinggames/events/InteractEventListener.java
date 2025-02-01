@@ -16,6 +16,8 @@
 package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.computing.BootedComputer;
+import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.crates.CrateData;
 import de.blazemcworld.blazinggames.crates.CrateManager;
 import de.blazemcworld.blazinggames.crates.DeathCrateKey;
@@ -25,6 +27,7 @@ import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarInterface;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.CustomItems;
 import de.blazemcworld.blazinggames.items.CustomSlabs;
+import de.blazemcworld.blazinggames.utils.Drops;
 import de.blazemcworld.blazinggames.utils.InventoryUtils;
 import de.blazemcworld.blazinggames.utils.TomeAltarStorage;
 import net.kyori.adventure.text.Component;
@@ -86,6 +89,14 @@ public class InteractEventListener implements Listener {
         }
 
         if (block != null && block.getType() == Material.VAULT) vaultShit(block);
+
+        if (block != null && block.getType() == Material.BARRIER && event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            if (ComputerRegistry.getComputerByLocationRounded(block.getLocation()) != null) {
+                BootedComputer computer = ComputerRegistry.getComputerByLocationRounded(block.getLocation());
+                ComputerRegistry.dropComputer(computer, player);
+                ComputerRegistry.unload(computer.getId());
+            }
+        }
 
         if (block != null && block.getType() == Material.END_PORTAL_FRAME && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             String crateId = CrateManager.getKeyULID(block.getLocation());

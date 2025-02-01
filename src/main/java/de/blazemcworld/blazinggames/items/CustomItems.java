@@ -92,8 +92,10 @@ public class CustomItems implements ItemProvider {
 
         providers.add(new CustomItems());
         providers.add(CUSTOM_SLABS);
-        providers.add(new AutomaticItemProvider(ComputerTypes.values(), new ComputerTypes.ComputerTypesProvider()));
-        providers.add(new AutomaticItemProvider(UpgradeType.values(), new UpgradeType.UpgradeTypeProvider()));
+        if (BlazingGames.get().areComputersEnabled()) {
+            providers.add(new AutomaticItemProvider(ComputerTypes.values(), new ComputerTypes.ComputerTypesProvider()));
+            providers.add(new AutomaticItemProvider(UpgradeType.values(), new UpgradeType.UpgradeTypeProvider()));
+        }
 
         return providers.build();
     }

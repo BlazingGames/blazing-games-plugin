@@ -105,10 +105,7 @@ public class BootedComputer {
     void hibernateNow() {
         this.stopCodeExecution();
         this.location.getBlock().setType(Material.AIR);
-        Entity entity = this.location.getWorld().getEntity(this.runtimeEntityUUID);
-        if (entity != null) {
-            entity.remove();
-        }
+        this.location.getWorld().getEntity(this.runtimeEntityUUID).remove();
         this.runtimeEntityUUID = null;
         this.location = null;
     }

@@ -16,8 +16,6 @@
 package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.computing.BootedComputer;
-import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.enchantments.PatternEnchantment;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
@@ -312,11 +310,6 @@ public class BreakBlockEventListener implements Listener {
 
             drops.addAll(smeltedDrops);
         }
-
-        if (ComputerRegistry.getComputerByLocationRounded(block.getLocation()) != null) {
-            BootedComputer computer = ComputerRegistry.getComputerByLocationRounded(block.getLocation());
-            return new Drops(computer.getType().item().create(computer.getMetadata().createContext()));
-        }
         
         return drops;
     }
@@ -351,11 +344,6 @@ public class BreakBlockEventListener implements Listener {
         if (block.getType() == Material.LODESTONE) {
             LodestoneStorage.destroyLodestone(block.getLocation());
             LodestoneStorage.refreshAllInventories();
-        }
-
-        if (ComputerRegistry.getComputerByLocationRounded(block.getLocation()) != null) {
-            BootedComputer computer = ComputerRegistry.getComputerByLocationRounded(block.getLocation());
-            ComputerRegistry.unload(computer.getId());
         }
     }
 
