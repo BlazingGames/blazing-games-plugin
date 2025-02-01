@@ -82,7 +82,6 @@ public interface EnchantmentWrapper {
         return null;
     }
 
-    //int maxLevelAvailableInAltar(int altarTier);
 
     ItemStack getPreIcon();
 

@@ -40,7 +40,7 @@ public class FlameTouchEnchantment extends CustomSingleLeveledEnchantment {
 
     @Override
     public AltarRecipe getRecipe() {
-        return new AltarRecipe(3,1, 4, 16, new MaterialItemPredicate(Material.BLAZE_POWDER));
+        return new AltarRecipe(3, 1, 4, 16, new MaterialItemPredicate(Material.BLAZE_POWDER));
     }
 
     @Override
