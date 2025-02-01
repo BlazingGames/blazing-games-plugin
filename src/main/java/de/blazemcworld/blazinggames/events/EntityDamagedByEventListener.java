@@ -55,7 +55,7 @@ public class EntityDamagedByEventListener implements Listener {
         }
 
         double damageAdded = 0;
-        for(Map.Entry<CustomEnchantment, Integer> enchantment : EnchantmentHelper.getActiveCustomEnchantments(weapon).entrySet()) {
+        for(Map.Entry<CustomEnchantment, Integer> enchantment : EnchantmentHelper.getActiveEnchantmentWrappers(weapon).entrySet()) {
             damageAdded += enchantment.getKey().getDamageIncrease(victim, enchantment.getValue());
         }
 
@@ -68,7 +68,7 @@ public class EntityDamagedByEventListener implements Listener {
         if(victim instanceof Player p && damager instanceof Damageable damageable) {
             if(p.isBlocking() && event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) != 0) {
                 ItemStack shield = p.getActiveItem();
-                int reflectiveDefenses = EnchantmentHelper.getActiveCustomEnchantmentLevel(shield, CustomEnchantments.REFLECTIVE_DEFENSES);
+                int reflectiveDefenses = EnchantmentHelper.getActiveEnchantmentWrapperLevel(shield, CustomEnchantments.REFLECTIVE_DEFENSES);
 
                 if(reflectiveDefenses != 0 && new Random().nextInt(Math.max(7 - reflectiveDefenses, 2)) == 0) {
                     double dmg = Math.abs(event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING)) * 0.15;

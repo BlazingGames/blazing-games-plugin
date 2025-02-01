@@ -51,7 +51,7 @@ public class EnchantmentTome extends ContextlessItem {
     }
 
     protected Component getComponent() {
-        return getWrapper().getLevelessComponent();
+        return getWrapper().getDescription();
     }
     public EnchantmentWrapper getWrapper() {
         return wrapper;

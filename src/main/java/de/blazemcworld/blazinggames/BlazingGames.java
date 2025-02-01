@@ -31,7 +31,6 @@ import de.blazemcworld.blazinggames.packs.ResourcePackManager;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
 import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
 import de.blazemcworld.blazinggames.teleportanchor.LodestoneInteractionEventListener;
-import de.blazemcworld.blazinggames.teleportanchor.LodestoneInventoryClickEventListener;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.DecodingException;
@@ -229,7 +228,6 @@ public class BlazingGames extends JavaPlugin {
         pluginManager.registerEvents(new BlockPlaceEventListener(), this);
         pluginManager.registerEvents(new SpawnerSpawnEventListener(), this);
         pluginManager.registerEvents(new LodestoneInteractionEventListener(), this);
-        pluginManager.registerEvents(new LodestoneInventoryClickEventListener(), this);
         pluginManager.registerEvents(new BlockDestroyEventListener(), this);
         pluginManager.registerEvents(new BlockExplodeEventListener(), this);
         pluginManager.registerEvents(new EntityExplodeEventListener(), this);

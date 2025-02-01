@@ -39,8 +39,8 @@ public class UnshinyEnchantment extends CustomTreasureSingleLeveledEnchantment {
     }
 
     @Override
-    public AltarRecipe getRecipe(int level) {
-        return new AltarRecipe(1, 0, new MaterialItemPredicate(Material.INK_SAC));
+    public AltarRecipe getRecipe() {
+        return new AltarRecipe(1, 1, 0, new MaterialItemPredicate(Material.INK_SAC));
     }
 
     @Override
@@ -54,10 +54,5 @@ public class UnshinyEnchantment extends CustomTreasureSingleLeveledEnchantment {
 
     public @NotNull CustomEnchantmentType getEnchantmentType() {
         return CustomEnchantmentType.COSMETIC;
-    }
-
-    @Override
-    protected boolean allowAltarTier(int altarTier) {
-        return true;
     }
 }

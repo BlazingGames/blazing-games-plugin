@@ -31,14 +31,12 @@ import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
 import de.blazemcworld.blazinggames.data.name.ULIDNameProvider;
 import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
 import de.blazemcworld.blazinggames.utils.TextLocation;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 
 public class LodestoneStorage {
     private LodestoneStorage() {}
     private static final DataStorage<HashMap<UUID, String>, String> dataStorage = DataStorage.forClass(
         LodestoneStorage.class, null,
-        new GsonStorageProvider<HashMap<UUID, String>>(new TypeToken<HashMap<UUID, String>>() {}.getType()),
+        new GsonStorageProvider<>(new TypeToken<HashMap<UUID, String>>() {}.getType()),
         new ULIDNameProvider(), new GZipCompressionProvider()
     );
 
@@ -61,14 +59,14 @@ public class LodestoneStorage {
             .stream().collect(Collectors.toMap(TextLocation::deserialize, i -> dataStorage.getData(i).getOrDefault(player, "error")));
     }
 
-    public static void destoryLodestone(Location location) {
+    public static void destroyLodestone(Location location) {
         dataStorage.deleteData(TextLocation.serializeRounded(location));
     }
 
     public static void refreshAllInventories() {
         for (Player p : Bukkit.getOnlinePlayers()) {
-            if (p.getOpenInventory().title().equals(Component.text("Teleportation Menu").color(NamedTextColor.AQUA))) {
-                LodestoneInteractionEventListener.openTeleportAnchor(p);
+            if (p.getInventory().getHolder(false) instanceof TeleportAnchorInterface tpi) {
+                tpi.reload();
             }
         }
     }

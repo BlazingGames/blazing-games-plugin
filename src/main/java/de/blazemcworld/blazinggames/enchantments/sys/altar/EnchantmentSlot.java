@@ -16,6 +16,7 @@
 package de.blazemcworld.blazinggames.enchantments.sys.altar;
 
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrapper;
+import de.blazemcworld.blazinggames.items.change.ItemChangeProviders;
 import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
 import de.blazemcworld.blazinggames.userinterfaces.UserInterfaceSlot;
 
@@ -81,7 +82,7 @@ public class EnchantmentSlot implements UserInterfaceSlot {
                     return false;
                 }
 
-                if(level >= wrapper.maxLevelAvailableInAltar(altarInterface.getTier())) {
+                if(altarInterface.getTier() < wrapper.getRecipe(level).tier()) {
                     return false;
                 }
 
@@ -94,7 +95,10 @@ public class EnchantmentSlot implements UserInterfaceSlot {
                 if(lapis.getAmount() >= recipe.lapisAmount()) {
                     if(recipe.matchMaterial(material)) {
                         if(player.getLevel() >= recipe.expAmount()) {
-                            altarInterface.setItem(1, 1, wrapper.apply(tool, level+1));
+                            ItemStack result = wrapper.apply(tool, level+1);
+                            result = ItemChangeProviders.update(result);
+
+                            altarInterface.setItem(1, 1, result);
                             lapis.subtract(recipe.lapisAmount());
                             material.subtract(recipe.itemAmount());
                             player.setLevel(player.getLevel() - recipe.expAmount());

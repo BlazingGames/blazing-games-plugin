@@ -38,8 +38,8 @@ public class CollectableEnchantment extends CustomSingleLeveledEnchantment {
     }
 
     @Override
-    public AltarRecipe getRecipe(int level) {
-        return new AltarRecipe(1, 2, 4, new MaterialItemPredicate(Material.ENDER_PEARL));
+    public AltarRecipe getRecipe() {
+        return new AltarRecipe(2,1, 2, 4, new MaterialItemPredicate(Material.ENDER_PEARL));
     }
 
     @Override
@@ -49,10 +49,5 @@ public class CollectableEnchantment extends CustomSingleLeveledEnchantment {
 
     public ItemPredicate getItemTarget() {
         return PaperEnchantmentTarget.TOOL;
-    }
-
-    @Override
-    protected boolean allowAltarTier(int altarTier) {
-        return altarTier >= 2;
     }
 }

@@ -35,6 +35,22 @@ import java.util.*;
 public class EnchantmentHelper implements ItemChangeProvider {
     private static final NamespacedKey key = BlazingGames.get().key("custom_enchantments");
 
+    public static Map<EnchantmentWrapper, Integer> getEnchantmentWrappers(ItemStack stack) {
+        if(stack == null || !stack.hasItemMeta()) {
+            return new HashMap<>();
+        }
+
+        HashMap<EnchantmentWrapper, Integer> enchantments = new HashMap<>();
+
+        for(EnchantmentWrapper wrapper : EnchantmentWrappers.list(false)) {
+            if(wrapper.has(stack)) {
+                enchantments.put(wrapper, wrapper.getLevel(stack));
+            }
+        }
+
+        return enchantments;
+    }
+
     public static Map<CustomEnchantment, Integer> getCustomEnchantments(ItemStack stack) {
         if(stack == null || !stack.hasItemMeta()) {
             return new HashMap<>();
@@ -148,7 +164,7 @@ public class EnchantmentHelper implements ItemChangeProvider {
         return ItemPredicates.enchantability.matchItem(stack);
     }
 
-    public static ItemStack enchantTool(ItemStack stack, CustomEnchantment enchantment, int level) {
+    public static ItemStack enchantTool(ItemStack stack, EnchantmentWrapper enchantment, int level) {
         ItemStack result = stack.clone();
 
         if(!canEnchantItem(result)) {
@@ -156,13 +172,8 @@ public class EnchantmentHelper implements ItemChangeProvider {
         }
 
         if(enchantment.canEnchantItem(result)) {
-            int current = getCustomEnchantmentLevel(result, enchantment);
+            int current = enchantment.getLevel(result);
 
-            if(current == level && current > 0) {
-                if(enchantment.canUpgradeLevel(current)) {
-                    level++;
-                }
-            }
             if(current > level) {
                 level = current;
             }
@@ -173,7 +184,7 @@ public class EnchantmentHelper implements ItemChangeProvider {
                 level = 0;
             }
 
-            return setCustomEnchantment(result, enchantment, level);
+            return enchantment.apply(result, level);
         }
 
         return result;
@@ -237,38 +248,41 @@ public class EnchantmentHelper implements ItemChangeProvider {
         return null;
     }
 
-    public static ItemStack enchantFromItem(ItemStack in, ItemStack enchantingItem) {
+    public static Pair<ItemStack, Integer> enchantFromItem(ItemStack in, ItemStack enchantingItem) {
         ItemStack result = in.clone();
 
         if(!canEnchantItem(result)) {
-            return result;
+            return new Pair<>(result, 0);
         }
 
-        Map<CustomEnchantment, Integer> enchantmentLevels = getCustomEnchantments(enchantingItem);
+        int cost = 0;
 
-        for(Map.Entry<CustomEnchantment, Integer> enchantment : enchantmentLevels.entrySet()) {
+        Map<EnchantmentWrapper, Integer> enchantmentLevels = getEnchantmentWrappers(enchantingItem);
+
+        for(Map.Entry<EnchantmentWrapper, Integer> enchantment : enchantmentLevels.entrySet()) {
             result = enchantTool(result, enchantment.getKey(), enchantment.getValue());
+            cost++;
         }
 
-        return ItemChangeProviders.update(result);
+        return new Pair<>(ItemChangeProviders.update(result), cost);
     }
 
     public static boolean hasCustomEnchantments(ItemStack stack) {
         return !getCustomEnchantments(stack).isEmpty();
     }
 
-    public static ItemStack removeCustomEnchantments(ItemStack stack) {
+    public static ItemStack removeEnchantments(ItemStack stack) {
         ItemStack result = stack.clone();
 
         if(!canEnchantItem(result)) {
             return result;
         }
 
-        Set<CustomEnchantment> enchantments = getCustomEnchantments(stack).keySet();
+        Set<EnchantmentWrapper> enchantments = getEnchantmentWrappers(stack).keySet();
 
-        for(CustomEnchantment enchantment : enchantments) {
-            if(enchantment.getEnchantmentType().canBeRemoved()) {
-                result = removeCustomEnchantment(result, enchantment);
+        for(EnchantmentWrapper enchantment : enchantments) {
+            if(enchantment.canBeRemoved()) {
+                result = enchantment.remove(result);
             }
         }
 
@@ -276,19 +290,19 @@ public class EnchantmentHelper implements ItemChangeProvider {
     }
 
     // This version of the getCustomEnchantmentLevel function ignores enchanted books
-    public static int getActiveCustomEnchantmentLevel(ItemStack stack, CustomEnchantment enchantment) {
+    public static int getActiveEnchantmentWrapperLevel(ItemStack stack, EnchantmentWrapper enchantment) {
         if(stack != null && stack.getType() == Material.ENCHANTED_BOOK) {
             return 0;
         }
-        return getCustomEnchantmentLevel(stack, enchantment);
+        return enchantment.getLevel(stack);
     }
 
     // This version of the hasCustomEnchantment function ignores enchanted books
-    public static boolean hasActiveCustomEnchantment(ItemStack stack, CustomEnchantment enchantment) {
-        return getActiveCustomEnchantmentLevel(stack, enchantment) > 0;
+    public static boolean hasActiveEnchantmentWrapper(ItemStack stack, EnchantmentWrapper enchantment) {
+        return getActiveEnchantmentWrapperLevel(stack, enchantment) > 0;
     }
 
-    public static Map<CustomEnchantment, Integer> getActiveCustomEnchantments(ItemStack stack) {
+    public static Map<CustomEnchantment, Integer> getActiveEnchantmentWrappers(ItemStack stack) {
         if(stack != null && stack.getType() == Material.ENCHANTED_BOOK) {
             return new HashMap<>();
         }
@@ -342,7 +356,7 @@ public class EnchantmentHelper implements ItemChangeProvider {
                 meta = result.getItemMeta();
             }
 
-            if(hasCustomEnchantment(stack, CustomEnchantments.UNSHINY)) {
+            if(CustomEnchantments.UNSHINY.has(stack)) {
                 meta.setEnchantmentGlintOverride(false);
             }
         }

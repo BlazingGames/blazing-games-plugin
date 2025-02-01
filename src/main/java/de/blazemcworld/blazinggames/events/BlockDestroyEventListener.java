@@ -26,7 +26,7 @@ public class BlockDestroyEventListener implements Listener {
     @EventHandler
     public void onExplosion(BlockDestroyEvent event) {
         if (event.getBlock().getType() == Material.LODESTONE) {
-            LodestoneStorage.destoryLodestone(event.getBlock().getLocation());
+            LodestoneStorage.destroyLodestone(event.getBlock().getLocation());
             LodestoneStorage.refreshAllInventories();
         }
     }

@@ -29,6 +29,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class SeaInfusionEnchantment extends CustomEnchantment {
     @Override
     public @NotNull NamespacedKey getKey() {
@@ -42,10 +44,6 @@ public class SeaInfusionEnchantment extends CustomEnchantment {
 
     public ItemPredicate getItemTarget() {
         return BlazingEnchantmentTarget.WEAPON_TRIDENT;
-    }
-
-    public int getMaxLevel() {
-        return 3;
     }
 
     public double getDamageIncrease(Entity victim, int level) {
@@ -67,24 +65,16 @@ public class SeaInfusionEnchantment extends CustomEnchantment {
     }
 
     @Override
-    public int maxLevelAvailableInAltar(int altarTier) {
-        if(altarTier <= 1) return 0;
-        return altarTier - 1;
-    }
-
-    @Override
     public ItemStack getPreIcon() {
         return new ItemStack(Material.TUBE_CORAL_BLOCK);
     }
 
     @Override
-    public AltarRecipe getRecipe(int level) {
-        return new AltarRecipe(
-                level, level * 4, level == 3 ? 32 : 16, switch(level) {
-                    case 2 -> new MaterialItemPredicate(Material.TUBE_CORAL_BLOCK);
-                    case 3 -> new MaterialItemPredicate(Material.SPONGE);
-                    default -> new MaterialItemPredicate(Material.TUBE_CORAL);
-                }
+    public List<AltarRecipe> getRecipes() {
+        return List.of(
+                new AltarRecipe(2, 1, 4, 16, new MaterialItemPredicate(Material.TUBE_CORAL)),
+                new AltarRecipe(3, 2, 8, 16, new MaterialItemPredicate(Material.TUBE_CORAL_BLOCK)),
+                new AltarRecipe(4, 3, 12, 32, new MaterialItemPredicate(Material.SPONGE))
         );
     }
 }

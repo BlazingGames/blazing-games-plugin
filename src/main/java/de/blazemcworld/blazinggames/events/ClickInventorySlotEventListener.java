@@ -1,12 +1,12 @@
 /*
  * Copyright 2025 The Blazing Games Maintainers
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,21 +19,18 @@ import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantment;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
 import de.blazemcworld.blazinggames.items.CustomItems;
+import de.blazemcworld.blazinggames.items.predicates.ItemPredicates;
 import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
 import de.blazemcworld.blazinggames.utils.InventoryUtils;
 import de.blazemcworld.blazinggames.utils.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
@@ -60,88 +57,119 @@ public class ClickInventorySlotEventListener implements Listener {
             if (event.getClick() == ClickType.RIGHT && CustomItems.PORTABLE_CRAFTING_TABLE.matchItem(event.getCurrentItem())) {
                 event.setCancelled(true);
                 Bukkit.getScheduler().runTask(BlazingGames.get(), () -> event.getWhoClicked().openWorkbench(null, true));
+                return;
             }
 
-            if(!event.isCancelled() && event.getInventory().getHolder() instanceof UserInterface ui && event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-                event.setCancelled(!ui.onShiftClick(event.getCurrentItem(), event.getAction(), event));
+            if(event.isShiftClick()) {
+                if(event.getInventory().getHolder() instanceof UserInterface ui) {
+                    event.setCancelled(!ui.onShiftClick(event.getCurrentItem(), event.getAction(), event));
+                    return;
+                }
+
+                if(event.getInventory() instanceof GrindstoneInventory grindstone) {
+                    ItemStack movedItem = event.getCurrentItem();
+
+                    if(movedItem != null && ItemPredicates.grindstoneHandler.matchItem(movedItem)) {
+                        for(int i = 0; i < 2; i++) {
+                            ItemStack current = grindstone.getItem(i);
+
+                            if(current == null || current.isEmpty()) {
+                                int available = getGrindstoneDragMax(movedItem);
+                                if(available > movedItem.getAmount()) {
+                                    available = movedItem.getAmount();
+                                }
+                                grindstone.setItem(i, movedItem.asQuantity(available));
+                                movedItem.subtract(available);
+                            }
+                            else if(current.isSimilar(movedItem)) {
+                                int available = getGrindstoneDragMax(movedItem) - current.getAmount();
+                                if(available > movedItem.getAmount()) {
+                                    available = movedItem.getAmount();
+                                }
+                                current.add(available);
+                                movedItem.subtract(available);
+                            }
+                        }
+
+                        event.setCancelled(true);
+                    }
+                }
                 return;
             }
         }
 
         if(inventory instanceof GrindstoneInventory grindstone) {
-            ItemStack cursorItem = event.getCursor().clone();
-            if(cursorItem.getType() == Material.SPONGE || cursorItem.getType() == Material.WET_SPONGE) {
-                if(event.getSlot() != 2) {
-                    ItemStack eventItem;
+            ItemStack cursorItem = event.getCursor();
+            if (event.getSlot() != 2) {
+                ItemStack eventItem = grindstone.getItem(event.getSlot());
+                switch (event.getAction()) {
+                    case PLACE_ONE, PLACE_SOME, PLACE_ALL -> {
+                        if (ItemPredicates.grindstoneHandler.matchItem(cursorItem)) {
+                            int amount = cursorItem.getAmount();
 
-                    if(event.getSlot() == 0) {
-                        eventItem = grindstone.getUpperItem();
-                    }
-                    else if(event.getSlot() == 1) {
-                        eventItem = grindstone.getLowerItem();
-                    }
-                    else {
-                        return;
-                    }
-
-                    if(eventItem == null) {
-                        eventItem = ItemStack.empty();
-                    }
-                    else {
-                        eventItem = eventItem.clone();
-                    }
-
-                    BlazingGames.get().debugLog(cursorItem.toString());
-                    BlazingGames.get().debugLog(eventItem.toString());
-
-                    if(event.getClick() == ClickType.LEFT) {
-                        if(eventItem.isSimilar(cursorItem)) {
-                            int total = eventItem.getAmount() + cursorItem.getAmount();
-                            if(total > eventItem.getMaxStackSize()) {
-                                cursorItem.setAmount(total - eventItem.getMaxStackSize());
-                                eventItem.setAmount(eventItem.getMaxStackSize());
+                            if (event.getAction() == InventoryAction.PLACE_ONE) {
+                                amount = 1;
                             }
-                            else {
-                                cursorItem.subtract(cursorItem.getAmount());
-                                eventItem.setAmount(total);
+
+                            if (eventItem == null || eventItem.isEmpty()) {
+                                int available = getGrindstoneDragMax(cursorItem);
+                                if (available > amount) {
+                                    available = amount;
+                                }
+
+                                grindstone.setItem(event.getSlot(), cursorItem.asQuantity(available));
+                                cursorItem.subtract(available);
+                                event.setCancelled(true);
+                            } else if (eventItem.isSimilar(cursorItem)) {
+                                int available = getGrindstoneDragMax(eventItem) - eventItem.getAmount();
+                                if (available > amount) {
+                                    available = amount;
+                                }
+
+                                eventItem.add(available);
+                                cursorItem.subtract(available);
+                                event.setCancelled(true);
                             }
                         }
-                        else {
-                            ItemStack swap = cursorItem;
-                            cursorItem = eventItem;
-                            eventItem = swap;
+                    }
+                    case SWAP_WITH_CURSOR -> {
+                        if (ItemPredicates.grindstoneHandler.matchItem(cursorItem)) {
+                            if (cursorItem.getAmount() <= getGrindstoneDragMax(cursorItem)) {
+                                event.getWhoClicked().setItemOnCursor(eventItem);
+                                grindstone.setItem(event.getSlot(), cursorItem);
+                            }
+
+                            event.setCancelled(true);
                         }
                     }
-                    else if(event.getClick() == ClickType.RIGHT) {
-                        if(eventItem.isSimilar(cursorItem)) {
-                            if(eventItem.getAmount() < eventItem.getMaxStackSize()) {
-                                eventItem.add();
-                                cursorItem.subtract();
+                    case HOTBAR_SWAP -> {
+                        if (event.getHotbarButton() >= 0) {
+                            ItemStack hotbar = event.getWhoClicked().getInventory().getItem(event.getHotbarButton());
+
+                            if (hotbar == null || hotbar.isEmpty()) {
+                                inventory.setItem(event.getSlot(), ItemStack.empty());
+                                event.getWhoClicked().getInventory().setItem(event.getHotbarButton(), eventItem);
+                            } else if (ItemPredicates.grindstoneHandler.matchItem(hotbar) && hotbar.getAmount() <= getGrindstoneDragMax(hotbar)) {
+                                inventory.setItem(event.getSlot(), hotbar);
+                                event.getWhoClicked().getInventory().setItem(event.getHotbarButton(), eventItem);
                             }
                         } else {
-                            if (eventItem == null || eventItem.isEmpty()) {
-                                eventItem = cursorItem.asOne();
-                                cursorItem.subtract();
+                            ItemStack hotbar = event.getWhoClicked().getInventory().getItemInOffHand();
+
+                            if(hotbar.isEmpty()) {
+                                inventory.setItem(event.getSlot(), ItemStack.empty());
+                                event.getWhoClicked().getInventory().setItemInOffHand(eventItem);
+                            }
+                            else if (ItemPredicates.grindstoneHandler.matchItem(hotbar) && hotbar.getAmount() <= getGrindstoneDragMax(hotbar)) {
+                                inventory.setItem(event.getSlot(), event.getWhoClicked().getInventory().getItemInOffHand());
+                                event.getWhoClicked().getInventory().setItemInOffHand(eventItem);
                             }
                         }
                     }
-
-                    BlazingGames.get().log(cursorItem.toString());
-                    BlazingGames.get().log(eventItem.toString());
-
-                    if(event.getSlot() == 0) {
-                        grindstone.setUpperItem(eventItem);
-                    }
-                    else if(event.getSlot() == 1) {
-                        grindstone.setLowerItem(eventItem);
-                    }
-                    event.getWhoClicked().setItemOnCursor(cursorItem);
-
-                    event.setCancelled(true);
-                    return;
                 }
+
             }
-            if(event.getSlot() == 2) {
+            else {
                 ItemStack up = grindstone.getUpperItem();
                 ItemStack down = grindstone.getLowerItem();
                 ItemStack result = grindstone.getResult();
@@ -149,7 +177,7 @@ public class ClickInventorySlotEventListener implements Listener {
                 if(result != null && !result.isEmpty()) {
                     if(up != null && !up.isEmpty()) {
                         if(down != null && !down.isEmpty()) {
-                            if(up.getType() == Material.SPONGE || up.getType() == Material.WET_SPONGE) {
+                            if(ItemPredicates.grindstoneScrubber.matchItem(up)) {
                                 ItemStack book = scrubResultClick(down, up);
 
                                 if(book == null) {
@@ -164,7 +192,7 @@ public class ClickInventorySlotEventListener implements Listener {
 
                                 return;
                             }
-                            else if(down.getType() == Material.SPONGE || down.getType() == Material.WET_SPONGE) {
+                            else if(ItemPredicates.grindstoneScrubber.matchItem(down)) {
                                 ItemStack book = scrubResultClick(up, down);
 
                                 if(book == null) {
@@ -176,39 +204,12 @@ public class ClickInventorySlotEventListener implements Listener {
                                 if(giveItemStack(event, result)) {
                                     grindstone.setUpperItem(book);
                                 }
-
-                                return;
                             }
                         }
                     }
                 }
             }
-        }
-
-        if(inventory instanceof AnvilInventory anvil) {
-            if(event.getSlotType() == InventoryType.SlotType.RESULT) {
-                ItemStack result = anvil.getResult();
-                ItemStack book = anvil.getSecondItem();
-
-                if(book != null && book.getType() == Material.ENCHANTED_BOOK) {
-                    if(book.getItemMeta() instanceof EnchantmentStorageMeta esm) {
-                        if(esm.hasStoredEnchant(Enchantment.INFINITY)) {
-                            if(result != null && result.getType() == Material.FIREWORK_ROCKET
-                                    && result.getEnchantmentLevel(Enchantment.INFINITY) > 0) {
-                                if(giveItemStack(event, result)) {
-                                    anvil.setFirstItem(ItemStack.empty());
-                                    anvil.setSecondItem(ItemStack.empty());
-                                    anvil.setResult(ItemStack.empty());
-
-                                    HumanEntity p = event.getWhoClicked();
-
-                                    p.getWorld().playSound(p, Sound.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1, 1);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            return;
         }
     }
 
@@ -242,6 +243,13 @@ public class ClickInventorySlotEventListener implements Listener {
         }
 
         return book;
+    }
+
+    private int getGrindstoneDragMax(ItemStack item) {
+        if(ItemPredicates.grindstoneScrubber.matchItem(item)) {
+            return item.getMaxStackSize();
+        }
+        return 1;
     }
 
     private boolean giveItemStack(InventoryClickEvent event, ItemStack stack) {

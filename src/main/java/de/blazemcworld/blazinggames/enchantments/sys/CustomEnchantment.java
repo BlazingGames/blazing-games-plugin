@@ -15,21 +15,18 @@
  */
 package de.blazemcworld.blazinggames.enchantments.sys;
 
+import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import de.blazemcworld.blazinggames.utils.NumberUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
 import java.util.Set;
 
 public abstract class CustomEnchantment implements EnchantmentWrapper {
@@ -45,67 +42,22 @@ public abstract class CustomEnchantment implements EnchantmentWrapper {
         return EnchantmentHelper.getCustomEnchantmentLevel(tool, this);
     }
 
-    @Override
-    public int getMaxLevel() {
-        return 1;
-    }
-
     public ItemPredicate getItemTarget() {
         return PaperEnchantmentTarget.BREAKABLE;
     }
 
-    public boolean canEnchantItem(@NotNull ItemStack itemStack) {
-        Map<CustomEnchantment, Integer> customEnchantmentLevels = EnchantmentHelper.getCustomEnchantments(itemStack);
-
-        for(Map.Entry<CustomEnchantment, Integer> entry : customEnchantmentLevels.entrySet()) {
-            if(conflictsWith(entry.getKey()) || entry.getKey().conflictsWith(this)) {
-                return false;
-            }
-        }
-
-        ItemMeta meta = itemStack.getItemMeta();
-
-        Map<Enchantment, Integer> enchantmentLevels = Map.of();
-
-        if(meta != null) {
-            enchantmentLevels = itemStack.getItemMeta().getEnchants();
-        }
-
-        for(Map.Entry<Enchantment, Integer> entry : enchantmentLevels.entrySet()) {
-            if(conflictsWith(entry.getKey())) {
-                return false;
-            }
-        }
-
-        if(itemStack.getItemMeta() instanceof EnchantmentStorageMeta esm) {
-            Map<Enchantment, Integer> storedEnchantmentLevels = esm.getStoredEnchants();
-
-            for(Map.Entry<Enchantment, Integer> entry : storedEnchantmentLevels.entrySet()) {
-                if(conflictsWith(entry.getKey())) {
-                    return false;
-                }
-            }
-        }
-
-        return canGoOnItem(itemStack);
-    }
-
     @Override
     public boolean canGoOnItem(ItemStack tool) {
-        return getItemTarget().matchItem(tool) || tool.getType() == Material.BOOK
-                || tool.getType() == Material.ENCHANTED_BOOK;
-    }
-
-    public int maxLevelAvailableInAltar(int altarTier) {
-        if(altarTier == 4) {
-            return getMaxLevel();
+        if(getItemTarget().matchItem(tool)) {
+            return true;
         }
 
-        return Math.min(getMaxLevel(), altarTier);
-    }
+        if(CustomItem.isCustomItem(tool)) {
+            return false;
+        }
 
-    public boolean canUpgradeLevel(int currentLevel) {
-        return true;
+        return tool.getType() == Material.BOOK
+                || tool.getType() == Material.ENCHANTED_BOOK;
     }
 
     public @NotNull CustomEnchantmentType getEnchantmentType() {
@@ -142,12 +94,17 @@ public abstract class CustomEnchantment implements EnchantmentWrapper {
     }
 
     @Override
-    public Component getLevelessComponent() {
+    public Component getDescription() {
         return Component.text(getDisplayName()).color(getEnchantmentType().getColor()).decoration(TextDecoration.ITALIC, false);
     }
 
     @Override
     public boolean isTreasure() {
         return false;
+    }
+
+    @Override
+    public boolean canBeRemoved() {
+        return getEnchantmentType().canBeRemoved();
     }
 }

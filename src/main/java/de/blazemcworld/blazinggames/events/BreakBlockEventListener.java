@@ -27,6 +27,8 @@ import de.blazemcworld.blazinggames.utils.Drops;
 import de.blazemcworld.blazinggames.utils.InventoryUtils;
 import de.blazemcworld.blazinggames.utils.ItemUtils;
 import de.blazemcworld.blazinggames.utils.Pair;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Tool;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
@@ -48,6 +50,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.Damageable;
@@ -96,20 +99,24 @@ public class BreakBlockEventListener implements Listener {
         BlockFace face = event.getPlayer().getTargetBlockFace(6);
 
         event.setDropItems(false);
+        event.setExpToDrop(0);
 
-        if (event.getBlock().getType() == Material.SPAWNER) {
-            if (mainHand.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0 && (
-                    mainHand.getType() == Material.IRON_PICKAXE ||
-                            mainHand.getType() == Material.DIAMOND_PICKAXE ||
-                            mainHand.getType() == Material.NETHERITE_PICKAXE
-            )) {
-                event.setExpToDrop(0);
+        if(mainHand.hasData(DataComponentTypes.TOOL)) {
+            Tool toolComponent = mainHand.getData(DataComponentTypes.TOOL);
+            if(toolComponent != null) {
+                int damagePerBlock = toolComponent.damagePerBlock();
+                if(mainHand.getType() == Material.SHEARS) {
+                    if(event.getBlock().getType() != Material.FIRE && event.getBlock().getType() != Material.SOUL_FIRE) {
+                        Bukkit.getScheduler().runTask(BlazingGames.get(), () -> player.damageItemStack(EquipmentSlot.HAND, 1));
+                    }
+                }
+                else if(event.getBlock().getType().getHardness() > 0) {
+                    Bukkit.getScheduler().runTask(BlazingGames.get(), () -> player.damageItemStack(EquipmentSlot.HAND, damagePerBlock));
+                }
             }
         }
 
-        fakeBreakBlock(player, event.getBlock(), false);
-
-        if (EnchantmentHelper.hasActiveCustomEnchantment(mainHand, CustomEnchantments.TREE_FELLER)) {
+        if (EnchantmentHelper.hasActiveEnchantmentWrapper(mainHand, CustomEnchantments.TREE_FELLER)) {
             if (logs.contains(event.getBlock().getType())) {
                 if (player.getFoodLevel() <= 6) {
                     return;
@@ -117,7 +124,7 @@ public class BreakBlockEventListener implements Listener {
 
                 ItemStack axe = player.getInventory().getItemInMainHand();
 
-                int treeFeller = EnchantmentHelper.getActiveCustomEnchantmentLevel(axe, CustomEnchantments.TREE_FELLER);
+                int treeFeller = EnchantmentHelper.getActiveEnchantmentWrapperLevel(axe, CustomEnchantments.TREE_FELLER);
 
                 if (treeFeller <= 0) {
                     return;
@@ -159,10 +166,10 @@ public class BreakBlockEventListener implements Listener {
             }
         }
 
-        int pattern = EnchantmentHelper.getActiveCustomEnchantmentLevel(mainHand, CustomEnchantments.PATTERN);
+        int pattern = EnchantmentHelper.getActiveEnchantmentWrapperLevel(mainHand, CustomEnchantments.PATTERN);
 
         if (pattern > 0 && face != null) {
-            Pair<Integer, Integer> dimensions = PatternEnchantment.dimensions.get(pattern - 1).left2();
+            Pair<Integer, Integer> dimensions = PatternEnchantment.dimensions.get(pattern - 1);
 
             for (int i = 0; i < dimensions.left; i++) {
                 int x = -dimensions.left / 2 + i;
@@ -190,6 +197,8 @@ public class BreakBlockEventListener implements Listener {
                 }
             }
         }
+
+        fakeBreakBlock(player, event.getBlock(), false);
     }
 
     private void treeFeller(Player player, List<Block> blocksToBreak) {
@@ -203,7 +212,7 @@ public class BreakBlockEventListener implements Listener {
 
         ItemStack axe = player.getInventory().getItemInMainHand();
 
-        int treeFeller = EnchantmentHelper.getActiveCustomEnchantmentLevel(axe, CustomEnchantments.TREE_FELLER);
+        int treeFeller = EnchantmentHelper.getActiveEnchantmentWrapperLevel(axe, CustomEnchantments.TREE_FELLER);
 
         if (treeFeller <= 0) {
             return;
@@ -214,9 +223,7 @@ public class BreakBlockEventListener implements Listener {
         fakeBreakBlock(player, block);
         blocksToBreak.removeFirst();
 
-        axe = axe.damage(1, player);
-
-        player.getInventory().setItemInMainHand(axe);
+        player.damageItemStack(EquipmentSlot.HAND, 1);
 
         int chance = 100 - treeFeller * 20;
 
@@ -285,7 +292,7 @@ public class BreakBlockEventListener implements Listener {
             }
         }
 
-        if (EnchantmentHelper.hasActiveCustomEnchantment(mainHand, CustomEnchantments.FLAME_TOUCH)) {
+        if (EnchantmentHelper.hasActiveEnchantmentWrapper(mainHand, CustomEnchantments.FLAME_TOUCH)) {
             Iterator<ItemStack> iter = drops.iterator();
             List<ItemStack> smeltedDrops = new ArrayList<>();
 
@@ -342,7 +349,7 @@ public class BreakBlockEventListener implements Listener {
 
     private static void onAnyBlockBreak(Block block) {
         if (block.getType() == Material.LODESTONE) {
-            LodestoneStorage.destoryLodestone(block.getLocation());
+            LodestoneStorage.destroyLodestone(block.getLocation());
             LodestoneStorage.refreshAllInventories();
         }
 
