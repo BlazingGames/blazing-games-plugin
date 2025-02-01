@@ -15,6 +15,7 @@
  */
 package de.blazemcworld.blazinggames.utils;
 
+import de.blazemcworld.blazinggames.items.CustomItem;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
@@ -119,5 +120,17 @@ public class ItemUtils {
                     -> Material.OAK_PLANKS;
             default -> mat;
         };
+    }
+
+    public static boolean canRepairTool(ItemStack tool, ItemStack sacrificial) {
+        if(tool == null) return false;
+        if(sacrificial == null) return false;
+
+        CustomItem<?> customItem = CustomItem.getCustomItem(tool);
+        if(customItem == null) {
+            return !CustomItem.isCustomItem(sacrificial) && tool.isRepairableBy(sacrificial);
+        }
+
+        return customItem.repairableBy(sacrificial);
     }
 }

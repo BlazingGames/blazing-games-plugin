@@ -16,6 +16,7 @@
 package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.builderwand.BuilderWand;
 import de.blazemcworld.blazinggames.crates.CrateData;
 import de.blazemcworld.blazinggames.crates.CrateManager;
 import de.blazemcworld.blazinggames.crates.DeathCrateKey;
@@ -253,10 +254,11 @@ public class InteractEventListener implements Listener {
                     }
                 }
             }
-            if(CustomItems.BUILDER_WAND.matchItem(eventItem)) {
+            if(CustomItem.getCustomItem(eventItem) instanceof BuilderWand wand) {
                 if(!player.hasCooldown(eventItem)) {
-                    int blocksUsed = CustomItems.BUILDER_WAND.build(player, eventItem, block, face, clampedInteractionPoint);
+                    int blocksUsed = wand.build(player, eventItem, block, face, clampedInteractionPoint);
                     if(blocksUsed > 0) {
+                        player.damageItemStack(event.getHand(), blocksUsed);
                         player.setCooldown(eventItem, 5);
                         player.getWorld().playSound(player, Sound.ENTITY_CHICKEN_STEP, 1, 1.25f);
                     }
@@ -267,14 +269,14 @@ public class InteractEventListener implements Listener {
         }
 
         if(event.getAction().isLeftClick() && hand != null) {
-            if(player.isSneaking() && CustomItems.BUILDER_WAND.matchItem(eventItem)) {
+            if(player.isSneaking() && CustomItem.getCustomItem(eventItem) instanceof BuilderWand wand) {
                 event.setCancelled(true);
 
-                eventItem = CustomItems.BUILDER_WAND.cycleMode(eventItem);
+                eventItem = wand.cycleMode(eventItem);
 
                 player.getInventory().setItem(hand, eventItem);
 
-                player.sendActionBar(Component.text(CustomItems.BUILDER_WAND.getModeText(eventItem)));
+                player.sendActionBar(Component.text(wand.getModeText(eventItem)));
             }
         }
 

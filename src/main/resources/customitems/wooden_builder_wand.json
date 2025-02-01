@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "blazinggames:item/wooden_builder_wand"
+  }
+}
