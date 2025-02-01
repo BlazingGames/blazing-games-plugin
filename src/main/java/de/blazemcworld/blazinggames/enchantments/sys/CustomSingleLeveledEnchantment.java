@@ -15,18 +15,21 @@
  */
 package de.blazemcworld.blazinggames.enchantments.sys;
 
+import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarRecipe;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public abstract class CustomSingleLeveledEnchantment extends CustomEnchantment {
     @Override
-    public int maxLevelAvailableInAltar(int altarTier) {
-        return allowAltarTier(altarTier) ? 1 : 0;
-    }
-
-    protected abstract boolean allowAltarTier(int altarTier);
-
-    @Override
     public @NotNull String getDisplayLevel(int level) {
         return "";
+    }
+
+    public abstract AltarRecipe getRecipe();
+
+    @Override
+    public List<AltarRecipe> getRecipes() {
+        return List.of(getRecipe());
     }
 }

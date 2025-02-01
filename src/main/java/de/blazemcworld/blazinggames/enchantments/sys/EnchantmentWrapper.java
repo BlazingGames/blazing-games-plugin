@@ -29,20 +29,39 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public interface EnchantmentWrapper {
     ItemStack apply(ItemStack tool, int level);
     int getLevel(ItemStack tool);
-    int getMaxLevel();
-    boolean canEnchantItem(ItemStack tool);
     boolean canGoOnItem(ItemStack tool);
+
+    default boolean canEnchantItem(ItemStack tool) {
+        for(Map.Entry<EnchantmentWrapper, Integer> entry : EnchantmentHelper.getEnchantmentWrappers(tool).entrySet()) {
+            if(this.conflictsWith(entry.getKey()))
+            {
+                return false;
+            }
+
+            if(entry.getKey().conflictsWith(this))
+            {
+                return false;
+            }
+        }
+
+        return this.canGoOnItem(tool);
+    }
+
+    default ItemStack remove(ItemStack tool) {
+        return apply(tool, 0);
+    }
 
     default boolean conflictsWith(EnchantmentWrapper wrapper) {
         if(wrapper instanceof VanillaEnchantmentWrapper vanilla) {
             return conflictsWith(vanilla.getEnchantment());
         }
         if(wrapper instanceof CustomEnchantment custom) {
-            conflictsWith(custom);
+            return conflictsWith(custom);
         }
         return false;
     }
@@ -57,13 +76,12 @@ public interface EnchantmentWrapper {
 
     NamespacedKey getKey();
     Component getComponent(int level);
-    Component getLevelessComponent();
+    Component getDescription();
 
     default String getWarning(int level) {
         return null;
     }
 
-    int maxLevelAvailableInAltar(int altarTier);
 
     ItemStack getPreIcon();
 
@@ -75,7 +93,9 @@ public interface EnchantmentWrapper {
         List<Component> lore = new ArrayList<>();
 
         if(level < getMaxLevel()) {
-            if(level >= maxLevelAvailableInAltar(tier)) {
+            AltarRecipe recipe = getRecipe(level + 1);
+
+            if(tier < recipe.tier()) {
                 lore.add(Component.text("Can't upgrade any more with this tier of altar!")
                         .color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
             }
@@ -85,8 +105,6 @@ public interface EnchantmentWrapper {
                         .append(Component.text(":"))
                         .color(NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false)
                 );
-
-                AltarRecipe recipe = getRecipe(level + 1);
 
                 Component name = recipe.itemRequirement().getDescription();
 
@@ -123,7 +141,7 @@ public interface EnchantmentWrapper {
         meta.setMaxStackSize(getMaxLevel());
         meta.setHideTooltip(false);
         meta.setEnchantmentGlintOverride(level > 0);
-        meta.itemName(level > 0 ? getComponent(level) : getLevelessComponent());
+        meta.itemName(level > 0 ? getComponent(level) : getDescription());
         meta.lore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
         result.setItemMeta(meta);
@@ -137,5 +155,23 @@ public interface EnchantmentWrapper {
 
     boolean isTreasure();
 
-    AltarRecipe getRecipe(int level);
+    List<AltarRecipe> getRecipes();
+    default AltarRecipe getRecipe(int level) {
+        List<AltarRecipe> recipes = getRecipes();
+
+        if(level < 1) return recipes.getFirst();
+
+        if(level > recipes.size()) return recipes.getLast();
+
+        return recipes.get(level - 1);
+    }
+    default int getMaxLevel() {
+        return getRecipes().size();
+    }
+
+    default boolean has(ItemStack stack) {
+        return getLevel(stack) != 0;
+    }
+
+    boolean canBeRemoved();
 }

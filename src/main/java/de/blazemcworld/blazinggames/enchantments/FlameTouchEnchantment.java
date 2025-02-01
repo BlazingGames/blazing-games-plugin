@@ -39,8 +39,8 @@ public class FlameTouchEnchantment extends CustomSingleLeveledEnchantment {
     }
 
     @Override
-    public AltarRecipe getRecipe(int level) {
-        return new AltarRecipe(1, 4, 16, new MaterialItemPredicate(Material.BLAZE_POWDER));
+    public AltarRecipe getRecipe() {
+        return new AltarRecipe(3, 1, 4, 16, new MaterialItemPredicate(Material.BLAZE_POWDER));
     }
 
     @Override
@@ -54,10 +54,5 @@ public class FlameTouchEnchantment extends CustomSingleLeveledEnchantment {
 
     public @NotNull CustomEnchantmentType getEnchantmentType() {
         return CustomEnchantmentType.TWISTED;
-    }
-
-    @Override
-    protected boolean allowAltarTier(int altarTier) {
-        return altarTier >= 3;
     }
 }

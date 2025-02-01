@@ -111,11 +111,11 @@ public class InputSlot extends UsableInterfaceSlot {
                 }
                 yield true;
             }
-            case HOTBAR_SWAP, HOTBAR_MOVE_AND_READD -> {
+            case HOTBAR_SWAP -> {
                 if(event.getHotbarButton() >= 0) {
                     ItemStack hotbar = event.getWhoClicked().getInventory().getItem(event.getHotbarButton());
 
-                    if(hotbar == null) {
+                    if(hotbar == null || hotbar.isEmpty()) {
                         inventory.setItem(slot, ItemStack.empty());
                         event.getWhoClicked().getInventory().setItem(event.getHotbarButton(), current);
                     }
@@ -127,7 +127,11 @@ public class InputSlot extends UsableInterfaceSlot {
                 else {
                     ItemStack hotbar = event.getWhoClicked().getInventory().getItemInOffHand();
 
-                    if(hotbar.getAmount() <= getDragMax(hotbar) && filterItem(hotbar)) {
+                    if(hotbar.isEmpty()) {
+                        inventory.setItem(slot, ItemStack.empty());
+                        event.getWhoClicked().getInventory().setItemInOffHand(current);
+                    }
+                    else if(hotbar.getAmount() <= getDragMax(hotbar) && filterItem(hotbar)) {
                         inventory.setItem(slot, event.getWhoClicked().getInventory().getItemInOffHand());
                         event.getWhoClicked().getInventory().setItemInOffHand(current);
                     }

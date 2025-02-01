@@ -27,6 +27,8 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class TreeFellerEnchantment extends CustomEnchantment {
     @Override
     public @NotNull NamespacedKey getKey() {
@@ -42,19 +44,8 @@ public class TreeFellerEnchantment extends CustomEnchantment {
         return BlazingEnchantmentTarget.AXE;
     }
 
-    public int getMaxLevel() {
-        return 5;
-    }
-
     public boolean conflictsWith(@NotNull CustomEnchantment enchantment) {
         return enchantment == CustomEnchantments.PATTERN;
-    }
-
-    @Override
-    public int maxLevelAvailableInAltar(int altarTier) {
-        if(altarTier >= 4) return 5;
-
-        return altarTier;
     }
 
     @Override
@@ -63,18 +54,13 @@ public class TreeFellerEnchantment extends CustomEnchantment {
     }
 
     @Override
-    public AltarRecipe getRecipe(int level) {
-        return new AltarRecipe(
-                level,
-                level * 3,
-                32,
-                switch(level) {
-                    case 2 -> new MaterialItemPredicate(Material.JUNGLE_LOG);
-                    case 3 -> new MaterialItemPredicate(Material.CHERRY_LOG);
-                    case 4 -> new MaterialItemPredicate(Material.WARPED_STEM);
-                    case 5 -> new MaterialItemPredicate(Material.CHORUS_FLOWER);
-                    default -> new MaterialItemPredicate(Material.OAK_LOG);
-                }
+    public List<AltarRecipe> getRecipes() {
+        return List.of(
+                new AltarRecipe(1, 1, 3, 32, new MaterialItemPredicate(Material.OAK_LOG)),
+                new AltarRecipe(2, 2, 6, 32, new MaterialItemPredicate(Material.JUNGLE_LOG)),
+                new AltarRecipe(3, 3, 9, 32, new MaterialItemPredicate(Material.CHERRY_LOG)),
+                new AltarRecipe(4, 4, 12, 32, new MaterialItemPredicate(Material.WARPED_STEM)),
+                new AltarRecipe(4, 5, 15, 32, new MaterialItemPredicate(Material.CHORUS_FLOWER))
         );
     }
 }

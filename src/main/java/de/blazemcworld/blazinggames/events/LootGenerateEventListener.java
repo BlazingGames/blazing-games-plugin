@@ -15,11 +15,9 @@
  */
 package de.blazemcworld.blazinggames.events;
 
-import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantment;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
 import de.blazemcworld.blazinggames.items.CustomItems;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
@@ -138,17 +136,5 @@ public class LootGenerateEventListener implements Listener {
             return esm.hasStoredEnchant(enchantment);
         }
         return false;
-    }
-
-    private ItemStack createRandomBook(CustomEnchantment enchantment, Random random) {
-        return enchantRandomTool(new ItemStack(Material.BOOK), enchantment, random);
-    }
-
-    private ItemStack createBook(CustomEnchantment enchantment, int level) {
-        return EnchantmentHelper.enchantTool(new ItemStack(Material.BOOK), enchantment, level);
-    }
-
-    private ItemStack enchantRandomTool(ItemStack stack, CustomEnchantment enchantment, Random random) {
-        return EnchantmentHelper.enchantTool(stack, enchantment, random.nextInt(enchantment.getMaxLevel()) + 1);
     }
 }
