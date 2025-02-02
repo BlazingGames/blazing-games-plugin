@@ -124,16 +124,4 @@ public enum BuilderWandMode {
     public String getModeText() {
         return modeText;
     }
-
-    public BuilderWandMode getNextMode() {
-        return switch(this) {
-            case NO_LOCK -> HORIZONTAL;
-            case HORIZONTAL -> VERTICAL;
-            case VERTICAL -> NORTH_SOUTH;
-            case NORTH_SOUTH -> NORTH_SOUTH_VERTICAL;
-            case NORTH_SOUTH_VERTICAL -> EAST_WEST;
-            case EAST_WEST -> EAST_WEST_VERTICAL;
-            case EAST_WEST_VERTICAL -> NO_LOCK;
-        };
-    }
 }

@@ -63,6 +63,13 @@ public class GuiElementsHook implements PackBuildHook {
             } catch (IOException e) {
                 BlazingGames.get().log(e);
             }
+
+            // install animation options
+            try (InputStream stream = BlazingGames.class.getResourceAsStream("/gui/" + texture.getKey() + ".png.mcmeta")) {
+                if (stream != null) context.installTextureAnimationData(texture, "item", stream.readAllBytes());
+            } catch (IOException e) {
+                BlazingGames.get().log(e);
+            }
         }
 
         for (NamespacedKey model : getGuiModels()) {
