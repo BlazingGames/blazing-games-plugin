@@ -16,7 +16,6 @@
 package de.blazemcworld.blazinggames.computing.functions;
 
 import com.caoccao.javet.annotations.V8Function;
-import com.caoccao.javet.exceptions.JavetException;
 import com.caoccao.javet.interop.V8Runtime;
 import de.blazemcworld.blazinggames.computing.BootedComputer;
 import de.blazemcworld.blazinggames.computing.functions.annotations.MethodDoc;
@@ -25,11 +24,8 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 
 public class GlobalFunctions extends JSFunctionalClass {
-    private final V8Runtime runtime;
-
     public GlobalFunctions(BootedComputer computer, V8Runtime runtime) {
-        super(computer);
-        this.runtime = runtime;
+        super(computer, runtime);
     }
 
     @Override
@@ -46,35 +42,19 @@ public class GlobalFunctions extends JSFunctionalClass {
     @MethodDoc("Freezes the computer for the given amount of ticks")
     @ParamDoc(param = "ticks", doc = "The amount of ticks to freeze the computer for")
     public void freeze(int ticks) {
-        if (ticks >= 1) {
-            this.computer.freeze(ticks);
-
-            byte[] snapshot;
-            try {
-                snapshot = this.runtime.createSnapshot();
-            } catch (JavetException e) {
-                throw new RuntimeException(e);
-            }
-
-            this.runtime.terminateExecution();
-            if (snapshot != null) {
-                this.runtime.getRuntimeOptions().setSnapshotBlob(snapshot);
-            }
-        }
+        super.freeze(ticks);
     }
 
     @V8Function
     @MethodDoc("Stops the computer")
     public void exit() {
-        this.computer.stopCodeExecution();
-        this.runtime.terminateExecution();
+        super.stop();
     }
 
     @V8Function
     @MethodDoc("Restarts the computer")
     public void restart() {
-        this.computer.restartCodeExecution();
-        this.runtime.terminateExecution();
+        super.restart();
     }
 
     @V8Function
@@ -82,6 +62,6 @@ public class GlobalFunctions extends JSFunctionalClass {
     @ParamDoc(param = "ticks", doc = "The amount of ticks to freeze the computer for")
     public void freezeAndRestart(int ticks) {
         this.computer.restartCodeExecution();
-        freeze(ticks);
+        super.freeze(ticks);
     }
 }

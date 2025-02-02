@@ -16,7 +16,6 @@
 package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantment;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
@@ -47,11 +46,6 @@ public class EntityDamagedByEventListener implements Listener {
         Entity damager = event.getDamager();
 
         ItemStack weapon = ItemStack.empty();
-
-        if (damager instanceof Player attacker && ComputerRegistry.getComputerByActorUUID(victim.getUniqueId()) != null) {
-            event.setCancelled(true);
-            ComputerRegistry.getComputerByActorUUID(victim.getUniqueId()).damageHookAddHit(attacker);
-        }
 
         if(damager instanceof Player p) {
             weapon = p.getInventory().getItemInMainHand();

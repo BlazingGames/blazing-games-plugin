@@ -17,7 +17,6 @@ package de.blazemcworld.blazinggames.computing;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
-import de.blazemcworld.blazinggames.computing.types.IComputerType;
 import de.blazemcworld.blazinggames.data.DataStorage;
 import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
 import de.blazemcworld.blazinggames.data.name.ULIDNameProvider;
@@ -30,29 +29,19 @@ import de.blazemcworld.blazinggames.utils.NameGenerator;
 import de.blazemcworld.blazinggames.utils.Pair;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
 public class ComputerRegistry {
     private static final ArrayList<BootedComputer> computers = new ArrayList<>();
-    private static int tick = 0;
-    private static final int loopOnTick = 100;
-    private static final int hitsThreshold = 5;
     public static final String defaultCode = "// welcome to the editor!\n" +
             "// this uses JavaScript along with our custom methods to control computers\n// learn more in the documentation: ______";
-    private static final String NAMESPACE = "blazingcomputing";
-    public static final NamespacedKey NAMESPACEDKEY_COMPUTER_TYPE = new NamespacedKey(NAMESPACE, "_computer_type");
-    public static final NamespacedKey NAMESPACEDKEY_COMPUTER_ID = new NamespacedKey(NAMESPACE, "_computer_id");
-
 
     public static final DataStorage<ComputerMetadata, String> metadataStorage = DataStorage.forClass(
         ComputerRegistry.class, "metadata",
@@ -86,10 +75,10 @@ public class ComputerRegistry {
         if (getComputerById(id) != null) return;
         if (getComputerByLocationRounded(metadata.location) != null) return;
 
-        Bukkit.getScheduler().runTask(BlazingGames.get(), () -> {
+        Bukkit.getScheduler().runTaskLater(BlazingGames.get(), () -> {
             BootedComputer computer = new BootedComputer(metadata, metadata.location, state, code == null ? defaultCode : code);
             computers.add(computer);
-        });
+        }, 2L);
     }
 
     /**
@@ -110,11 +99,11 @@ public class ComputerRegistry {
                 return;
             }
 
-            Bukkit.getScheduler().runTask(BlazingGames.get(), () -> {
+            Bukkit.getScheduler().runTaskLater(BlazingGames.get(), () -> {
                 BootedComputer computer = new BootedComputer(metadata, location, state, code == null ? defaultCode : code);
                 computers.add(computer);
                 callback.accept(true, computer);
-            });
+            }, 2L);
         }
     }
 
@@ -135,7 +124,7 @@ public class ComputerRegistry {
      */
     public static void dropComputer(final BootedComputer computer, final Player player) {
         ComputerMetadata metadata = computer.getMetadata();
-        ItemStack computerItem = addAttributes(metadata.type.getType().getDisplayItem(computer), metadata.type, computer.getId());
+        ItemStack computerItem = computer.getType().item().create(computer.getMetadata().createContext());
         if (player != null && EnchantmentHelper.hasCustomEnchantment(player.getInventory().getItemInMainHand(), CustomEnchantments.COLLECTABLE)) {
             player.getInventory().addItem(new ItemStack[]{computerItem});
         } else {
@@ -156,7 +145,7 @@ public class ComputerRegistry {
                     NameGenerator.generateName(),
                     UUID.randomUUID(),
                     type,
-                    new String[0],
+                    List.of(),
                     location,
                     ownerUUID,
                     new UUID[0],
@@ -167,13 +156,13 @@ public class ComputerRegistry {
             final ComputerMetadata metadata = data.left;
 
             Bukkit.getScheduler()
-                .runTask(
+                .runTaskLater(
                     BlazingGames.get(),
                     () -> {
                         BootedComputer computer = new BootedComputer(metadata, location, null, defaultCode);
                         computers.add(computer);
                         callback.accept(computer);
-                    }
+                    }, 2L
                 );
         }
     }
@@ -203,10 +192,6 @@ public class ComputerRegistry {
         return computers.stream().filter(computer -> computer.getMetadata().location.equals(location)).findFirst().orElse(null);
     }
 
-    public static BootedComputer getComputerByActorUUID(UUID iAmTiredOfMakingTheseMethods) {
-        return computers.stream().filter(computer -> iAmTiredOfMakingTheseMethods.equals(computer.motorRuntimeEntityUUID)).findFirst().orElse(null);
-    }
-
     public static BootedComputer getComputerByLocationRounded(Location location) {
         Location loc = _roundLocation(location);
         return computers.stream().filter(computer -> _roundLocation(computer.getMetadata().location).equals(loc)).findFirst().orElse(null);
@@ -217,71 +202,17 @@ public class ComputerRegistry {
     }
 
     public static void tick() {
-        tick++;
-        if (tick >= loopOnTick) {
-            tick = 0;
-
-            for (BootedComputer computer : computers) {
-                if (computer.motorRuntimeEntityHits >= hitsThreshold) {
-                    Player player = Bukkit.getPlayer(computer.motorRuntimeEntityHitAttacker);
-                    dropComputer(computer, player);
-                    unload(computer.getId());
-                } else {
-                    computer.damageHookRemoveHit();
-                    computer.tick();
-                }
-            }
-        } else {
-            for (BootedComputer computerx : computers) {
-                computerx.tick();
-            }
+        for (BootedComputer computer : computers) {
+            computer.tick();
         }
     }
 
-    public static void registerAllRecipes() {
-        for (ComputerTypes value : ComputerTypes.values()) {
-            IComputerType type = value.getType();
-            NamespacedKey key = new NamespacedKey(NAMESPACE, value.name().toLowerCase());
-            Bukkit.addRecipe(type.getRecipe(key, addAttributes(type.getDisplayItem(null), value.name(), "")));
+    public static void shutdownHook() {
+        for (BootedComputer computer : computers) {
+            saveToDisk(computer);
+            computer.hibernateNow();
         }
-    }
-
-    public static ItemStack addAttributes(ItemStack item, BootedComputer computer) {
-        return addAttributes(item, computer.getType(), computer.getId());
-    }
-
-    public static ItemStack addAttributes(ItemStack item, IComputerType type, String id) {
-        return addAttributes(item, ComputerTypes.valueOf(type), id);
-    }
-
-    public static ItemStack addAttributes(ItemStack item, ComputerTypes computerType, String id) {
-        return addAttributes(item, computerType.name(), id);
-    }
-
-    public static ItemStack addAttributes(ItemStack item, String computerType, String id) {
-        ItemStack itemStack = item.clone();
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-        if (computerType != null && !computerType.isEmpty()) {
-            container.set(NAMESPACEDKEY_COMPUTER_TYPE, PersistentDataType.STRING, computerType);
-        }
-
-        if (!id.equals("")) {
-            container.set(NAMESPACEDKEY_COMPUTER_ID, PersistentDataType.STRING, id);
-        }
-
-        itemStack.setItemMeta(itemMeta);
-        return itemStack;
-    }
-
-    public static boolean isComputerItem(ItemStack item) {
-        if (!item.hasItemMeta()) {
-            return false;
-        } else {
-            ItemMeta itemMeta = item.getItemMeta();
-            PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-            return !((String)container.getOrDefault(NAMESPACEDKEY_COMPUTER_TYPE, PersistentDataType.STRING, "")).isEmpty();
-        }
+        computers.clear();
     }
 
     public static record ComputerPrivileges(boolean chunkloading, boolean network) {
