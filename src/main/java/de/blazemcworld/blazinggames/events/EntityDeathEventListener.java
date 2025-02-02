@@ -15,6 +15,7 @@
  */
 package de.blazemcworld.blazinggames.events;
 
+import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
 import org.bukkit.Material;
@@ -26,6 +27,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +44,13 @@ public class EntityDeathEventListener implements Listener {
     public void onEntityDeath(EntityDeathEvent event) {
         LivingEntity victim = event.getEntity();
         Player killer = victim.getKiller();
+
+        PersistentDataContainer container = victim.getPersistentDataContainer();
+
+        if (container.has(BlazingGames.get().key("slab")) && container.has(BlazingGames.get().key("slab_type"))) {
+            event.setCancelled(true);
+            return;
+        }
 
         if(killer == null) {
             return;

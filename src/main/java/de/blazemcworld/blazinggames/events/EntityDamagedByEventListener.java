@@ -88,11 +88,12 @@ public class EntityDamagedByEventListener implements Listener {
                     p.getWorld().playSound(p, Sound.ENCHANT_THORNS_HIT, 1, 1.5f);
                 }
             }
-        } else if (damager instanceof Player p) {
+        } else {
             PersistentDataContainer container = victim.getPersistentDataContainer();
 
             if (container.has(BlazingGames.get().key("slab")) && container.has(BlazingGames.get().key("slab_type"))) {
                 event.setCancelled(true);
+                if (!(damager instanceof Player p)) return;
                 UUID displayBlockUUID = UUID.fromString(Objects.requireNonNull(container.get(BlazingGames.get().key("slab"), PersistentDataType.STRING)));
                 String slabType = container.get(BlazingGames.get().key("slab_type"), PersistentDataType.STRING);
                 ItemDisplay displayBlock = (ItemDisplay) p.getWorld().getEntity(displayBlockUUID);
