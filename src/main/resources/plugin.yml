@@ -17,6 +17,9 @@ permissions:
   blazinggames.setaltar:
     description: "Allows using the /setalatar command"
     default: op
+  blazinggames.enforcewhitelist:
+    description: "Allows using the /enforcewhitelist command"
+    default: op
 
 libraries: ##  see build.gradle
   - io.azam.ulidj:ulidj:1.0.4
@@ -58,3 +61,8 @@ commands:
     description: "Set altar with specific level at current location"
     usage: /setaltar <level>
     permission: blazinggames.setmultiblock
+  enforcewhitelist:
+    description: "Kick players that are not whitelisted. Automatically run every 30 seconds."
+    usage: /enforcewhitelist
+    permission: blazinggames.enforcewhitelist
+

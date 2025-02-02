@@ -4,6 +4,7 @@ jda:
   link-channel: 000000000000000000
   console-channel: 000000000000000000
   webhook: "https://discord.com/api/webhooks/...."
+  whitelist-management: false
 
 logging:
   log-error: true
