@@ -19,9 +19,7 @@ import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.discord.commands.ICommand;
-import de.blazemcworld.blazinggames.discord.commands.UnlinkCommand;
-import de.blazemcworld.blazinggames.discord.commands.WhitelistCommand;
+import de.blazemcworld.blazinggames.discord.commands.*;
 import de.blazemcworld.blazinggames.events.ChatEventListener;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import de.blazemcworld.blazinggames.utils.TextUtils;
@@ -68,7 +66,7 @@ public class DiscordApp extends ListenerAdapter {
 
     );
     private final List<ICommand> whitelistCommands = List.of(
-        new WhitelistCommand(), new UnlinkCommand()
+        new WhitelistCommand(), new UnlinkCommand(), new SetPrimaryCommand(), new LinksCommand()
     );
 
 

@@ -76,9 +76,13 @@ public class WhitelistManagement {
     }
 
     public boolean removePlayer(WhitelistedPlayer player) {
+        return removePlayer(player, true);
+    }
+
+    public boolean removePlayer(WhitelistedPlayer player, boolean enforceWhitelist) {
         whitelist.deleteData(player.uuid);
 
-        if(this == DiscordApp.getWhitelistManagement()) {
+        if(this == DiscordApp.getWhitelistManagement() && enforceWhitelist) {
             Bukkit.getScheduler().runTask(BlazingGames.get(), EnforceWhitelistCommand::enforceWhitelist);
         }
 
@@ -121,6 +125,14 @@ public class WhitelistManagement {
         players.sort(Comparator.comparingLong((a) -> a.whitelistedAt));
 
         return players.getFirst();
+    }
+
+    public List<WhitelistedPlayer> getWhitelistedPlayersOfDiscordUser(DiscordUser user) {
+        List<WhitelistedPlayer> players = whitelist.queryForData((data) -> data.discordUser == user.snowflake);
+
+        players.sort(Comparator.comparingLong((a) -> a.whitelistedAt));
+
+        return players;
     }
 
     public DiscordUser getDiscordUser(long snowflake) {

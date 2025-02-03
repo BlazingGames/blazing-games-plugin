@@ -68,13 +68,13 @@ public class WhitelistCommand implements ICommand {
         }
         embedDescription.append(".\n\n");
         embedDescription.append("* To change your primary account, run `/setprimary` (in discord).\n");
-        embedDescription.append("* To unlink a minecraft account, run `/unlink` (in discord or in game).");
+        embedDescription.append("* To unlink a minecraft account, run `/unlink` (in discord or in game).\n");
+        embedDescription.append("* To view a list of all linked minecraft accounts, run `/links` (in discord).");
 
         MessageEmbed embed = new EmbedBuilder()
             .setTitle("Whitelist")
             .setColor(0x7BF283)
             .setDescription(embedDescription)
-            .setImage("https://crafatar.com/renders/head/" + uuid + ".png?overlay")
             .build();
         event.replyEmbeds(embed).setEphemeral(true).queue();
     }

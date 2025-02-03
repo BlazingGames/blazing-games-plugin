@@ -10,21 +10,23 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-public class UnlinkCommand implements ICommand {
+import java.util.UUID;
+
+public class SetPrimaryCommand implements ICommand {
     @Override
     public String name() {
-        return "unlink";
+        return "setprimary";
     }
     
     @Override
     public String description() {
-        return "Unlink your account(s) from the minecraft whitelist.";
+        return "Sets a whitelisted account as your primary account.";
     }
 
     @SuppressWarnings("null")
     @Override
     public void handle(SlashCommandInteractionEvent event) {
-        if (!DiscordApp.isWhitelistManaged()) throw new IllegalStateException("Whitelist is not managed, but /unlink was called");
+        if (!DiscordApp.isWhitelistManaged()) throw new IllegalStateException("Whitelist is not managed, but /setprimary was called");
         WhitelistManagement whitelist = DiscordApp.getWhitelistManagement();
 
         String username = event.getOption("username").getAsString();
@@ -42,35 +44,40 @@ public class UnlinkCommand implements ICommand {
 
         username = whitelistedPlayer.lastKnownName;
 
-        boolean removingPrimary = whitelist.removePlayer(whitelistedPlayer);
+        DiscordUser user = whitelist.getDiscordUser(event.getUser().getIdLong());
+
+        if(user == null) {
+            user = whitelist.updateUser(event.getUser(), null);
+        }
+
+        if(whitelistedPlayer.uuid.equals(user.favoriteAccount)) {
+            event.reply("The specified player is already your primary account.").setEphemeral(true).queue();
+            return;
+        }
+
+        UUID previousPrimary = user.favoriteAccount;
+        WhitelistedPlayer previousPrimaryPlayer = whitelist.getWhitelistedPlayer(previousPrimary);
+
+        whitelist.updateUser(event.getUser(), whitelistedPlayer.uuid);
 
         StringBuilder embedDescription = new StringBuilder();
 
-        embedDescription.append("The player ").append(username).append(" has been removed from the whitelist and unlinked from your discord account.\n\n");
-        if(removingPrimary) {
-            DiscordUser user = whitelist.getDiscordUser(event.getUser().getIdLong());
+        embedDescription.append("The player ").append(username).append(" has been set as the primary account for your discord account.\n\n");
 
-            boolean noMorePrimary = user == null || user.favoriteAccount == null;
-
-            if(noMorePrimary) {
-                embedDescription.append("You no longer have any players linked to this discord account. ");
-                embedDescription.append("This means that in order to continue playing, you need to link a new account");
-            }
-            else {
-                embedDescription.append("The player ").append(username).append(" was your primary account up to now. Sending messages in the chat link channel will now send as ").append(whitelist.getWhitelistedPlayer(whitelist.getDiscordUser(event.getMember().getIdLong()).favoriteAccount).lastKnownName);
-            }
+        if(previousPrimaryPlayer == null) {
+            embedDescription.append("You didn't have a primary account up to now. Sending messages in the chat link channel will now send as ").append(username);
         }
         else {
-            embedDescription.append("Your primary account was unaffected. Sending messages in the chat link channel will still send as ").append(whitelist.getWhitelistedPlayer(whitelist.getDiscordUser(event.getMember().getIdLong()).favoriteAccount).lastKnownName);
+            embedDescription.append("The player ").append(previousPrimaryPlayer.lastKnownName).append(" was your primary account up to now. Sending messages in the chat link channel will now send as ").append(username);
         }
         embedDescription.append(".\n\n");
-        embedDescription.append("* To change your primary account, run `/setprimary` (in discord).\n");
+        embedDescription.append("* To unlink a minecraft account, run `/unlink` (in discord or in game).\n");
         embedDescription.append("* To link a new player, run `/whitelist` (in discord) with a link code obtained by joining the server with the desired account.\n");
         embedDescription.append("* To view a list of all linked minecraft accounts, run `/links` (in discord).");
 
         MessageEmbed embed = new EmbedBuilder()
                 .setTitle("Whitelist")
-                .setColor(0xF27B7B)
+                .setColor(0xDFE378)
                 .setDescription(embedDescription)
                 .build();
         event.replyEmbeds(embed).setEphemeral(true).queue();
@@ -79,7 +86,7 @@ public class UnlinkCommand implements ICommand {
     @Override
     public OptionData[] getOptions() {
         return new OptionData[] {
-            new OptionData(OptionType.STRING, "username", "Username of the player you want to unlink", true)
+            new OptionData(OptionType.STRING, "username", "Username of the player you want to set as primary", true)
         };
     }
 }

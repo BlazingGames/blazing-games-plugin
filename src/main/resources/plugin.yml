@@ -65,4 +65,7 @@ commands:
     description: "Kick players that are not whitelisted. Automatically run every 30 seconds."
     usage: /enforcewhitelist
     permission: blazinggames.enforcewhitelist
+  unlink:
+    description: "Unlinks your account from your discord account. This also removes you from the whitelist."
+    usage: /unlink
 

@@ -214,6 +214,10 @@ public class BlazingGames extends JavaPlugin {
         registerCommand("setaltar", new SetAltar());
         registerCommand("enforcewhitelist", new EnforceWhitelistCommand());
 
+        if(DiscordApp.isWhitelistManaged()) {
+            registerCommand("unlink", new UnlinkCommand());
+        }
+
         // Events
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(new PrepareAnvilEventListener(), this);
