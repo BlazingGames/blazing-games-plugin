@@ -3,6 +3,7 @@ package de.blazemcworld.blazinggames.discord.commands;
 import java.util.UUID;
 
 import de.blazemcworld.blazinggames.discord.DiscordApp;
+import de.blazemcworld.blazinggames.discord.DiscordUser;
 import de.blazemcworld.blazinggames.discord.WhitelistManagement;
 import de.blazemcworld.blazinggames.utils.Pair;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -39,15 +40,24 @@ public class WhitelistCommand implements ICommand {
 
         boolean isNewPrimary;
 
-        
+        DiscordUser discordUser = whitelist.getDiscordUser(event.getMember().getIdLong());
 
-        if (whitelist.getDiscordUser(event.getMember().getIdLong()) == null) {
+        if (discordUser == null || discordUser.favoriteAccount == null) {
             isNewPrimary = true;
         } else if (event.getOption("primary") != null) {
             isNewPrimary = event.getOption("primary").getAsBoolean();
         } else {
             isNewPrimary = false;
         }
+
+        whitelist.addPlayer(uuid, event.getUser().getIdLong());
+        whitelist.updatePlayerLastKnownName(uuid, username);
+
+        if(isNewPrimary) {
+            whitelist.updateUser(event.getUser(), uuid);
+        }
+
+        whitelist.invalidateLinkCode(code);
 
         StringBuilder embedDescription = new StringBuilder();
         embedDescription.append("The player ").append(username).append(" has been whitelisted and linked to your discord account.\n\n");

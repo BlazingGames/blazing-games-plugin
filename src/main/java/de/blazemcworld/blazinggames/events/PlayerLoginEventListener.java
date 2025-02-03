@@ -41,16 +41,19 @@ public class PlayerLoginEventListener implements Listener {
             }
 
             if (whitelist.isWhitelisted(player.getUniqueId())) {
+                whitelist.updatePlayerLastKnownName(player.getUniqueId(), player.getName());
                 WhitelistedPlayer whitelistedPlayer = whitelist.getWhitelistedPlayer(player.getUniqueId());
                 DiscordUser linkedAccount = whitelist.getDiscordUser(whitelistedPlayer.discordUser);
                 sendMessageLater(player.getUniqueId(), "Hello, " + linkedAccount.displayName + "! ("
-                    + linkedAccount.username + "#" + linkedAccount.descriminator + ")");
+                    + linkedAccount.username + ")");
                 event.allow();
                 return;
             }
 
+            String linkCode = DiscordApp.getWhitelistManagement().createLinkCode(event.getPlayer().getName(), event.getPlayer().getUniqueId());
+
             event.disallow(Result.KICK_WHITELIST, Component.text(
-                "You are not whitelisted. Please use /whitelist on discord to link your account first."
+                "You are not whitelisted. Please use /whitelist on discord to link your account first.\nLink Code: " + linkCode
             ).color(NamedTextColor.RED));
         }
     }

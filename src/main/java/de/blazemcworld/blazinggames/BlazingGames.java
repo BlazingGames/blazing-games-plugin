@@ -65,7 +65,7 @@ public class BlazingGames extends JavaPlugin {
 
     // Gson
     public static final Gson gson = new GsonBuilder()
-        .excludeFieldsWithModifiers(Modifier.PRIVATE, Modifier.PROTECTED, Modifier.TRANSIENT, Modifier.STATIC)        .registerTypeAdapter(Location.class, new TextLocation.LocationTypeAdapter())
+        .excludeFieldsWithModifiers(Modifier.PRIVATE, Modifier.PROTECTED, Modifier.TRANSIENT, Modifier.STATIC)
         .registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter())
         .registerTypeAdapter(Location.class, new TextLocation.LocationTypeAdapter())
         .create();

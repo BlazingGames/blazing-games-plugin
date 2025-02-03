@@ -7,5 +7,4 @@ public class DiscordUser {
     public long snowflake;
     public String displayName;
     public String username;
-    public String descriminator;
 }

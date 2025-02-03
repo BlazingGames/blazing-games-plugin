@@ -20,6 +20,8 @@ import club.minnced.discord.webhook.send.WebhookMessage;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.discord.commands.ICommand;
+import de.blazemcworld.blazinggames.discord.commands.UnlinkCommand;
+import de.blazemcworld.blazinggames.discord.commands.WhitelistCommand;
 import de.blazemcworld.blazinggames.events.ChatEventListener;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import de.blazemcworld.blazinggames.utils.TextUtils;
@@ -33,7 +35,9 @@ import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -50,10 +54,7 @@ import java.io.IOException;
 import java.awt.Color;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Function;
 
 import javax.annotation.Nonnull;
@@ -67,7 +68,7 @@ public class DiscordApp extends ListenerAdapter {
 
     );
     private final List<ICommand> whitelistCommands = List.of(
-        
+        new WhitelistCommand(), new UnlinkCommand()
     );
 
 
@@ -168,6 +169,8 @@ public class DiscordApp extends ListenerAdapter {
                 }, 0, 20);
             } catch (FileNotFoundException ignored) {}
             this.client = WebhookClient.withUrl(config.webhookUrl());
+
+            updateCommands();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -183,6 +186,24 @@ public class DiscordApp extends ListenerAdapter {
         }
     }
 
+    private List<ICommand> getAvailableCommands() {
+        ArrayList<ICommand> available = new ArrayList<>(commands);
+        if(whitelist != null) {
+            available.addAll(whitelistCommands);
+        }
+        return available;
+    }
+
+    private void updateCommands() {
+        CommandListUpdateAction commandsAction = jda.updateCommands();
+
+        for(ICommand command : getAvailableCommands()) {
+            command.register(commandsAction);
+        }
+
+        commandsAction.queue();
+    }
+
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         if (!event.isFromGuild()) return;
@@ -190,8 +211,8 @@ public class DiscordApp extends ListenerAdapter {
         if (event.getChannel().getId().equals(this.channel.getId())) {
             sendMinecraftMessage(Objects.requireNonNull(event.getMember()),
                     event.getMessage().getContentRaw(),
-                event.getMessage().getAttachments().toArray(new Message.Attachment[0]),
-                event.getMessage().getStickers().toArray(new StickerItem[0]));
+                    event.getMessage().getAttachments().toArray(new Message.Attachment[0]),
+                    event.getMessage().getStickers().toArray(new StickerItem[0]));
         } else if (event.getChannel().getId().equals(this.consoleChannel.getId())) {
             lastMessageId = 0;
             String command = event.getMessage().getContentRaw();
@@ -201,11 +222,19 @@ public class DiscordApp extends ListenerAdapter {
         }
     }
 
-    
+
     @Override
     public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event) {
         if (event.isFromGuild()) {
-
+            SlashCommandInteraction interaction = event.getInteraction();
+            String name = interaction.getName();
+            for(ICommand command : getAvailableCommands()) {
+                if(command.name().equals(name)) {
+                    command.handle(event);
+                    return;
+                }
+            }
+            event.reply("Somehow, you provided an invalid command.").setEphemeral(true).queue();
         } else {
             event.reply("Slash commands may only be used in guilds.").setEphemeral(true).queue();
         }

@@ -23,7 +23,7 @@ public class EnforceWhitelistCommand implements CommandExecutor {
             }
 
             if (!whitelist.isWhitelisted(player.getUniqueId())) {
-                player.kick(Component.text("fuck you").color(NamedTextColor.RED));
+                player.kick(Component.text("You have been removed from the whitelist.").color(NamedTextColor.RED));
             }
         }
     }

@@ -1,12 +1,16 @@
 package de.blazemcworld.blazinggames.discord;
 
 import java.time.Duration;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
+import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.commands.EnforceWhitelistCommand;
 import de.blazemcworld.blazinggames.data.DataStorage;
 import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
 import de.blazemcworld.blazinggames.data.name.ArbitraryNameProvider;
@@ -14,6 +18,7 @@ import de.blazemcworld.blazinggames.data.name.UUIDNameProvider;
 import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
 import de.blazemcworld.blazinggames.utils.Pair;
 import net.dv8tion.jda.api.entities.User;
+import org.bukkit.Bukkit;
 
 public class WhitelistManagement {
     private final DataStorage<WhitelistedPlayer, UUID> whitelist = DataStorage.forClass(
@@ -40,13 +45,14 @@ public class WhitelistManagement {
         return whitelist.hasData(uuid);
     }
 
-    @SuppressWarnings("deprecation")
     public DiscordUser updateUser(User user, UUID primary) {
         DiscordUser discordUser = new DiscordUser();
         discordUser.snowflake = user.getIdLong();
         discordUser.displayName = user.getGlobalName();
         discordUser.username = user.getName();
-        discordUser.descriminator = user.getDiscriminator();
+        if(primary != null) {
+            discordUser.favoriteAccount = primary;
+        }
         discordUsers.storeData(user.getId(), discordUser);
         return discordUser;
     }
@@ -60,12 +66,61 @@ public class WhitelistManagement {
         return whitelistedPlayer;
     }
 
-    public void removePlayer(WhitelistedPlayer player) {
+    public void updatePlayerLastKnownName(UUID player, String name) {
+        WhitelistedPlayer whitelistedPlayer = getWhitelistedPlayer(player);
+
+        if(whitelistedPlayer == null) return;
+
+        whitelistedPlayer.lastKnownName = name;
+        whitelist.storeData(player, whitelistedPlayer);
+    }
+
+    public boolean removePlayer(WhitelistedPlayer player) {
         whitelist.deleteData(player.uuid);
+
+        if(this == DiscordApp.getWhitelistManagement()) {
+            Bukkit.getScheduler().runTask(BlazingGames.get(), EnforceWhitelistCommand::enforceWhitelist);
+        }
+
+        DiscordUser user = getDiscordUser(player.discordUser);
+        if(user == null) {
+            return false;
+        }
+
+        if(!player.uuid.equals(user.favoriteAccount)) {
+            return false;
+        }
+
+        List<WhitelistedPlayer> remaining = whitelist.queryForData((data) -> data.discordUser == user.snowflake);
+
+        remaining.sort(Comparator.comparingLong((a) -> a.whitelistedAt));
+
+        if(remaining.isEmpty()) {
+            user.favoriteAccount = null;
+        }
+        else {
+            user.favoriteAccount = remaining.getFirst().uuid;
+        }
+
+        discordUsers.storeData(Long.toUnsignedString(user.snowflake), user);
+
+        return true;
     }
     
     public WhitelistedPlayer getWhitelistedPlayer(UUID uuid) {
         return whitelist.getData(uuid);
+    }
+
+    public WhitelistedPlayer getWhitelistedPlayer(String username) {
+        List<WhitelistedPlayer> players = whitelist.queryForData((data) -> data.lastKnownName.equalsIgnoreCase(username));
+
+        if(players.isEmpty()) {
+            return null;
+        }
+
+        players.sort(Comparator.comparingLong((a) -> a.whitelistedAt));
+
+        return players.getFirst();
     }
 
     public DiscordUser getDiscordUser(long snowflake) {
