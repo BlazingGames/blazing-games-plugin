@@ -40,7 +40,7 @@ public class WhitelistCommand implements ICommand {
 
         boolean isNewPrimary;
 
-        DiscordUser discordUser = whitelist.getDiscordUser(event.getMember().getIdLong());
+        DiscordUser discordUser = whitelist.updateUser(event.getUser());
 
         if (discordUser == null || discordUser.favoriteAccount == null) {
             isNewPrimary = true;
@@ -54,7 +54,7 @@ public class WhitelistCommand implements ICommand {
         whitelist.updatePlayerLastKnownName(uuid, username);
 
         if(isNewPrimary) {
-            whitelist.updateUser(event.getUser(), uuid);
+            discordUser = whitelist.updateUser(event.getUser(), uuid);
         }
 
         whitelist.invalidateLinkCode(code);
@@ -64,7 +64,7 @@ public class WhitelistCommand implements ICommand {
         if (isNewPrimary) {
             embedDescription.append("This is your new primary account. You may send messages in the chat link channel with this account and they will send as ").append(username);
         } else {
-            embedDescription.append("Your primary account was unaffected. Sending messages in the chat link channel will still send as ").append(whitelist.getWhitelistedPlayer(whitelist.getDiscordUser(event.getMember().getIdLong()).favoriteAccount).lastKnownName);
+            embedDescription.append("Your primary account was unaffected. Sending messages in the chat link channel will still send as ").append(whitelist.getWhitelistedPlayer(discordUser.favoriteAccount).lastKnownName);
         }
         embedDescription.append(".\n\n");
         embedDescription.append("* To change your primary account, run `/setprimary` (in discord).\n");

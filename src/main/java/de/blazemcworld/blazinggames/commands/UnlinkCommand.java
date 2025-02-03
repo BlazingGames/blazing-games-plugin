@@ -42,12 +42,12 @@ public class UnlinkCommand implements CommandExecutor {
 
         StringBuilder embedDescription = new StringBuilder();
 
+        DiscordUser user = whitelist.getDiscordUser(whitelistedPlayer.discordUser);
+
+        boolean noMorePrimary = user == null || user.favoriteAccount == null;
+
         embedDescription.append("You have been removed from the whitelist and unlinked from your discord account.\n");
         if(removingPrimary) {
-            DiscordUser user = whitelist.getDiscordUser(whitelistedPlayer.discordUser);
-
-            boolean noMorePrimary = user == null || user.favoriteAccount == null;
-
             if(noMorePrimary) {
                 embedDescription.append("You no longer have any players linked to this discord account.\n");
                 embedDescription.append("This means that in order to continue playing, you need to link a new account");
@@ -56,8 +56,11 @@ public class UnlinkCommand implements CommandExecutor {
                 embedDescription.append("This account was your primary account up to now. Sending messages in the chat link channel will now send as ").append(whitelist.getWhitelistedPlayer(user.favoriteAccount).lastKnownName);
             }
         }
+        else if(noMorePrimary) {
+            embedDescription.append("You never had a primary account in the first place. How.");
+        }
         else {
-            embedDescription.append("Your primary account was unaffected. Sending messages in the chat link channel will still send as ").append(whitelist.getWhitelistedPlayer(whitelist.getDiscordUser(whitelistedPlayer.discordUser).favoriteAccount).lastKnownName);
+            embedDescription.append("Your primary account was unaffected. Sending messages in the chat link channel will still send as ").append(whitelist.getWhitelistedPlayer(user.favoriteAccount).lastKnownName);
         }
         embedDescription.append(".\n");
         embedDescription.append("To change your primary account, run `/setprimary` (in discord).\n");

@@ -46,22 +46,24 @@ public class UnlinkCommand implements ICommand {
 
         StringBuilder embedDescription = new StringBuilder();
 
+        DiscordUser user = whitelist.updateUser(event.getUser());
+        boolean noMorePrimary = user == null || user.favoriteAccount == null;
+
         embedDescription.append("The player ").append(username).append(" has been removed from the whitelist and unlinked from your discord account.\n\n");
         if(removingPrimary) {
-            DiscordUser user = whitelist.getDiscordUser(event.getUser().getIdLong());
-
-            boolean noMorePrimary = user == null || user.favoriteAccount == null;
-
             if(noMorePrimary) {
                 embedDescription.append("You no longer have any players linked to this discord account. ");
                 embedDescription.append("This means that in order to continue playing, you need to link a new account");
             }
             else {
-                embedDescription.append("The player ").append(username).append(" was your primary account up to now. Sending messages in the chat link channel will now send as ").append(whitelist.getWhitelistedPlayer(whitelist.getDiscordUser(event.getMember().getIdLong()).favoriteAccount).lastKnownName);
+                embedDescription.append("The player ").append(username).append(" was your primary account up to now. Sending messages in the chat link channel will now send as ").append(whitelist.getWhitelistedPlayer(user.favoriteAccount).lastKnownName);
             }
         }
+        else if(noMorePrimary) {
+            embedDescription.append("You never had a primary account in the first place. How.");
+        }
         else {
-            embedDescription.append("Your primary account was unaffected. Sending messages in the chat link channel will still send as ").append(whitelist.getWhitelistedPlayer(whitelist.getDiscordUser(event.getMember().getIdLong()).favoriteAccount).lastKnownName);
+            embedDescription.append("Your primary account was unaffected. Sending messages in the chat link channel will still send as ").append(whitelist.getWhitelistedPlayer(user.favoriteAccount).lastKnownName);
         }
         embedDescription.append(".\n\n");
         embedDescription.append("* To change your primary account, run `/setprimary` (in discord).\n");

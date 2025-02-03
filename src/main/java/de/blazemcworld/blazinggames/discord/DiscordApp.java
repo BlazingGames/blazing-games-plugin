@@ -66,7 +66,7 @@ public class DiscordApp extends ListenerAdapter {
 
     );
     private final List<ICommand> whitelistCommands = List.of(
-        new WhitelistCommand(), new UnlinkCommand(), new SetPrimaryCommand(), new LinksCommand()
+        new WhitelistCommand(), new UnlinkCommand(), new SetPrimaryCommand(), new LinksCommand(), new SyncCommand()
     );
 
 

@@ -44,11 +44,7 @@ public class SetPrimaryCommand implements ICommand {
 
         username = whitelistedPlayer.lastKnownName;
 
-        DiscordUser user = whitelist.getDiscordUser(event.getUser().getIdLong());
-
-        if(user == null) {
-            user = whitelist.updateUser(event.getUser(), null);
-        }
+        DiscordUser user = whitelist.updateUser(event.getUser());
 
         if(whitelistedPlayer.uuid.equals(user.favoriteAccount)) {
             event.reply("The specified player is already your primary account.").setEphemeral(true).queue();

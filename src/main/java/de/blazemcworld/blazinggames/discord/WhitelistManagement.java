@@ -45,6 +45,14 @@ public class WhitelistManagement {
         return whitelist.hasData(uuid);
     }
 
+    public DiscordUser updateUser(User user) {
+        DiscordUser discordUser = getDiscordUser(user.getIdLong());
+        if(discordUser == null) {
+            return updateUser(user, null);
+        }
+        return updateUser(user, discordUser.favoriteAccount);
+    }
+
     public DiscordUser updateUser(User user, UUID primary) {
         DiscordUser discordUser = new DiscordUser();
         discordUser.snowflake = user.getIdLong();

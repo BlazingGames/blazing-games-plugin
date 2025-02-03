@@ -28,11 +28,7 @@ public class LinksCommand implements ICommand {
         if (!DiscordApp.isWhitelistManaged()) throw new IllegalStateException("Whitelist is not managed, but /links was called");
         WhitelistManagement whitelist = DiscordApp.getWhitelistManagement();
 
-        DiscordUser user = whitelist.getDiscordUser(event.getUser().getIdLong());
-
-        if(user == null) {
-            user = whitelist.updateUser(event.getUser(), null);
-        }
+        DiscordUser user = whitelist.updateUser(event.getUser());
 
         List<WhitelistedPlayer> whitelistedPlayers = whitelist.getWhitelistedPlayersOfDiscordUser(user);
 
