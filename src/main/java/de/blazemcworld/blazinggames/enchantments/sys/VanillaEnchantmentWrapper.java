@@ -87,6 +87,8 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
 
     @Override
     public boolean conflictsWith(Enchantment other) {
+        if(other == enchantment) return false;
+
         return enchantment.conflictsWith(other) || other.conflictsWith(enchantment);
     }
 

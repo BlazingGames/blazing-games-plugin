@@ -19,6 +19,9 @@ import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.items.ContextlessItem;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.change.ItemChangeProviders;
+import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
+import de.blazemcworld.blazinggames.items.predicates.MaterialItemPredicate;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -41,14 +44,43 @@ import java.util.Map;
 public class BuilderWand extends ContextlessItem {
     private static final NamespacedKey modeKey = BlazingGames.get().key("builder_mode");
 
+    private final NamespacedKey key;
+    private final Component name;
+    private final int maxBlocks;
+    private final int durability;
+    private final Material gem;
+    private final Material handle;
+    private final ItemPredicate repairPredicate;
+    private final List<BuilderWandMode> availableModes;
+
+    public BuilderWand(NamespacedKey key, Component name, int maxBlocks, int durability, Material gem, Material handle, ItemPredicate repairPredicate, BuilderWandMode... availableModes) {
+        this.key = key;
+        this.name = name;
+        this.maxBlocks = maxBlocks;
+        this.durability = durability;
+        this.gem = gem;
+        this.handle = handle;
+        this.repairPredicate = repairPredicate;
+        this.availableModes = List.of(availableModes);
+    }
+
+    public BuilderWand(NamespacedKey key, Component name, int maxBlocks, int durability, Material gem, Material handle, BuilderWandMode... availableModes) {
+        this(key, name, maxBlocks, durability, gem, handle, new MaterialItemPredicate(gem), availableModes);
+    }
+
     @Override
     public @NotNull NamespacedKey getKey() {
-        return BlazingGames.get().key("builder_wand");
+        return key;
     }
 
     @Override
     protected int stackSize() {
         return 1;
+    }
+
+    @Override
+    protected ItemPredicate repairPredicate() {
+        return repairPredicate;
     }
 
     @Override
@@ -59,12 +91,15 @@ public class BuilderWand extends ContextlessItem {
 
         wand.setItemMeta(meta);
 
+        wand.setData(DataComponentTypes.DAMAGE, 0);
+        wand.setData(DataComponentTypes.MAX_DAMAGE, durability);
+
         return wand;
     }
 
     @Override
     protected @NotNull Component itemName() {
-        return Component.text("Builder's Wand").color(NamedTextColor.GOLD);
+        return name;
     }
 
     @Override
@@ -73,7 +108,11 @@ public class BuilderWand extends ContextlessItem {
             return List.of();
         }
 
-        return List.of(Component.text(getModeText(wand)).color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        return List.of(
+                Component.text("Can place up to " + maxBlocks + " blocks")
+                        .color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
+                Component.text(getModeText(wand)).color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
+        );
     }
 
     public ItemStack cycleMode(ItemStack wand) {
@@ -86,7 +125,11 @@ public class BuilderWand extends ContextlessItem {
         ItemMeta meta = wand.getItemMeta();
 
         BuilderWandMode mode = meta.getPersistentDataContainer().getOrDefault(modeKey, BuilderWandMode.persistentType, BuilderWandMode.NO_LOCK);
-        mode = mode.getNextMode();
+
+        int idx = availableModes.indexOf(mode);
+        idx++;
+        if(idx >= availableModes.size()) idx = 0;
+        mode = availableModes.get(idx);
 
         meta.getPersistentDataContainer().set(modeKey, BuilderWandMode.persistentType, mode);
 
@@ -125,19 +168,35 @@ public class BuilderWand extends ContextlessItem {
 
         Inventory inv = player.getInventory();
 
-        for (ItemStack itemStack : inv.getStorageContents()) {
-            if(itemStack == null) continue;
-            if(itemStack.getType() != itemMaterial) continue;
-            if(CustomItem.isCustomItem(itemStack)) continue;
+        if(player.getGameMode() == GameMode.CREATIVE) {
+            maxBlocks = this.maxBlocks;
+        }
+        else {
+            for (ItemStack itemStack : inv.getStorageContents()) {
+                if(itemStack == null) continue;
+                if(itemStack.getType() != itemMaterial) continue;
+                if(CustomItem.isCustomItem(itemStack)) continue;
 
-            maxBlocks += itemStack.getAmount();
+                maxBlocks += itemStack.getAmount();
+            }
+
+            if(eventItem.hasData(DataComponentTypes.DAMAGE) &&
+                    eventItem.hasData(DataComponentTypes.MAX_DAMAGE) &&
+                    !eventItem.hasData(DataComponentTypes.UNBREAKABLE)) {
+                int damage = eventItem.getDataOrDefault(DataComponentTypes.DAMAGE, 0);
+                int maxDamage = eventItem.getDataOrDefault(DataComponentTypes.MAX_DAMAGE, 0);
+                int durability = maxDamage - damage;
+                if(maxBlocks > durability) {
+                    maxBlocks = durability;
+                }
+            }
+
+            if(maxBlocks > this.maxBlocks) {
+                maxBlocks = this.maxBlocks;
+            }
         }
 
-        if(maxBlocks > 128) {
-            maxBlocks = 128;
-        }
-
-        if(maxBlocks <= 0 && player.getGameMode() != GameMode.CREATIVE)
+        if(maxBlocks <= 0)
         {
             return 0;
         }
@@ -241,8 +300,8 @@ public class BuilderWand extends ContextlessItem {
                 " R ",
                 "R  "
         );
-        wandRecipe.setIngredient('R', Material.BLAZE_ROD);
-        wandRecipe.setIngredient('S', Material.NETHER_STAR);
+        wandRecipe.setIngredient('R', handle);
+        wandRecipe.setIngredient('S', gem);
 
         return Map.of(
             getKey(), wandRecipe

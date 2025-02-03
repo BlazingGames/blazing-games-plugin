@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 

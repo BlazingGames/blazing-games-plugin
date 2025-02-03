@@ -54,6 +54,10 @@ public class HookContext {
         writeFile("assets/" + namespace.getNamespace() + "/textures/" + type + "/" + namespace.getKey() + ".png", texture);
     }
 
+    public void installTextureAnimationData(NamespacedKey namespace, String type, byte[] animationData) {
+        writeFile("assets/" + namespace.getNamespace() + "/textures/" + type + "/" + namespace.getKey() + ".png.mcmeta", animationData);
+    }
+
     public void installModel(NamespacedKey namespace, byte[] model) {
         writeFile("assets/" + namespace.getNamespace() + "/models/" + namespace.getKey() + ".json", model);
     }

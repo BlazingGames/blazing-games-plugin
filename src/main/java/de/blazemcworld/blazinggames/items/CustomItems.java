@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableSet;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.builderwand.BuilderWand;
+import de.blazemcworld.blazinggames.builderwand.BuilderWandMode;
 import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
 import de.blazemcworld.blazinggames.computing.upgrades.UpgradeType;
 import de.blazemcworld.blazinggames.crates.DeathCrateKey;
@@ -30,6 +31,9 @@ import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrappers;
 import de.blazemcworld.blazinggames.multiblocks.Blueprint;
 import de.blazemcworld.blazinggames.utils.AutomaticItemProvider;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 
 import javax.annotation.Nullable;
@@ -39,7 +43,6 @@ import java.util.*;
 public class CustomItems implements ItemProvider {
     public static final CustomSlabs CUSTOM_SLABS = new CustomSlabs();
 
-    public static final BuilderWand BUILDER_WAND = new BuilderWand();
     public static final PortableCraftingTable PORTABLE_CRAFTING_TABLE = new PortableCraftingTable();
     public static final TeleportAnchor TELEPORT_ANCHOR = new TeleportAnchor();
     public static final Blueprint BLUEPRINT = new Blueprint();
@@ -48,6 +51,30 @@ public class CustomItems implements ItemProvider {
     public static final SkeletonKey SKELETON_KEY = new SkeletonKey();
     public static final ToGoBoxItem TO_GO_BOX = new ToGoBoxItem();
     public static final NetherStarChunk NETHER_STAR_CHUNK = new NetherStarChunk();
+
+    public static final BuilderWand WOODEN_BUILDER_WAND = new BuilderWand(
+            BlazingGames.get().key("wooden_builder_wand"),
+            Component.text("Wooden Builder's Wand"),
+            16, 256,
+            Material.FLINT, Material.STICK,
+            BuilderWandMode.NO_LOCK
+    );
+    public static final BuilderWand STORM_BUILDER_WAND = new BuilderWand(
+            BlazingGames.get().key("storm_builder_wand"),
+            Component.text("Storm Builder's Wand").color(NamedTextColor.BLUE),
+            64, 2048,
+            Material.DIAMOND, Material.BREEZE_ROD,
+            BuilderWandMode.NO_LOCK, BuilderWandMode.HORIZONTAL, BuilderWandMode.VERTICAL
+    );
+    public static final BuilderWand BLAZING_BUILDER_WAND = new BuilderWand(
+            BlazingGames.get().key("blazing_builder_wand"),
+            Component.text("Blazing Builder's Wand").color(NamedTextColor.GOLD),
+            128, 16384,
+            Material.NETHER_STAR, Material.BLAZE_ROD, CustomItems.NETHER_STAR_CHUNK,
+            BuilderWandMode.NO_LOCK, BuilderWandMode.HORIZONTAL, BuilderWandMode.VERTICAL,
+            BuilderWandMode.NORTH_SOUTH, BuilderWandMode.NORTH_SOUTH_VERTICAL,
+            BuilderWandMode.EAST_WEST, BuilderWandMode.EAST_WEST_VERTICAL
+    );
 
     public static final EnchantmentTome FUSE_TOME = new EnchantmentTome(BlazingGames.get().key("fuse_tome"), "Fuse Tome", EnchantmentWrappers.MENDING);
     public static final EnchantmentTome BIND_TOME = new EnchantmentTome(BlazingGames.get().key("bind_tome"), "Bind Tome", EnchantmentWrappers.BINDING_CURSE);
@@ -64,7 +91,6 @@ public class CustomItems implements ItemProvider {
     @Override
     public Set<CustomItem<?>> getItems() {
         return Set.of(
-                BUILDER_WAND,
                 PORTABLE_CRAFTING_TABLE,
                 TELEPORT_ANCHOR,
                 BLUEPRINT,
@@ -73,6 +99,9 @@ public class CustomItems implements ItemProvider {
                 SKELETON_KEY,
                 TO_GO_BOX,
                 NETHER_STAR_CHUNK,
+                WOODEN_BUILDER_WAND,
+                STORM_BUILDER_WAND,
+                BLAZING_BUILDER_WAND,
                 FUSE_TOME,
                 BIND_TOME,
                 VANISH_TOME,

@@ -118,6 +118,16 @@ public abstract class CustomItem<T extends ItemContext> implements RecipeProvide
         return itemName();
     }
 
+    public final boolean repairableBy(ItemStack stack) {
+        ItemPredicate repairPredicate = repairPredicate();
+
+        if(repairPredicate == null) {
+            return false;
+        }
+
+        return repairPredicate.matchItem(stack);
+    }
+
     // DO NOT CALL THIS METHOD, instead call create() on the item's instance
     // also there's no need to set the "custom_item" item tag because
     // the create() method does it anyway
@@ -134,6 +144,10 @@ public abstract class CustomItem<T extends ItemContext> implements RecipeProvide
     }
     public List<Component> lore(ItemStack stack) {
         return List.of();
+    }
+
+    protected ItemPredicate repairPredicate() {
+        return null;
     }
 
     protected abstract T parseRawContext(Player player, String raw) throws ParseException;

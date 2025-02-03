@@ -47,6 +47,13 @@ public interface ItemProvider extends PackBuildHook {
                 BlazingGames.get().log(e);
             }
 
+            // install animation options
+            try (InputStream stream = item.getClass().getResourceAsStream(directory + item.getKey().getKey() + ".png.mcmeta")) {
+                if (stream != null) context.installTextureAnimationData(item.getKey(), "item", stream.readAllBytes());
+            } catch (IOException e) {
+                BlazingGames.get().log(e);
+            }
+
             // install model
             try (InputStream stream = item.getClass().getResourceAsStream(directory + item.getKey().getKey() + ".json")) {
                 if (stream != null) context.installModel(item.getKey(), stream.readAllBytes());

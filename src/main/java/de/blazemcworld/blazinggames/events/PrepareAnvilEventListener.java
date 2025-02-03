@@ -17,6 +17,7 @@ package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
 import de.blazemcworld.blazinggames.items.CustomItem;
+import de.blazemcworld.blazinggames.utils.ItemUtils;
 import de.blazemcworld.blazinggames.utils.Pair;
 import de.blazemcworld.blazinggames.utils.TextUtils;
 import io.papermc.paper.datacomponent.DataComponentTypes;
@@ -53,7 +54,35 @@ public class PrepareAnvilEventListener implements Listener {
 
         if(enchantingItem != null && !enchantingItem.isEmpty()) {
             repairCost += enchantingItem.getDataOrDefault(DataComponentTypes.REPAIR_COST, 0);
-            if(CustomItem.isCustomItem(enchantingItem))
+            if(ItemUtils.canRepairTool(result, enchantingItem)) {
+                if(result.hasData(DataComponentTypes.MAX_DAMAGE) &&
+                        result.hasData(DataComponentTypes.DAMAGE) &&
+                        !result.hasData(DataComponentTypes.UNBREAKABLE))
+                {
+                    int damage = result.getData(DataComponentTypes.DAMAGE);
+                    int maxDamage = result.getData(DataComponentTypes.MAX_DAMAGE);
+
+                    int damageReduced = maxDamage / 4;
+
+                    int count = 0;
+                    while(count * damageReduced < damage) {
+                        if(count >= enchantingItem.getAmount()) {
+                            break;
+                        }
+                        count++;
+                    }
+
+                    damage -= count * damageReduced;
+                    if(damage < 0) damage = 0;
+
+                    result.setData(DataComponentTypes.DAMAGE, damage);
+
+                    event.getView().setRepairItemCountCost(count);
+                    repairCost += count;
+                    increaseRepairCost = true;
+                }
+            }
+            else if(CustomItem.isCustomItem(enchantingItem))
             {
                 if(EnchantmentHelper.canEnchantItem(result) && result.getAmount() == 1) {
                     CustomItem<?> item = CustomItem.getCustomItem(enchantingItem);
@@ -68,55 +97,22 @@ public class PrepareAnvilEventListener implements Listener {
                     }
                 }
             }
-            else
-            {
-                if(result.isRepairableBy(enchantingItem)) {
-                    if(result.hasData(DataComponentTypes.MAX_DAMAGE) &&
-                        result.hasData(DataComponentTypes.DAMAGE) &&
-                        !result.hasData(DataComponentTypes.UNBREAKABLE))
-                    {
-                        int damage = result.getData(DataComponentTypes.DAMAGE);
-                        int maxDamage = result.getData(DataComponentTypes.MAX_DAMAGE);
+            else if(EnchantmentHelper.canEnchantItem(result) && result.getAmount() == 1) {
+                if(enchantingItem.getType() == Material.ENCHANTED_BOOK) {
+                    Pair<ItemStack, Integer> enchantResult = EnchantmentHelper.enchantFromItem(result, enchantingItem);
+                    result = enchantResult.left;
+                    repairCost += enchantResult.right;
+                    increaseRepairCost = true;
 
-                        int damageReduced = maxDamage / 4;
-
-                        int count = 0;
-                        while(count * damageReduced < damage) {
-                            if(count >= enchantingItem.getAmount()) {
-                                break;
-                            }
-                            count++;
-                        }
-
-                        damage -= count * damageReduced;
-                        if(damage < 0) damage = 0;
-
-                        result.setData(DataComponentTypes.DAMAGE, damage);
-
-                        event.getView().setRepairItemCountCost(count);
-                        repairCost += count;
-                        increaseRepairCost = true;
-                    }
+                    minRepairCost = Math.min(minRepairCost, enchantingItem.getDataOrDefault(DataComponentTypes.REPAIR_COST, 0));
                 }
-                else {
-                    if(EnchantmentHelper.canEnchantItem(result) && result.getAmount() == 1) {
-                        if(enchantingItem.getType() == Material.ENCHANTED_BOOK) {
-                            Pair<ItemStack, Integer> enchantResult = EnchantmentHelper.enchantFromItem(result, enchantingItem);
-                            result = enchantResult.left;
-                            repairCost += enchantResult.right;
-                            increaseRepairCost = true;
+                else if(!CustomItem.isCustomItem(result) && enchantingItem.getType() == result.getType()) {
+                    Pair<ItemStack, Integer> enchantResult = EnchantmentHelper.enchantFromItem(result, enchantingItem);
+                    result = enchantResult.left;
+                    repairCost += repairByCombination(result, enchantingItem, 12) + enchantResult.right;
+                    increaseRepairCost = true;
 
-                            minRepairCost = Math.min(minRepairCost, enchantingItem.getDataOrDefault(DataComponentTypes.REPAIR_COST, 0));
-                        }
-                        else if(!CustomItem.isCustomItem(result) && enchantingItem.getType() == result.getType()) {
-                            Pair<ItemStack, Integer> enchantResult = EnchantmentHelper.enchantFromItem(result, enchantingItem);
-                            result = enchantResult.left;
-                            repairCost += repairByCombination(result, enchantingItem, 12) + enchantResult.right;
-                            increaseRepairCost = true;
-
-                            minRepairCost = Math.min(minRepairCost, enchantingItem.getDataOrDefault(DataComponentTypes.REPAIR_COST, 0));
-                        }
-                    }
+                    minRepairCost = Math.min(minRepairCost, enchantingItem.getDataOrDefault(DataComponentTypes.REPAIR_COST, 0));
                 }
             }
         }
