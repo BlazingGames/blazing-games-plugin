@@ -19,5 +19,6 @@ public record AppConfig(
         String token,
         long channelId,
         long consoleChannelId,
-        String webhookUrl
+        String webhookUrl,
+        boolean managedWhitelist
 ) { }

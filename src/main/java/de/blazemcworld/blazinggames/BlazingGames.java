@@ -65,7 +65,7 @@ public class BlazingGames extends JavaPlugin {
 
     // Gson
     public static final Gson gson = new GsonBuilder()
-        .excludeFieldsWithModifiers(Modifier.PRIVATE, Modifier.PROTECTED, Modifier.TRANSIENT, Modifier.STATIC)        .registerTypeAdapter(Location.class, new TextLocation.LocationTypeAdapter())
+        .excludeFieldsWithModifiers(Modifier.PRIVATE, Modifier.PROTECTED, Modifier.TRANSIENT, Modifier.STATIC)
         .registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter())
         .registerTypeAdapter(Location.class, new TextLocation.LocationTypeAdapter())
         .create();
@@ -115,8 +115,14 @@ public class BlazingGames extends JavaPlugin {
                     config.getString("jda.token"),
                     config.getLong("jda.link-channel"),
                     config.getLong("jda.console-channel"),
-                    config.getString("jda.webhook")
+                    config.getString("jda.webhook"),
+                    config.getBoolean("jda.whitelist-management")
             );
+
+            if (config.getBoolean("jda.whitelist-management")) {
+                Bukkit.setWhitelist(true);
+                Bukkit.setWhitelistEnforced(false);
+            }
 
             try {
                 DiscordApp.init(appConfig);
@@ -206,6 +212,11 @@ public class BlazingGames extends JavaPlugin {
         registerCommand("playtime", new PlaytimeCommand());
         registerCommand("display", new DisplayCommand());
         registerCommand("setaltar", new SetAltar());
+        registerCommand("enforcewhitelist", new EnforceWhitelistCommand());
+
+        if(DiscordApp.isWhitelistManaged()) {
+            registerCommand("unlink", new UnlinkCommand());
+        }
 
         // Events
         PluginManager pluginManager = getServer().getPluginManager();
@@ -233,8 +244,10 @@ public class BlazingGames extends JavaPlugin {
         pluginManager.registerEvents(new VillagerAcquireTradeEventListener(), this);
         pluginManager.registerEvents(new InventoryDragEventListener(), this);
         pluginManager.registerEvents(new InventoryCloseEventListener(), this);
+        pluginManager.registerEvents(new PlayerLoginEventListener(), this);
 
         Bukkit.getScheduler().runTaskTimer(this, TickEventListener::onTick, 0, 1);
+        Bukkit.getScheduler().runTaskTimer(this, EnforceWhitelistCommand::enforceWhitelist, 0, 600);
 
         // Cooldowns
         interactCooldown = new Cooldown(this);
