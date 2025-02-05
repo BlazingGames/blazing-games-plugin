@@ -159,11 +159,11 @@ public class AltarInterface extends UserInterface {
     }
 
     public ItemStack getLapis() {
-        return getItem(1,3);
+        return getItem(1,2);
     }
 
     public ItemStack getMaterial() {
-        return getItem(1,2);
+        return getItem(1,3);
     }
 
     public int getTier() {
