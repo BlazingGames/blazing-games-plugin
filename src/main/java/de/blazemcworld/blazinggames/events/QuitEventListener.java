@@ -38,8 +38,8 @@ public class QuitEventListener implements Listener {
             BlazingGames.get().rebuildPack();
         }
 
-        Component name = PlayerConfig.forPlayer(event.getPlayer().getUniqueId())
-            .buildNameComponent(event.getPlayer().getName(), event.getPlayer().isOp());
+        Component name = PlayerConfig.forPlayer(event.getPlayer())
+            .buildNameComponent();
         event.quitMessage(Component.empty().append(name).append(Component.text(" left the game").color(color)));
     }
 }

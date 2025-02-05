@@ -42,14 +42,14 @@ public class ChatEventListener implements Listener, ChatRenderer {
 
     @Override
     public @NotNull Component render(@NotNull Player source, @NotNull Component sourceDisplayName, @NotNull Component message, @NotNull Audience viewer) {
-        PlayerConfig config = PlayerConfig.forPlayer(source.getUniqueId());
-        Component username = config.buildNameComponent(source.getName(), source.isOp());
+        PlayerConfig config = PlayerConfig.forPlayer(source);
+        Component username = config.buildNameComponent();
         String rawMessage = TextUtils.componentToString(message);
         if (meFormat(rawMessage) != null) {
             // me when a oneliner needs to be multiline
             return Component.text("*").color(NamedTextColor.WHITE)
                 .appendSpace()
-                .append(config.buildNameComponentShort(source.getName(), source.isOp()))
+                .append(config.buildNameComponentShort())
                 .appendSpace()
                 .append(TextUtils.colorCodeParser(TextUtils.stringToComponent(meFormat(rawMessage))).color(NamedTextColor.WHITE));
         } else if (greentextFormat(rawMessage) != null) {

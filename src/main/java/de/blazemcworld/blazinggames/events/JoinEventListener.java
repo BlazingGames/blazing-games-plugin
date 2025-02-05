@@ -49,9 +49,9 @@ public class JoinEventListener implements Listener {
             );
         }
 
-        PlayerConfig config = PlayerConfig.forPlayer(event.getPlayer().getUniqueId());
-        config.updatePlayer(event.getPlayer());
-        Component name = config.buildNameComponent(event.getPlayer().getName(), event.getPlayer().isOp());
+        PlayerConfig config = PlayerConfig.forPlayer(event.getPlayer());
+        config.updatePlayer();
+        Component name = config.buildNameComponent();
         event.joinMessage(Component.empty().append(name).append(Component.text(" joined the game").color(color)));
     }
 }

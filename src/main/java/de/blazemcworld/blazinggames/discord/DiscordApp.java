@@ -22,6 +22,7 @@ import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.discord.commands.*;
 import de.blazemcworld.blazinggames.events.ChatEventListener;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
+import de.blazemcworld.blazinggames.utils.PlayerInfo;
 import de.blazemcworld.blazinggames.utils.TextUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -239,10 +240,10 @@ public class DiscordApp extends ListenerAdapter {
     }
 
     private void sendDiscordMessage(Player player, String content) {
-        PlayerConfig config = PlayerConfig.forPlayer(player.getUniqueId());
+        PlayerConfig config = PlayerConfig.forPlayer(player);
         String out;
         if (ChatEventListener.meFormat(content) != null) {
-            out = config.buildNameStringShort(player.getName()) + " " + ChatEventListener.meFormat(content);
+            out = config.buildNameStringShort() + " " + ChatEventListener.meFormat(content);
         } else if (ChatEventListener.greentextFormat(content) != null) {
             StringBuilder builder = new StringBuilder();
             String[] parts = ChatEventListener.greentextFormat(content);
@@ -255,7 +256,7 @@ public class DiscordApp extends ListenerAdapter {
         }
 
         WebhookMessage message = new WebhookMessageBuilder()
-                .setUsername(config.buildNameString(player.getName(), player.isOp()))
+                .setUsername(config.buildNameString())
                 .setAvatarUrl("https://cravatar.eu/helmavatar/" + player.getUniqueId() + "/128.png")
                 .setContent(out)
                 .build();
@@ -375,6 +376,33 @@ public class DiscordApp extends ListenerAdapter {
         return String.format("%.1f %ciB", value / 1024.0, ci.current());
     }
 
+    private Component getDisplayName(Member member) {
+        Component discordName = Component.text(member.getEffectiveName())
+                .color(TextColor.color(member.getColorRaw()))
+                .hoverEvent(Component.text("Discord Display Name\nDiscord Username: "
+                        + member.getUser().getName()).asHoverEvent());
+
+        if(!isWhitelistManaged()) {
+            return discordName;
+        }
+
+        DiscordUser user = whitelist.updateUser(member.getUser());
+
+        if(user.favoriteAccount == null) {
+            return discordName;
+        }
+
+        WhitelistedPlayer player = whitelist.getWhitelistedPlayer(user.favoriteAccount);
+        PlayerInfo info = PlayerInfo.fromWhitelistedPlayer(player);
+
+        if(info == null) {
+            return discordName;
+        }
+
+        PlayerConfig config = PlayerConfig.forPlayer(info);
+        return config.buildNameComponent();
+    }
+
     private void sendMinecraftMessage(Member member, String content, Message.Attachment[] attachmentsRaw, Sticker[] stickersRaw) {
         Component attachments = (attachmentsRaw.length > 0) ? formatArrayIntoComponent(
                 "Attachments", attachmentsRaw, attachment -> prettyName(attachment.getFileName()),
@@ -402,10 +430,10 @@ public class DiscordApp extends ListenerAdapter {
         }
 
         Bukkit.broadcast(Component.text()
-                .append(Component.text("[DISCORD] ")
-                        .color(TextColor.color(0x2d4386)))
-                .append(Component.text(member.getEffectiveName())
-                        .color(TextColor.color(member.getColorRaw())))
+                .append(Component.text("☁").hoverEvent(Component.text("Discord Message").asHoverEvent())
+                        .color(TextColor.color(0x4E58DE)))
+                .appendSpace()
+                .append(getDisplayName(member))
                 .append(messageSegment)
                 .append(attachments)
                 .append(stickers)

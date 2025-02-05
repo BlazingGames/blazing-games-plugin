@@ -43,7 +43,7 @@ public class DisplayCommand implements CommandExecutor, TabCompleter {
                     .color(NamedTextColor.RED));
             return false;
         }
-        PlayerConfig config = PlayerConfig.forPlayer(player.getUniqueId());
+        PlayerConfig config = PlayerConfig.forPlayer(player);
         player.sendMessage("");
 
         if (args.length < 1) {
@@ -133,16 +133,16 @@ public class DisplayCommand implements CommandExecutor, TabCompleter {
     }
 
     private static void sendNameplates(Player player) {
-        PlayerConfig config = PlayerConfig.forPlayer(player.getUniqueId());
+        PlayerConfig config = PlayerConfig.forPlayer(player);
         player.sendMessage(Component.text("Preview:").color(colorSuccess));
         player.sendMessage(Component.text("- Current nameplate: ").color(colorSuccess)
-            .append(config.buildNameComponent(player.getName(), player.isOp())));
+                .append(config.buildNameComponent()));
         player.sendMessage(Component.text("- Current nameplate (short): ").color(colorSuccess)
-            .append(config.buildNameComponentShort(player.getName(), player.isOp())));
+                .append(config.buildNameComponentShort()));
         player.sendMessage(Component.text("- Current discord name: ").color(colorSuccess)
-            .append(Component.text(config.buildNameString(player.getName(), player.isOp())).color(NamedTextColor.WHITE)));
+                .append(Component.text(config.buildNameString()).color(NamedTextColor.WHITE)));
         player.sendMessage(Component.text("- Current discord name (short): ").color(colorSuccess)
-            .append(Component.text(config.buildNameStringShort(player.getName())).color(NamedTextColor.WHITE)));
-        config.updatePlayer(player);
+                .append(Component.text(config.buildNameStringShort()).color(NamedTextColor.WHITE)));
+        config.updatePlayer();
     }
 }
