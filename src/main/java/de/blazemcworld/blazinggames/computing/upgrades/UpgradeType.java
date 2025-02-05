@@ -145,7 +145,7 @@ public enum UpgradeType {
             return recipe;
         }, null),
 
-    NETWORKING_ADVANCED("Dial-Up Internet Upgrade", NamedTextColor.AQUA, "We're in the future now! (send real HTTP requests at dial-up speeds)", true,
+    NETWORKING_ADVANCED("Wi-Fi Upgrade", NamedTextColor.AQUA, "Send real HTTP requests at dial-up speeds.", true,
         (item, key) -> {
             ShapedRecipe recipe = new ShapedRecipe(key, item);
             recipe.shape(

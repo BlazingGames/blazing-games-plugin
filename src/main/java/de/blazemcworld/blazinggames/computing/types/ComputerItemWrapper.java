@@ -58,7 +58,7 @@ public class ComputerItemWrapper extends CustomItem<ComputerItemContext> {
 
     @Override
     public NamespacedKey getKey() {
-        return BlazingGames.get().key(type.name().toLowerCase());
+        return BlazingGames.get().key(type.name().toLowerCase() + "_computer");
     }
 
     @Override

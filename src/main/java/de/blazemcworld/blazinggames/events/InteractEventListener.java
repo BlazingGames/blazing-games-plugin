@@ -18,7 +18,11 @@ package de.blazemcworld.blazinggames.events;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.builderwand.BuilderWand;
 import de.blazemcworld.blazinggames.computing.BootedComputer;
+import de.blazemcworld.blazinggames.computing.ComputerEditor;
+import de.blazemcworld.blazinggames.computing.ComputerMetadata;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
+import de.blazemcworld.blazinggames.computing.upgrades.UpgradeItem;
+import de.blazemcworld.blazinggames.computing.upgrades.UpgradeListInterface;
 import de.blazemcworld.blazinggames.crates.CrateData;
 import de.blazemcworld.blazinggames.crates.CrateManager;
 import de.blazemcworld.blazinggames.crates.DeathCrateKey;
@@ -96,6 +100,33 @@ public class InteractEventListener implements Listener {
                 ComputerRegistry.dropComputer(computer, player);
                 ComputerRegistry.unload(computer.getId());
             }
+        }
+
+        if (block != null && block.getType() == Material.BARRIER && event.getAction() == Action.RIGHT_CLICK_BLOCK
+            && eventItem != null && CustomItem.getCustomItem(eventItem) instanceof UpgradeItem upgrade
+            && ComputerRegistry.getComputerByLocationRounded(block.getLocation()) != null
+        ) {
+            // adding an upgrade
+            BootedComputer computer = ComputerRegistry.getComputerByLocationRounded(block.getLocation());
+            ComputerMetadata metadata = computer.getMetadata();
+            int existingUpgradeCount = metadata.upgrades.size();
+            if (existingUpgradeCount >= computer.getType().getType().getUpgradeSlots()) {
+                // no more room
+                metadata.location.getWorld().playSound(metadata.location, Sound.BLOCK_DISPENSER_FAIL, 1.0f, 1.0f);
+            } else {
+                // add it
+                player.getInventory().getItem(hand).subtract(1);
+                ComputerEditor.addUpgrade(computer.getId(), upgrade.type);
+                metadata.location.getWorld().playSound(metadata.location, Sound.BLOCK_DISPENSER_DISPENSE, 1.0f, 1.0f);
+            }
+        } else if (
+            block != null && block.getType() == Material.BARRIER && event.getAction() == Action.RIGHT_CLICK_BLOCK
+            && (eventItem == null || eventItem.isEmpty()) && player.isSneaking()
+            && ComputerRegistry.getComputerByLocationRounded(block.getLocation()) != null
+        ) {
+            // viewing upgrades
+            BootedComputer computer = ComputerRegistry.getComputerByLocationRounded(block.getLocation());
+            player.openInventory(new UpgradeListInterface(BlazingGames.get(), computer.getId(), computer.getType().getType().getUpgradeSlots()).getInventory());
         }
 
         if (block != null && block.getType() == Material.END_PORTAL_FRAME && event.getAction() == Action.RIGHT_CLICK_BLOCK) {

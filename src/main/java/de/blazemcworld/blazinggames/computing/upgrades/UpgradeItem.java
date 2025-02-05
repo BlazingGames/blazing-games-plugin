@@ -37,7 +37,7 @@ public class UpgradeItem extends ContextlessItem {
 
     @Override
     public @NotNull NamespacedKey getKey() {
-        return BlazingGames.get().key(type.name().toLowerCase());
+        return BlazingGames.get().key(type.name().toLowerCase() + "_upgrade");
     }
 
     @Override

@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -80,8 +79,6 @@ public class BootedComputer {
         this.address = metadata.address;
         this.name = metadata.name;
         this.upgrades = new ArrayList<>(metadata.upgrades);
-        upgrades.addAll(List.of(type.getType().getDefaultUpgrades())); // add defaults
-        upgrades = new ArrayList<>(upgrades.stream().distinct().collect(Collectors.toList())); // remove duplicates
         this.owner = metadata.owner;
         this.collaborators = new ArrayList<>(List.of(metadata.collaborators));
         this.shouldRun = metadata.shouldRun;
@@ -152,7 +149,8 @@ public class BootedComputer {
                 upgradeList.addAll(upgrades);
                 for (UpgradeType type : upgradeList) {
                     if (type.functions != null) {
-                        functionList.add(type.functions.apply(this, runtime));
+                        JSFunctionalClass functionalClass = type.functions.apply(this, runtime);
+                        if (functionalClass != null) functionList.add(functionalClass);
                     }
                 }
 
@@ -196,13 +194,12 @@ public class BootedComputer {
     }
 
     public ComputerMetadata getMetadata() {
-        List<UpgradeType> defaultUpgrades = List.of(type.getType().getDefaultUpgrades());
         return new ComputerMetadata(
             this.id,
             this.name,
             this.address,
             this.type,
-            this.upgrades.stream().filter(upgrade -> !defaultUpgrades.contains(upgrade)).toList(),
+            List.copyOf(this.upgrades),
             this.location,
             this.owner,
             this.collaborators.toArray(UUID[]::new),
@@ -229,8 +226,6 @@ public class BootedComputer {
         this.address = metadata.address;
         this.name = metadata.name;
         this.upgrades = new ArrayList<>(metadata.upgrades);
-        upgrades.addAll(List.of(type.getType().getDefaultUpgrades())); // add defaults
-        upgrades = new ArrayList<>(upgrades.stream().distinct().collect(Collectors.toList())); // remove duplicates
         this.owner = metadata.owner;
     }
 
