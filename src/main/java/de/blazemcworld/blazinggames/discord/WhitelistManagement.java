@@ -10,7 +10,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.commands.EnforceWhitelistCommand;
+import de.blazemcworld.blazinggames.commands.DiscordWhitelistCommand;
 import de.blazemcworld.blazinggames.data.DataStorage;
 import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
 import de.blazemcworld.blazinggames.data.name.ArbitraryNameProvider;
@@ -91,7 +91,7 @@ public class WhitelistManagement {
         whitelist.deleteData(player.uuid);
 
         if(this == DiscordApp.getWhitelistManagement() && enforceWhitelist) {
-            Bukkit.getScheduler().runTask(BlazingGames.get(), EnforceWhitelistCommand::enforceWhitelist);
+            Bukkit.getScheduler().runTask(BlazingGames.get(), DiscordWhitelistCommand::enforceWhitelist);
         }
 
         DiscordUser user = getDiscordUser(player.discordUser);
@@ -145,6 +145,10 @@ public class WhitelistManagement {
 
     public DiscordUser getDiscordUser(long snowflake) {
         return discordUsers.getData(String.valueOf(snowflake));
+    }
+
+    public List<DiscordUser> getAllKnownDiscordUsers() {
+        return discordUsers.queryForData((a) -> true);
     }
 
     public String createLinkCode(String username, UUID user) {

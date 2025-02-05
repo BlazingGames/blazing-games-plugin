@@ -212,10 +212,10 @@ public class BlazingGames extends JavaPlugin {
         registerCommand("playtime", new PlaytimeCommand());
         registerCommand("display", new DisplayCommand());
         registerCommand("setaltar", new SetAltar());
-        registerCommand("enforcewhitelist", new EnforceWhitelistCommand());
 
         if(DiscordApp.isWhitelistManaged()) {
             registerCommand("unlink", new UnlinkCommand());
+            registerCommand("discordwhitelist", new DiscordWhitelistCommand());
         }
 
         // Events
@@ -247,7 +247,7 @@ public class BlazingGames extends JavaPlugin {
         pluginManager.registerEvents(new PlayerLoginEventListener(), this);
 
         Bukkit.getScheduler().runTaskTimer(this, TickEventListener::onTick, 0, 1);
-        Bukkit.getScheduler().runTaskTimer(this, EnforceWhitelistCommand::enforceWhitelist, 0, 600);
+        Bukkit.getScheduler().runTaskTimer(this, DiscordWhitelistCommand::enforceWhitelist, 0, 600);
 
         // Cooldowns
         interactCooldown = new Cooldown(this);

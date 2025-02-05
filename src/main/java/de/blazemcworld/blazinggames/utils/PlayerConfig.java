@@ -120,7 +120,7 @@ public class PlayerConfig {
         }
 
         if (playerInfo.isOperator()) {
-            username = username.appendSpace().append(Component.text("\u266E").color(NamedTextColor.RED)
+            username = username.appendSpace().append(Component.text("♮").color(NamedTextColor.RED)
                 .hoverEvent(HoverEvent.showText(Component.text("Server Operator"))));
         }
 
@@ -148,7 +148,7 @@ public class PlayerConfig {
             username.append(" (").append(getPronouns()).append(")");
         }
         if (playerInfo.isOperator()) {
-            username.append(" \u266E");
+            username.append(" ♮");
         }
 
         return username.toString();
