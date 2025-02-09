@@ -6,6 +6,9 @@ plugins {
 group = 'de.blazemcworld'
 version = project.version
 
+def extraRepos = [
+    "ivy-collective-git"
+]
 repositories {
     mavenCentral()
     maven {
@@ -16,15 +19,18 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
+    maven {
+        name = "ivy-collective-git"
+        url = "https://git.ivycollective.dev/api/packages/ivycollective/maven/"
+    }
 }
 
 dependencies {
-    // IMPORTANT IF YOU"RE ADDING OR UPDATING DEPENDENCIES!!!!!!!!!
-    // add them in plugin.yml too so that they are loaded when running on a server
+    // Paper
     paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
     compileOnly "io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT"
 
-    // ULID
+    // Utilities
     implementation 'io.azam.ulidj:ulidj:1.0.4'
 
     // JDA
@@ -43,6 +49,38 @@ dependencies {
 
     // Websocket server
     implementation 'org.java-websocket:Java-WebSocket:1.5.7'
+}
+
+tasks.register("generateReposAndDeps") {
+    doLast {
+        def reposFile = file("$buildDir/resources/main/repositories.txt")
+        reposFile.getParentFile().mkdirs()
+        if (reposFile.exists()) {
+            reposFile.delete()
+        }
+        reposFile.createNewFile()
+        def repos = []
+        project.repositories.each { repo ->
+            if (repo.name in extraRepos) {
+                repos.add(repo.name + ";" + repo.url)
+            }
+        }
+        println("Found " + repos.size() + " extra repositories")
+        reposFile.text = repos.join("\n")
+
+        def depsFile = file("$buildDir/resources/main/dependencies.txt")
+        depsFile.getParentFile().mkdirs()
+        if (depsFile.exists()) {
+            depsFile.delete()
+        }
+        depsFile.createNewFile()
+        def deps = []
+        project.configurations.implementation.dependencies.each { dependency ->
+            deps.add(dependency.group + ":" + dependency.name + ":" + dependency.version)
+        }
+        println("Found " + deps.size() + " dependencies")
+        depsFile.text = deps.join("\n")
+    }
 }
 
 def targetJavaVersion = 21
@@ -64,13 +102,14 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 processResources {
+    dependsOn("generateReposAndDeps")
     def props = [
         version: version,
         launchClass: ("true".equals(project.test)) ? project.testClass : project.mainClass
     ]
     inputs.properties props
     filteringCharset 'UTF-8'
-    filesMatching('plugin.yml') {
+    filesMatching('paper-plugin.yml') {
         expand props
     }
 }

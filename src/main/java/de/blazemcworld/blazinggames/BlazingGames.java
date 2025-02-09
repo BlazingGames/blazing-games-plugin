@@ -17,6 +17,7 @@ package de.blazemcworld.blazinggames;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import de.blazemcworld.blazinggames.commands.*;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry.ComputerPrivileges;
@@ -39,13 +40,11 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.WeakKeyException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Server;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
@@ -55,7 +54,6 @@ import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 import javax.crypto.SecretKey;
@@ -205,19 +203,6 @@ public class BlazingGames extends JavaPlugin {
             getLogger().severe("The resource pack is enabled, but the API is not available!");
         }
 
-        // Commands
-        registerCommand("customenchant", new CustomEnchantCommand());
-        registerCommand("customgive", new CustomGiveCommand());
-        registerCommand("killme", new KillMeCommand());
-        registerCommand("playtime", new PlaytimeCommand());
-        registerCommand("display", new DisplayCommand());
-        registerCommand("setaltar", new SetAltar());
-
-        if(DiscordApp.isWhitelistManaged()) {
-            registerCommand("unlink", new UnlinkCommand());
-            registerCommand("discordwhitelist", new DiscordWhitelistCommand());
-        }
-
         // Events
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(new PrepareAnvilEventListener(), this);
@@ -265,15 +250,6 @@ public class BlazingGames extends JavaPlugin {
         // Computers
         BlazingAPI.stopAll();
         API_AVAILABLE = false; // reset value
-    }
-
-    private void registerCommand(String name, CommandExecutor executor) {
-        PluginCommand command = Objects.requireNonNull(getCommand(name));
-        command.setExecutor(executor);
-
-        if(executor instanceof TabCompleter tc) {
-            command.setTabCompleter(tc);
-        }
     }
 
     public static BlazingGames get()
