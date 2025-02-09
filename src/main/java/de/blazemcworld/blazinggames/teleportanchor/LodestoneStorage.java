@@ -26,18 +26,18 @@ import org.bukkit.entity.Player;
 
 import com.google.common.reflect.TypeToken;
 
-import de.blazemcworld.blazinggames.data.DataStorage;
-import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
-import de.blazemcworld.blazinggames.data.name.ULIDNameProvider;
-import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
+import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.utils.TextLocation;
+import dev.ivycollective.datastorage.DataStorage;
+import dev.ivycollective.datastorage.name.ULIDNameProvider;
+import dev.ivycollective.datastorage.storage.GsonStorageProvider;
 
 public class LodestoneStorage {
     private LodestoneStorage() {}
-    private static final DataStorage<HashMap<UUID, String>, String> dataStorage = DataStorage.forClass(
+    private static final DataStorage<HashMap<UUID, String>, String> dataStorage = BlazingGames.dataStorageConfig().makeDataStorage(
         LodestoneStorage.class, null,
         new GsonStorageProvider<>(new TypeToken<HashMap<UUID, String>>() {}.getType()),
-        new ULIDNameProvider(), new GZipCompressionProvider()
+        new ULIDNameProvider()
     );
 
     public static void saveLodestoneToPlayer(UUID player, Location location, String customName) {
