@@ -86,6 +86,7 @@ public class CustomSlabs implements ItemProvider {
     public CustomSlabs() {
         List<String> materialNames = Arrays.stream(Material.values()).map(Material::name).toList();
         for (Material material : Material.values()) {
+            if (material.isLegacy()) continue;
             if (!blockedMaterials.contains(material) && material.isBlock() && material.isItem() && !material.isInteractable() && material.isOccluding() && material.isCollidable() && material.isSolid() && !material.name().contains("_PLANKS") && !material.name().contains("_SLAB") && !materialNames.contains(material.name() + "_SLAB")) {
                 BlockData blockData = material.createBlockData();
 
