@@ -28,7 +28,7 @@ jobs:
           echo "eula=true" > testsrv/eula.txt
 
       - name: Build test jar with Gradle
-        run: https://git.ivycollective.dev/gradle -Pversion=test-${{ github.run_number }} -Ptest=true build
+        run: gradle -Pversion=test-${{ github.run_number }} -Ptest=true build
 
       - name: Install plugin
         run: |
