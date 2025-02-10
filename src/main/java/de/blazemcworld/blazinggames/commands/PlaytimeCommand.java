@@ -16,20 +16,23 @@
 package de.blazemcworld.blazinggames.commands;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.PlayerProfileListResolver;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 public class PlaytimeCommand {
     public static LiteralCommandNode<CommandSourceStack> command() {
@@ -41,7 +44,7 @@ public class PlaytimeCommand {
                     return Command.SINGLE_SUCCESS;
                 }
                 
-                String playtime = getPlaytime(player);
+                String playtime = getPlaytime(player.getName(), player.getUniqueId());
 
                 if (playtime == null) {
                     sender.sendRichMessage("<red>what.");
@@ -51,18 +54,20 @@ public class PlaytimeCommand {
 
                 return Command.SINGLE_SUCCESS;
             })
-            .then(Commands.argument("player", StringArgumentType.word())
+            .then(Commands.argument("player", ArgumentTypes.playerProfiles())
                 .executes(ctx -> {
+                    PlayerProfileListResolver resolver = ctx.getArgument("player", PlayerProfileListResolver.class);
+                    Collection<PlayerProfile> profiles = resolver.resolve(ctx.getSource());
                     CommandSender sender = ctx.getSource().getSender();
-                    String username = StringArgumentType.getString(ctx, "player");
-                    OfflinePlayer player = Bukkit.getOfflinePlayer(username);
 
-                    String playtime = getPlaytime(player);
-
-                    if (playtime == null) {
-                        sender.sendRichMessage("<red>This player hasn't played before.");
-                    } else {
-                        sender.sendRichMessage("<yellow>" + playtime);
+                    for (PlayerProfile profile : profiles) {
+                        String playtime = getPlaytime(profile.getName(), profile.getId());
+    
+                        if (playtime == null) {
+                            sender.sendRichMessage("<red>Couldn't find any playtime for " + profile.getName());
+                        } else {
+                            sender.sendRichMessage("<yellow>" + playtime);
+                        }
                     }
 
                     return Command.SINGLE_SUCCESS;
@@ -70,8 +75,8 @@ public class PlaytimeCommand {
             .build();
     }
 
-    public static String getPlaytime(OfflinePlayer player) {
-        int playtime = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
+    public static String getPlaytime(String username, UUID uuid) {
+        int playtime = Bukkit.getOfflinePlayer(uuid).getStatistic(Statistic.PLAY_ONE_MINUTE);
 
         if(playtime <= 0) {
             return null;
@@ -100,6 +105,6 @@ public class PlaytimeCommand {
             timeText.append(" and ").append(time.get(time.size()-1));
         }
 
-        return player.getName() + " has been wasting time on this server for " + timeText + "!";
+        return username + " has been wasting time on this server for " + timeText + "!";
     }
 }

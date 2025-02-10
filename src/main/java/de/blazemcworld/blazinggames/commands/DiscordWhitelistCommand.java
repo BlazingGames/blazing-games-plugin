@@ -8,6 +8,8 @@ import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import de.blazemcworld.blazinggames.utils.PlayerInfo;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.PlayerProfileListResolver;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -15,10 +17,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import java.util.Collection;
 import java.util.List;
 
 public class DiscordWhitelistCommand {
@@ -66,22 +69,25 @@ public class DiscordWhitelistCommand {
                 }
                 return Command.SINGLE_SUCCESS;
             }))
-            .then(Commands.literal("remove").then(Commands.argument("player", StringArgumentType.word()).executes(ctx -> {
-                String player = StringArgumentType.getString(ctx, "player");
+            .then(Commands.literal("remove").then(Commands.argument("player", ArgumentTypes.playerProfiles()).executes(ctx -> {
+                PlayerProfileListResolver resolver = ctx.getArgument("player", PlayerProfileListResolver.class);
+                Collection<PlayerProfile> profiles = resolver.resolve(ctx.getSource());
                 WhitelistManagement whitelist = DiscordApp.getWhitelistManagement();
                 CommandSender sender = ctx.getSource().getSender();
 
-                WhitelistedPlayer whitelistedPlayer = whitelist.getWhitelistedPlayer(player);
+                for (PlayerProfile profile : profiles) {
+                    WhitelistedPlayer whitelistedPlayer = whitelist.getWhitelistedPlayer(profile.getId());
 
-                if(whitelistedPlayer == null) {
-                    sender.sendMessage(Component.text(player + " has not been whitelisted using the discord whitelist!")
-                            .color(NamedTextColor.RED));
-                    return Command.SINGLE_SUCCESS;
+                    if(whitelistedPlayer == null) {
+                        sender.sendMessage(Component.text(profile.getName() + " has not been whitelisted using the discord whitelist!")
+                                .color(NamedTextColor.RED));
+                        return Command.SINGLE_SUCCESS;
+                    }
+
+                    whitelist.removePlayer(whitelistedPlayer);
+                    sender.sendMessage(Component.text("Successfully removed " + profile.getName() + " from the discord whitelist!")
+                            .color(NamedTextColor.GREEN));
                 }
-
-                whitelist.removePlayer(whitelistedPlayer);
-                sender.sendMessage(Component.text("Successfully removed " + player + " from the discord whitelist!")
-                        .color(NamedTextColor.GREEN));
 
                 return Command.SINGLE_SUCCESS;
             })))
