@@ -11,26 +11,25 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.commands.DiscordWhitelistCommand;
-import de.blazemcworld.blazinggames.data.DataStorage;
-import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
-import de.blazemcworld.blazinggames.data.name.ArbitraryNameProvider;
-import de.blazemcworld.blazinggames.data.name.UUIDNameProvider;
-import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
 import de.blazemcworld.blazinggames.utils.Pair;
+import dev.ivycollective.datastorage.DataStorage;
+import dev.ivycollective.datastorage.name.ArbitraryNameProvider;
+import dev.ivycollective.datastorage.name.UUIDNameProvider;
+import dev.ivycollective.datastorage.storage.GsonStorageProvider;
 import net.dv8tion.jda.api.entities.User;
 import org.bukkit.Bukkit;
 
 public class WhitelistManagement {
-    private final DataStorage<WhitelistedPlayer, UUID> whitelist = DataStorage.forClass(
+    private final DataStorage<WhitelistedPlayer, UUID> whitelist = BlazingGames.dataStorageConfig().makeDataStorage(
         WhitelistManagement.class, "whitelist",
         new GsonStorageProvider<WhitelistedPlayer>(WhitelistedPlayer.class),
-        new UUIDNameProvider(), new GZipCompressionProvider()
+        new UUIDNameProvider()
     );
 
-    private final DataStorage<DiscordUser, String> discordUsers = DataStorage.forClass(
+    private final DataStorage<DiscordUser, String> discordUsers = BlazingGames.dataStorageConfig().makeDataStorage(
         WhitelistManagement.class, "discord",
         new GsonStorageProvider<DiscordUser>(DiscordUser.class),
-        new ArbitraryNameProvider(), new GZipCompressionProvider()
+        new ArbitraryNameProvider()
     );
 
     private final Cache<String, Pair<String, UUID>> linkCodes = Caffeine

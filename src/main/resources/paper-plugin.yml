@@ -1,0 +1,10 @@
+name: blazinggames
+version: ${version}
+main: ${launchClass}
+api-version: '1.21.4'
+prefix: BlazingGames
+authors: [BlazeMCworld, sbot50, 'Ivy Collective (ivyc.)', XTerPL]
+description: funny block game javascript computers
+website: https://blazingsite.surge.sh/
+loader: de.blazemcworld.blazinggames.BlazingGamesLoader
+bootstrapper: de.blazemcworld.blazinggames.BlazingGamesBootstrapper
