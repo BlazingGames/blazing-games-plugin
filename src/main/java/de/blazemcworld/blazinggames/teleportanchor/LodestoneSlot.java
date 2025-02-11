@@ -16,8 +16,8 @@
 
 package de.blazemcworld.blazinggames.teleportanchor;
 
+import de.blazemcworld.blazinggames.userinterfaces.IndexedUserInterfaceSlot;
 import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
-import de.blazemcworld.blazinggames.userinterfaces.UserInterfaceSlot;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
 import net.kyori.adventure.text.Component;
@@ -34,11 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LodestoneSlot implements UserInterfaceSlot {
-    private final int index;
-
+public class LodestoneSlot extends IndexedUserInterfaceSlot {
     public LodestoneSlot(int index) {
-        this.index = index;
+        super(index);
     }
 
     @Override
@@ -47,7 +45,7 @@ public class LodestoneSlot implements UserInterfaceSlot {
             return;
         }
 
-        Map.Entry<Location, String> lodestone = tpi.getLodestone(index);
+        Map.Entry<Location, String> lodestone = tpi.getLodestone(getIndex(inventory));
 
         if(lodestone == null) {
             inventory.setItem(slot, ItemStack.empty());
@@ -74,7 +72,7 @@ public class LodestoneSlot implements UserInterfaceSlot {
             return false;
         }
 
-        Map.Entry<Location, String> lodestone = tpi.getLodestone(index);
+        Map.Entry<Location, String> lodestone = tpi.getLodestone(getIndex(inventory));
 
         if(lodestone == null) {
             return false;

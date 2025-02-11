@@ -17,8 +17,8 @@ package de.blazemcworld.blazinggames.enchantments.sys.altar;
 
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrapper;
 import de.blazemcworld.blazinggames.items.change.ItemChangeProviders;
+import de.blazemcworld.blazinggames.userinterfaces.IndexedUserInterfaceSlot;
 import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
-import de.blazemcworld.blazinggames.userinterfaces.UserInterfaceSlot;
 
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -32,11 +32,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Set;
 
-public class EnchantmentSlot implements UserInterfaceSlot {
-    private final int index;
-
+public class EnchantmentSlot extends IndexedUserInterfaceSlot {
     public EnchantmentSlot(int index) {
-        this.index = index;
+        super(index);
     }
 
     @Override
@@ -49,6 +47,8 @@ public class EnchantmentSlot implements UserInterfaceSlot {
         ItemStack tool = altarInterface.getTool();
         int lapis = altarInterface.getLapis().getAmount();
         ItemStack material = altarInterface.getMaterial();
+
+        int index = getIndex(inventory);
 
         int cur = 0;
         for(EnchantmentWrapper wrapper : wrappers) {
@@ -72,6 +72,8 @@ public class EnchantmentSlot implements UserInterfaceSlot {
         ItemStack tool = altarInterface.getTool();
         ItemStack lapis = altarInterface.getLapis();
         ItemStack material = altarInterface.getMaterial();
+
+        int index = getIndex(inventory);
 
         int cur = 0;
         for(EnchantmentWrapper wrapper : wrappers) {
@@ -105,7 +107,7 @@ public class EnchantmentSlot implements UserInterfaceSlot {
 
                             player.getWorld().playSound(player, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
                             
-                            Advancement advancement = Bukkit.getAdvancement(NamespacedKey.fromString("minecraft:story/enchant_item"));
+                            Advancement advancement = Bukkit.getAdvancement(NamespacedKey.minecraft("story/enchant_item"));
                             AdvancementProgress progress = player.getAdvancementProgress(advancement);
                             if (!progress.isDone()) {
                                 progress.getRemainingCriteria().forEach(progress::awardCriteria);

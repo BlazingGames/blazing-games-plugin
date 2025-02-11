@@ -57,7 +57,7 @@ public class TeleportAnchorInterface extends UserInterface {
     }
 
     @Override
-    protected void reload() {
+    public void reload() {
         reloadLodestones();
 
         super.reload();

@@ -56,7 +56,11 @@ public abstract class UserInterface implements InventoryHolder {
         return this.inventory;
     }
 
-    protected void reload() {
+    public int getUnpagedIndex(int pagedIndex) {
+        return pagedIndex;
+    }
+
+    public void reload() {
         for(Map.Entry<Integer, UserInterfaceSlot> slot : slots.entrySet()) {
             slot.getValue().onUpdate(this, slot.getKey());
         }

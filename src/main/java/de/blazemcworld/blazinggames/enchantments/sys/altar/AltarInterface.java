@@ -33,7 +33,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-public class AltarInterface extends UserInterface {
+public class AltarInterface extends PagedUserInterface {
     private static final InputSlot toolSlot = new SingleInputSlot() {
 
         @Override
@@ -58,6 +58,9 @@ public class AltarInterface extends UserInterface {
             return super.filterItem(stack);
         }
     };
+
+    private static final PageSlot forward = new PageSlot(PageSlot.Arrow.DOWN, PageSlot.Direction.FORWARD);
+    private static final PageSlot backward = new PageSlot(PageSlot.Arrow.UP, PageSlot.Direction.BACKWARD);
 
     private final BlockState state;
     private final Map<String, ItemStack> altars;
@@ -96,6 +99,9 @@ public class AltarInterface extends UserInterface {
         addSlot(1, 1, toolSlot);
         addSlot(1, 2, lapisSlot);
         addSlot(1, 3, materialSlot);
+
+        addSlot(1, 4, forward);
+        addSlot(1, 0, backward);
     }
 
     @Override
@@ -131,6 +137,12 @@ public class AltarInterface extends UserInterface {
         for (Location altar : newAltars) {
             ItemStack stack = TomeAltarStorage.getItem(altar);
             altars.put(TextLocation.serializeRounded(altar), stack);
+        }
+
+        int maxPage = getMaxPage();
+
+        if(getCurrentPage() > getMaxPage()) {
+            changePage(maxPage);
         }
     }
 
@@ -168,5 +180,21 @@ public class AltarInterface extends UserInterface {
 
     public int getTier() {
         return tier;
+    }
+
+    @Override
+    public int getMaxPage() {
+        int available = getAvailable().size();
+
+        if(available == 0) {
+            return 0;
+        }
+
+        return (available-1) / indicesPerPage();
+    }
+
+    @Override
+    public int indicesPerPage() {
+        return 5*6;
     }
 }
