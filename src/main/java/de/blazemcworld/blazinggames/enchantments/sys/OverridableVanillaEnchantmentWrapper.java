@@ -16,7 +16,9 @@
 package de.blazemcworld.blazinggames.enchantments.sys;
 
 import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarRecipe;
+import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
@@ -59,6 +61,11 @@ public class OverridableVanillaEnchantmentWrapper extends VanillaEnchantmentWrap
     @Override
     public boolean canGoOnItem(ItemStack tool) {
         if(overrides.target != null) {
+            if(!CustomItem.isCustomItem(tool)) {
+                if(tool.getType() == Material.BOOK || tool.getType() == Material.ENCHANTED_BOOK) {
+                    return true;
+                }
+            }
             return overrides.target.matchItem(tool);
         }
 

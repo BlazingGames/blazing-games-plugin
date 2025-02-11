@@ -39,9 +39,10 @@ public class ColorlessItemPredicate implements ItemPredicate {
 
     @Override
     public Component getDescription() {
-        return Component.text(switch(material) {
+        return Component.text(switch(ItemUtils.getUncoloredType(material)) {
             case WHITE_WOOL -> "Any Wool";
             case WHITE_BED -> "Any Bed";
+            case OAK_BOAT -> "Any Boat or Raft";
             default -> "Unknown Colorless Material!";
         });
     }

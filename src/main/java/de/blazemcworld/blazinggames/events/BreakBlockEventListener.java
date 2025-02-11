@@ -116,55 +116,7 @@ public class BreakBlockEventListener implements Listener {
             }
         }
 
-        if (EnchantmentHelper.hasActiveEnchantmentWrapper(mainHand, CustomEnchantments.TREE_FELLER)) {
-            if (logs.contains(event.getBlock().getType())) {
-                if (player.getFoodLevel() <= 6) {
-                    return;
-                }
-
-                ItemStack axe = player.getInventory().getItemInMainHand();
-
-                int treeFeller = EnchantmentHelper.getActiveEnchantmentWrapperLevel(axe, CustomEnchantments.TREE_FELLER);
-
-                if (treeFeller <= 0) {
-                    return;
-                }
-
-                List<Block> blocksToBreak = new ArrayList<>();
-                blocksToBreak.add(event.getBlock());
-
-                boolean foundLeaves = false;
-
-                for (int i = 0; i < blocksToBreak.size(); i++) {
-                    Block block = blocksToBreak.get(i);
-                    for (int x = -1; x <= 1; x++) {
-                        for (int z = -1; z <= 1; z++) {
-                            for (int y = -1; y <= 1; y++) {
-                                Block relBlock = block.getRelative(x, 1, z);
-
-                                if (leaves.contains(relBlock.getType())) {
-                                    if (relBlock.getBlockData() instanceof Leaves leaf) {
-                                        if (!leaf.isPersistent()) {
-                                            foundLeaves = true;
-                                        }
-                                    }
-                                } else if (logs.contains(relBlock.getType())) {
-                                    if (!blocksToBreak.contains(relBlock)) {
-                                        blocksToBreak.add(relBlock);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (!foundLeaves) {
-                    return;
-                }
-
-                Bukkit.getScheduler().runTaskLater(BlazingGames.get(), () -> treeFeller(player, blocksToBreak), 1);
-            }
-        }
+        treeFellerInitiate(event, mainHand, player);
 
         int pattern = EnchantmentHelper.getActiveEnchantmentWrapperLevel(mainHand, CustomEnchantments.PATTERN);
 
@@ -199,6 +151,60 @@ public class BreakBlockEventListener implements Listener {
         }
 
         fakeBreakBlock(player, event.getBlock(), false);
+    }
+
+    private void treeFellerInitiate(BlockBreakEvent event, ItemStack mainHand, Player player) {
+        if (!EnchantmentHelper.hasActiveEnchantmentWrapper(mainHand, CustomEnchantments.TREE_FELLER)) {
+            return;
+        }
+        if (!logs.contains(event.getBlock().getType())) {
+            return;
+        }
+        if (player.getFoodLevel() <= 6) {
+            return;
+        }
+
+        ItemStack axe = player.getInventory().getItemInMainHand();
+
+        int treeFeller = EnchantmentHelper.getActiveEnchantmentWrapperLevel(axe, CustomEnchantments.TREE_FELLER);
+
+        if (treeFeller <= 0) {
+            return;
+        }
+
+        List<Block> blocksToBreak = new ArrayList<>();
+        blocksToBreak.add(event.getBlock());
+
+        boolean foundLeaves = false;
+
+        for (int i = 0; i < blocksToBreak.size(); i++) {
+            Block block = blocksToBreak.get(i);
+            for (int x = -1; x <= 1; x++) {
+                for (int z = -1; z <= 1; z++) {
+                    for (int y = -1; y <= 1; y++) {
+                        Block relBlock = block.getRelative(x, 1, z);
+
+                        if (leaves.contains(relBlock.getType())) {
+                            if (relBlock.getBlockData() instanceof Leaves leaf) {
+                                if (!leaf.isPersistent()) {
+                                    foundLeaves = true;
+                                }
+                            }
+                        } else if (logs.contains(relBlock.getType())) {
+                            if (!blocksToBreak.contains(relBlock)) {
+                                blocksToBreak.add(relBlock);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!foundLeaves) {
+            return;
+        }
+
+        Bukkit.getScheduler().runTaskLater(BlazingGames.get(), () -> treeFeller(player, blocksToBreak), 1);
     }
 
     private void treeFeller(Player player, List<Block> blocksToBreak) {
