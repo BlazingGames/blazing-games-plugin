@@ -15,10 +15,13 @@
  */
 package de.blazemcworld.blazinggames.computing.types;
 
-import java.text.ParseException;
-import java.util.List;
-import java.util.Map;
-
+import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.computing.ComputerEditor;
+import de.blazemcworld.blazinggames.computing.ComputerMetadata;
+import de.blazemcworld.blazinggames.items.CustomItem;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -29,13 +32,9 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.computing.ComputerEditor;
-import de.blazemcworld.blazinggames.computing.ComputerMetadata;
-import de.blazemcworld.blazinggames.items.CustomItem;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
+import java.text.ParseException;
+import java.util.List;
+import java.util.Map;
 
 public class ComputerItemWrapper extends CustomItem<ComputerItemContext> {
     private static final NamespacedKey computerContext = BlazingGames.get().key("computer_context");
@@ -68,7 +67,7 @@ public class ComputerItemWrapper extends CustomItem<ComputerItemContext> {
 
     @Override
     protected Material baseMaterial() {
-        return Material.REINFORCED_DEEPSLATE;
+        return Material.ICE;
     }
 
     @Override
