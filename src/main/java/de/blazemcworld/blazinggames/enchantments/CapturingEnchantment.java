@@ -42,9 +42,9 @@ public class CapturingEnchantment extends CustomTreasureEnchantment {
     @Override
     public List<AltarRecipe> getRecipes() {
         return List.of(
-                new AltarRecipe(3, 1, 4, 16, new MaterialItemPredicate(Material.SPIDER_EYE)),
+                new AltarRecipe(3, 1, 4, 16, new MaterialItemPredicate(Material.GUNPOWDER)),
                 new AltarRecipe(3, 2, 8, 16, new MaterialItemPredicate(Material.EGG)),
-                new AltarRecipe(4, 3, 12, 16, new MaterialItemPredicate(Material.GUNPOWDER))
+                new AltarRecipe(4, 3, 12, 16, new MaterialItemPredicate(Material.SPIDER_EYE))
         );
     }
 
