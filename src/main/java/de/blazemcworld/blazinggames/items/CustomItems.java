@@ -16,11 +16,12 @@
 package de.blazemcworld.blazinggames.items;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonObject;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.builderwand.BuilderWand;
 import de.blazemcworld.blazinggames.builderwand.BuilderWandMode;
+import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
+import de.blazemcworld.blazinggames.computing.upgrades.UpgradeType;
 import de.blazemcworld.blazinggames.crates.DeathCrateKey;
 import de.blazemcworld.blazinggames.crates.SkeletonKey;
 import de.blazemcworld.blazinggames.crates.ToGoBoxItem;
@@ -28,7 +29,7 @@ import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentTome;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrappers;
 import de.blazemcworld.blazinggames.multiblocks.Blueprint;
-import de.blazemcworld.blazinggames.packs.HookContext;
+import de.blazemcworld.blazinggames.utils.AutomaticItemProvider;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -37,10 +38,7 @@ import org.bukkit.NamespacedKey;
 
 import javax.annotation.Nullable;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
-import java.util.logging.Logger;
 
 public class CustomItems implements ItemProvider {
     public static final CustomSlabs CUSTOM_SLABS = new CustomSlabs();
@@ -123,6 +121,10 @@ public class CustomItems implements ItemProvider {
 
         providers.add(new CustomItems());
         providers.add(CUSTOM_SLABS);
+        if (BlazingGames.get().areComputersEnabled()) {
+            providers.add(new AutomaticItemProvider(ComputerTypes.values(), new ComputerTypes.ComputerTypesProvider()));
+            providers.add(new AutomaticItemProvider(UpgradeType.values(), new UpgradeType.UpgradeTypeProvider()));
+        }
 
         return providers.build();
     }
@@ -144,39 +146,5 @@ public class CustomItems implements ItemProvider {
             }
         }
         return null;
-    }
-
-    @Override
-    public void runHook(Logger logger, HookContext context) {
-        for (CustomItem<?> item : getItems()) {
-            // install texture
-            try (InputStream stream = item.getClass().getResourceAsStream("/customitems/" + item.getKey().getKey() + ".png")) {
-                if (stream != null) context.installTexture(item.getKey(), "item", stream.readAllBytes());
-            } catch (IOException e) {
-                BlazingGames.get().log(e);
-            }
-
-            // install animation options
-            try (InputStream stream = item.getClass().getResourceAsStream("/customitems/" + item.getKey().getKey() + ".png.mcmeta")) {
-                if (stream != null) context.installTextureAnimationData(item.getKey(), "item", stream.readAllBytes());
-            } catch (IOException e) {
-                BlazingGames.get().log(e);
-            }
-
-            // install model
-            try (InputStream stream = item.getClass().getResourceAsStream("/customitems/" + item.getKey().getKey() + ".json")) {
-                if (stream != null) context.installModel(item.getKey(), stream.readAllBytes());
-            } catch (IOException e) {
-                BlazingGames.get().log(e);
-            }
-
-            // create items data
-            JsonObject root = new JsonObject();
-            JsonObject model = new JsonObject();
-            model.addProperty("type", "minecraft:model");
-            model.addProperty("model", item.getKey().toString());
-            root.add("model", model);
-            context.writeFile("/assets/" + item.getKey().getNamespace() + "/items/" + item.getKey().getKey() + ".json", root);
-        }
     }
 }

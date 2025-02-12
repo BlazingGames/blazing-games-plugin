@@ -107,6 +107,11 @@ public class BlazingGames extends JavaPlugin {
                     config.getBoolean("computing.privileges.chunkloading"),
                     config.getBoolean("computing.privileges.net")
             );
+            ComputerRegistry.metadataStorage.forEach(metadata -> {
+                if (metadata.location != null) {
+                    ComputerRegistry.loadComputerIntoWorld(metadata.id);
+                }
+            });
         }
 
         // Discord
@@ -134,7 +139,6 @@ public class BlazingGames extends JavaPlugin {
         }
 
         // Recipes
-        if (computersEnabled) ComputerRegistry.registerAllRecipes();
         CustomRecipes.loadRecipes();
 
         // Computers
@@ -262,9 +266,14 @@ public class BlazingGames extends JavaPlugin {
         // Recipes
         CustomRecipes.unloadRecipes();
 
-        // Computers
+        // API
         BlazingAPI.stopAll();
         API_AVAILABLE = false; // reset value
+
+        // Computers
+        if (computersEnabled) {
+            ComputerRegistry.shutdownHook();
+        }
     }
 
     private void registerCommand(String name, CommandExecutor executor) {

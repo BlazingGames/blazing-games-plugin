@@ -16,27 +16,49 @@
 package de.blazemcworld.blazinggames.computing.types;
 
 import java.util.Arrays;
-import java.util.function.Supplier;
 
 import com.google.gson.annotations.SerializedName;
 
+import de.blazemcworld.blazinggames.computing.types.impl.ConsoleCT;
+import de.blazemcworld.blazinggames.items.CustomItem;
+import de.blazemcworld.blazinggames.utils.AutomaticItemProvider;
+
 public enum ComputerTypes {
     @SerializedName("CONSOLE")
-    CONSOLE(ConsoleCT::new, ConsoleCT.class);
+    CONSOLE(new ConsoleCT())
+    
+    ;
 
-    private final Supplier<IComputerType> type;
+    private final IComputerType type;
     private final Class<? extends IComputerType> clazz;
-
-    private ComputerTypes(Supplier<IComputerType> type, Class<? extends IComputerType> clazz) {
+    private final ComputerItemWrapper item;
+    private ComputerTypes(IComputerType type) {
         this.type = type;
-        this.clazz = clazz;
+        this.clazz = type.getClass();
+        this.item = new ComputerItemWrapper(this);
     }
 
     public IComputerType getType() {
-        return this.type.get();
+        return this.type;
+    }
+
+    public ComputerItemWrapper item() {
+        return this.item;
     }
 
     public static ComputerTypes valueOf(IComputerType computerType) {
         return Arrays.stream(values()).filter(type -> type.clazz.equals(computerType.getClass())).findFirst().orElse(null);
+    }
+
+    public static class ComputerTypesProvider implements AutomaticItemProvider.ItemBuilder<ComputerTypes> {
+        @Override
+        public CustomItem<?> item(ComputerTypes enumValue) {
+            return enumValue.item();
+        }
+
+        @Override
+        public String directoryName() {
+            return "computeritems";
+        }
     }
 }

@@ -206,7 +206,7 @@ public abstract class BlazingTest {
             NameGenerator.generateName(),
             UUID.randomUUID(),
             type,
-            new String[0],
+            List.of(),
             null,
             owner,
             new UUID[0],

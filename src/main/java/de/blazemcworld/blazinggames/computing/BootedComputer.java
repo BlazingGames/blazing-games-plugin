@@ -26,18 +26,20 @@ import com.caoccao.javet.values.reference.V8ValueObject;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.functions.GlobalFunctions;
 import de.blazemcworld.blazinggames.computing.functions.JSFunctionalClass;
-import de.blazemcworld.blazinggames.computing.motor.IComputerMotor;
+import de.blazemcworld.blazinggames.computing.types.ComputerItemContext;
 import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
+import de.blazemcworld.blazinggames.computing.upgrades.UpgradeType;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.ItemDisplay;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 public class BootedComputer {
     private String code;
@@ -50,7 +52,7 @@ public class BootedComputer {
     private UUID address;
     private String name;
     private Location location;
-    private ArrayList<String> upgrades;
+    private ArrayList<UpgradeType> upgrades;
     private UUID owner;
     private ArrayList<UUID> collaborators;
     private boolean shouldRun;
@@ -59,9 +61,7 @@ public class BootedComputer {
     // Runtime data
     private DesiredState desiredState = DesiredState.NO_CHANGE;
     private boolean wantsStateReset = false;
-    UUID motorRuntimeEntityUUID;
-    int motorRuntimeEntityHits = 0;
-    UUID motorRuntimeEntityHitAttacker = null;
+    UUID runtimeEntityUUID;
 
     // State
     private V8RuntimeOptions state;
@@ -78,9 +78,7 @@ public class BootedComputer {
         this.location = location;
         this.address = metadata.address;
         this.name = metadata.name;
-        this.upgrades = new ArrayList<>(List.of(metadata.upgrades));
-        upgrades.addAll(List.of(type.getType().getDefaultUpgrades())); // add defaults
-        upgrades = new ArrayList<>(upgrades.stream().distinct().collect(Collectors.toList())); // remove duplicates
+        this.upgrades = new ArrayList<>(metadata.upgrades);
         this.owner = metadata.owner;
         this.collaborators = new ArrayList<>(List.of(metadata.collaborators));
         this.shouldRun = metadata.shouldRun;
@@ -92,39 +90,19 @@ public class BootedComputer {
             this.state.setSnapshotBlob(state);
         }
 
-        IComputerMotor motor = type.getType().getMotor();
-        if (motor.usesBlock()) {
-            location.getBlock().setType(motor.blockMaterial());
-            motor.applyPropsToBlock(location.getBlock());
-        }
+        location.getBlock().setType(Material.BARRIER);
 
-        if (motor.usesActor()) {
-            Entity entity = location.getWorld().spawnEntity(location, motor.actorEntityType());
-            motor.applyActorProperties(entity);
-            this.motorRuntimeEntityUUID = entity.getUniqueId();
-        }
+        ItemDisplay display = location.getWorld().spawn(location.toCenterLocation(), ItemDisplay.class, SpawnReason.CUSTOM, (entity) -> {
+            entity.setItemStack(type.item().create(ComputerItemContext.defaultContext()));
+        });
+        this.runtimeEntityUUID = display.getUniqueId();
     }
 
     void hibernateNow() {
         this.stopCodeExecution();
-        IComputerMotor motor = this.type.getType().getMotor();
-        if (motor.usesBlock()) {
-            this.location.getBlock().setType(Material.AIR);
-        }
-
-        if (motor.usesActor()) {
-            if (this.motorRuntimeEntityUUID == null) {
-                return;
-            }
-
-            Entity entity = this.location.getWorld().getEntity(this.motorRuntimeEntityUUID);
-            if (entity != null) {
-                entity.remove();
-            }
-
-            this.motorRuntimeEntityUUID = null;
-        }
-
+        this.location.getBlock().setType(Material.AIR);
+        this.location.getWorld().getEntity(this.runtimeEntityUUID).remove();
+        this.runtimeEntityUUID = null;
         this.location = null;
     }
 
@@ -133,6 +111,8 @@ public class BootedComputer {
     }
 
     void tick() {
+        if (this.location == null) throw new IllegalStateException("tick() called after hibernateNow()");
+
         // switch state if needed
         if (this.desiredState == DesiredState.STOPPED) {
             this.shouldRun = false;
@@ -157,48 +137,32 @@ public class BootedComputer {
             // unfreeze if frozen
             this.frozenTicks--;
         } else if (this.shouldRun) {
-            try {
-                V8Runtime v8Runtime = V8Host.getV8Instance().createV8Runtime(this.state);
+            try (
+                V8Runtime runtime = V8Host.getV8Instance().createV8Runtime(this.state)
+            ) {
+                JavetStandardConsoleInterceptor console = new JavetStandardConsoleInterceptor(runtime);
+                console.register(new IV8ValueObject[]{runtime.getGlobalObject()});
 
-                GlobalFunctions functions = new GlobalFunctions(this, v8Runtime);
-                V8ValueObject v8ValueObject = v8Runtime.createV8ValueObject();
-
-                try {
-                    v8Runtime.getGlobalObject().set(functions.getNamespace(), v8ValueObject);
-                    v8ValueObject.bind(functions);
-                } catch (Throwable t) {
-                    if (v8ValueObject != null) {
-                        try {
-                            v8ValueObject.close();
-                        } catch (Throwable tt) {
-                            t.addSuppressed(tt);
-                        }
-                    }
-
-                    throw t;
-                }
-
-                if (v8ValueObject != null) {
-                    v8ValueObject.close();
-                }
-
-                JavetStandardConsoleInterceptor console = new JavetStandardConsoleInterceptor(v8Runtime);
-                console.register(new IV8ValueObject[]{v8Runtime.getGlobalObject()});
-
-                for (JSFunctionalClass functionalClass : this.type.getType().getFunctions(this)) {
-                    V8ValueObject v8ValueObjectx = v8Runtime.createV8ValueObject();
-                    v8Runtime.getGlobalObject().set(functionalClass.getNamespace(), v8ValueObjectx);
-                    v8ValueObjectx.bind(functionalClass);
-                    if (v8ValueObjectx != null) {
-                        v8ValueObjectx.close();
+                Set<JSFunctionalClass> functionList = Set.of();
+                functionList.add(new GlobalFunctions(this, runtime));
+                Set<UpgradeType> upgradeList = Set.of(type.getType().getDefaultUpgrades());
+                upgradeList.addAll(upgrades);
+                for (UpgradeType type : upgradeList) {
+                    if (type.functions != null) {
+                        JSFunctionalClass functionalClass = type.functions.apply(this, runtime);
+                        if (functionalClass != null) functionList.add(functionalClass);
                     }
                 }
 
-                v8Runtime.getExecutor(this.code).executeVoid();
 
-                if (v8Runtime != null) {
-                    v8Runtime.close();
+                for (JSFunctionalClass functionalClass : functionList) {
+                    V8ValueObject obj = runtime.createV8ValueObject();
+                    runtime.getGlobalObject().set(functionalClass.getNamespace(), obj);
+                    obj.bind(functionalClass);
+                    obj.close();
                 }
+
+                runtime.getExecutor(this.code).executeVoid();
             } catch (JavetException e) {
                 throw new RuntimeException(e);
             }
@@ -230,13 +194,12 @@ public class BootedComputer {
     }
 
     public ComputerMetadata getMetadata() {
-        List<String> defaultUpgrades = List.of(type.getType().getDefaultUpgrades());
         return new ComputerMetadata(
             this.id,
             this.name,
             this.address,
             this.type,
-            this.upgrades.stream().filter(upgrade -> !defaultUpgrades.contains(upgrade)).toArray(String[]::new),
+            List.copyOf(this.upgrades),
             this.location,
             this.owner,
             this.collaborators.toArray(UUID[]::new),
@@ -245,36 +208,25 @@ public class BootedComputer {
         );
     }
 
-    void updateMetadata(final ComputerMetadata metadata) {
-        if (!metadata.location.equals(this.location) && metadata.location != null) {
+    void updateLocation(final Location newLocation) {
+        if (newLocation == null) throw new IllegalArgumentException("cannot move to a null location");
+
+        if (!newLocation.toCenterLocation().equals(this.location.toCenterLocation())) {
             Bukkit.getScheduler().runTask(BlazingGames.get(), () -> {
-                IComputerMotor motor = this.type.getType().getMotor();
-                if (motor.usesBlock()) {
-                    this.location.getBlock().setType(Material.AIR);
-                    metadata.location.getBlock().setType(motor.blockMaterial());
-                    motor.applyPropsToBlock(metadata.location.getBlock());
-                }
-        
-                if (motor.usesActor()) {
-                    motor.moveActor(this.location.getWorld().getEntity(this.motorRuntimeEntityUUID), metadata.location);
-                }
+                this.location.getBlock().setType(Material.AIR);
+                newLocation.getBlock().setType(Material.BARRIER);
+                this.location.getWorld().getEntity(this.runtimeEntityUUID).teleport(newLocation.toCenterLocation());
             });
         }
-        this.location = metadata.location;
+        this.location = newLocation;
+    }
+
+    void updateMetadata(final ComputerMetadata metadata) {
+        updateLocation(metadata.location);
         this.address = metadata.address;
         this.name = metadata.name;
-        this.upgrades = new ArrayList<>(List.of(metadata.upgrades));
-        upgrades.addAll(List.of(type.getType().getDefaultUpgrades())); // add defaults
-        upgrades = new ArrayList<>(upgrades.stream().distinct().collect(Collectors.toList())); // remove duplicates
+        this.upgrades = new ArrayList<>(metadata.upgrades);
         this.owner = metadata.owner;
-    }
-
-    public byte[] getState() {
-        return this.state.getSnapshotBlob();
-    }
-
-    public String getCode() {
-        return this.code;
     }
 
     void updateCode(String newCode) {
@@ -285,17 +237,6 @@ public class BootedComputer {
         }
     }
 
-    public void damageHookAddHit(Player attacker) {
-        this.motorRuntimeEntityHitAttacker = attacker.getUniqueId();
-        this.motorRuntimeEntityHits++;
-    }
-
-    void damageHookRemoveHit() {
-        if (this.motorRuntimeEntityHits > 0) {
-            this.motorRuntimeEntityHits--;
-        }
-    }
-
     private static enum DesiredState {
         NO_CHANGE,
         RUNNING,
@@ -303,12 +244,19 @@ public class BootedComputer {
         RESTART;
     }
 
-
     public String getId() {
         return this.id;
     }
 
     public ComputerTypes getType() {
         return this.type;
+    }
+
+    public byte[] getState() {
+        return this.state.getSnapshotBlob();
+    }
+
+    public String getCode() {
+        return this.code;
     }
 }
