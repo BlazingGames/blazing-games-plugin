@@ -28,31 +28,43 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
     public record Warning(String message, int enchantmentLevel) {
     }
 
     private final Enchantment enchantment;
-    private final Supplier<ItemStack> icon;
+    private final NamespacedKey model;
     private final List<AltarRecipe> recipes;
     private final List<Warning> warnings;
 
-    public VanillaEnchantmentWrapper(Enchantment enchantment, Supplier<ItemStack> icon, List<Warning> warnings, AltarRecipe... recipes) {
+    public VanillaEnchantmentWrapper(Enchantment enchantment, NamespacedKey model, List<Warning> warnings, AltarRecipe... recipes) {
         this.enchantment = enchantment;
-        this.icon = icon;
+        this.model = model;
         this.recipes = List.of(recipes);
         this.warnings = warnings;
     }
 
-    public VanillaEnchantmentWrapper(Enchantment enchantment, Supplier<ItemStack> icon, AltarRecipe... recipes) {
+    public VanillaEnchantmentWrapper(Enchantment enchantment, NamespacedKey model, AltarRecipe... recipes) {
         this.enchantment = enchantment;
-        this.icon = icon;
+        this.model = model;
         this.recipes = List.of(recipes);
         this.warnings = List.of();
     }
 
+    public VanillaEnchantmentWrapper(Enchantment enchantment, Material model, List<Warning> warnings, AltarRecipe... recipes) {
+        this.enchantment = enchantment;
+        this.model = model.getKey();
+        this.recipes = List.of(recipes);
+        this.warnings = warnings;
+    }
+
+    public VanillaEnchantmentWrapper(Enchantment enchantment, Material model, AltarRecipe... recipes) {
+        this.enchantment = enchantment;
+        this.model = model.getKey();
+        this.recipes = List.of(recipes);
+        this.warnings = List.of();
+    }
     @Override
     public ItemStack apply(ItemStack tool, int level) {
         ItemStack result = tool.clone();
@@ -108,6 +120,11 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
     }
 
     @Override
+    public NamespacedKey getModel() {
+        return model;
+    }
+
+    @Override
     public Component getDescription() {
         TextColor color = NamedTextColor.GRAY;
 
@@ -116,11 +133,6 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
         }
 
         return enchantment.description().color(color).decoration(TextDecoration.ITALIC, false);
-    }
-
-    @Override
-    public ItemStack getPreIcon() {
-        return icon.get();
     }
 
     @Override

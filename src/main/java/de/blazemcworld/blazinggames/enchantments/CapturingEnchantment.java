@@ -23,7 +23,6 @@ import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import de.blazemcworld.blazinggames.items.predicates.MaterialItemPredicate;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -35,8 +34,8 @@ public class CapturingEnchantment extends CustomTreasureEnchantment {
     }
 
     @Override
-    public ItemStack getPreIcon() {
-        return new ItemStack(Material.CREEPER_SPAWN_EGG);
+    public NamespacedKey getModel() {
+        return Material.CREEPER_SPAWN_EGG.getKey();
     }
 
     @Override

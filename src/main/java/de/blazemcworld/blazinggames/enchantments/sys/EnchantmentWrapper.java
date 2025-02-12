@@ -21,9 +21,9 @@ import de.blazemcworld.blazinggames.utils.NamespacedKeyDataType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -82,11 +82,10 @@ public interface EnchantmentWrapper {
         return null;
     }
 
-
-    ItemStack getPreIcon();
+    NamespacedKey getModel();
 
     default ItemStack getIcon(ItemStack tool, int lapisAmount, ItemStack material, int tier) {
-        ItemStack result = getPreIcon();
+        ItemStack result = new ItemStack(Material.STRUCTURE_BLOCK);
 
         int level = getLevel(tool);
 
@@ -143,7 +142,7 @@ public interface EnchantmentWrapper {
         meta.setEnchantmentGlintOverride(level > 0);
         meta.itemName(level > 0 ? getComponent(level) : getDescription());
         meta.lore(lore);
-        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+        meta.setItemModel(getModel());
         result.setItemMeta(meta);
 
         if(level > 0) {

@@ -27,7 +27,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -66,8 +65,8 @@ public class HellInfusionEnchantment extends CustomEnchantment {
     }
 
     @Override
-    public ItemStack getPreIcon() {
-        return new ItemStack(Material.MAGMA_BLOCK);
+    public NamespacedKey getModel() {
+        return Material.MAGMA_BLOCK.getKey();
     }
 
     @Override

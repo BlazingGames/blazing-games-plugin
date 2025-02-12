@@ -25,7 +25,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Illager;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -53,8 +52,8 @@ public class BaneOfIllagersEnchantment extends CustomEnchantment {
     }
 
     @Override
-    public ItemStack getPreIcon() {
-        return new ItemStack(Material.IRON_AXE);
+    public NamespacedKey getModel() {
+        return Material.IRON_AXE.getKey();
     }
 
     @Override
