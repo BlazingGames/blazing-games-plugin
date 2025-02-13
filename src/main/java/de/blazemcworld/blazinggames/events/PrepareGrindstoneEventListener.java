@@ -72,7 +72,7 @@ public class PrepareGrindstoneEventListener implements Listener {
             Pair<CustomEnchantment, Integer> entry = EnchantmentHelper.getCustomEnchantmentEntryByIndex(tool, sponge.getAmount());
 
             if(entry != null) {
-                result = EnchantmentHelper.removeCustomEnchantment(result, entry.left);
+                result = entry.left.remove(result);
             }
         }
 

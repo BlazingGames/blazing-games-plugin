@@ -15,7 +15,9 @@
  */
 package de.blazemcworld.blazinggames.enchantments.sys;
 
+import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.items.CustomItem;
+import de.blazemcworld.blazinggames.items.change.ItemChangeProviders;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import de.blazemcworld.blazinggames.utils.NumberUtils;
 import net.kyori.adventure.text.Component;
@@ -25,21 +27,65 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class CustomEnchantment implements EnchantmentWrapper {
+    private static final NamespacedKey enchantmentKey = BlazingGames.get().key("custom_enchantments");
+
     public abstract @NotNull NamespacedKey getKey();
 
     @Override
     public ItemStack apply(ItemStack tool, int level) {
-        return EnchantmentHelper.setCustomEnchantment(tool, this, level);
+        ItemStack result = tool.clone();
+
+        ItemMeta meta = result.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        PersistentDataContainer enchantments = meta.getPersistentDataContainer()
+                .get(enchantmentKey, PersistentDataType.TAG_CONTAINER);
+
+        if(enchantments == null) {
+            enchantments = container.getAdapterContext().newPersistentDataContainer();
+        }
+
+        if(level == 0) {
+            enchantments.remove(getKey());
+        }
+        else {
+            enchantments.set(getKey(), PersistentDataType.INTEGER, level);
+        }
+
+        if(enchantments.isEmpty()) {
+            container.remove(enchantmentKey);
+        }
+        else {
+            container.set(enchantmentKey, PersistentDataType.TAG_CONTAINER, enchantments);
+        }
+
+        result.setItemMeta(meta);
+        return ItemChangeProviders.update(result);
     }
 
     @Override
     public int getLevel(ItemStack tool) {
-        return EnchantmentHelper.getCustomEnchantmentLevel(tool, this);
+        if(tool == null || !tool.hasItemMeta()) {
+            return 0;
+        }
+
+        PersistentDataContainer enchantments = tool.getItemMeta().getPersistentDataContainer()
+                .get(enchantmentKey, PersistentDataType.TAG_CONTAINER);
+
+        if(enchantments == null) {
+            return 0;
+        }
+
+        return enchantments.getOrDefault(getKey(), PersistentDataType.INTEGER, 0);
     }
 
     public ItemPredicate getItemTarget() {

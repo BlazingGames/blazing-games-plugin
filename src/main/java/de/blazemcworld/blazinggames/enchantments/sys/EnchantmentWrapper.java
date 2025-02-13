@@ -37,6 +37,10 @@ public interface EnchantmentWrapper {
     boolean canGoOnItem(ItemStack tool);
 
     default boolean canEnchantItem(ItemStack tool) {
+        if(!this.canGoOnItem(tool)) {
+            return false;
+        }
+
         for(Map.Entry<EnchantmentWrapper, Integer> entry : EnchantmentHelper.getEnchantmentWrappers(tool).entrySet()) {
             if(this.conflictsWith(entry.getKey()))
             {
@@ -49,7 +53,7 @@ public interface EnchantmentWrapper {
             }
         }
 
-        return this.canGoOnItem(tool);
+        return true;
     }
 
     default ItemStack remove(ItemStack tool) {

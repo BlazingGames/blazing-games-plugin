@@ -15,7 +15,6 @@
  */
 package de.blazemcworld.blazinggames.enchantments.sys;
 
-import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.change.ItemChangeProvider;
 import de.blazemcworld.blazinggames.items.change.ItemChangeProviders;
@@ -23,18 +22,13 @@ import de.blazemcworld.blazinggames.items.predicates.ItemPredicates;
 import de.blazemcworld.blazinggames.utils.Pair;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import java.util.*;
 
 public class EnchantmentHelper implements ItemChangeProvider {
-    private static final NamespacedKey key = BlazingGames.get().key("custom_enchantments");
-
     public static Map<EnchantmentWrapper, Integer> getEnchantmentWrappers(ItemStack stack) {
         if(stack == null || !stack.hasItemMeta()) {
             return new HashMap<>();
@@ -56,101 +50,15 @@ public class EnchantmentHelper implements ItemChangeProvider {
             return new HashMap<>();
         }
 
-        PersistentDataContainer enchantments = stack.getItemMeta().getPersistentDataContainer()
-                .get(key, PersistentDataType.TAG_CONTAINER);
-
         Map<CustomEnchantment, Integer> enchantmentLevels = new HashMap<>();
 
-        if(enchantments != null) {
-            CustomEnchantments.list().forEach((customEnchantment) -> {
-                if(enchantments.has(customEnchantment.getKey(), PersistentDataType.INTEGER)) {
-                    enchantmentLevels.put(customEnchantment, enchantments.get(customEnchantment.getKey(), PersistentDataType.INTEGER));
-                }
-            });
-        }
+        CustomEnchantments.list().forEach((customEnchantment) -> {
+            if(customEnchantment.has(stack)) {
+                enchantmentLevels.put(customEnchantment, customEnchantment.getLevel(stack));
+            }
+        });
 
         return enchantmentLevels;
-    }
-
-    public static ItemStack setCustomEnchantment(ItemStack stack, CustomEnchantment enchantment, int level) {
-        if(level == 0)
-        {
-            return removeCustomEnchantment(stack, enchantment);
-        }
-
-        ItemStack result = stack.clone();
-
-        if(!canEnchantItem(result)) {
-            return result;
-        }
-
-        ItemMeta meta = result.getItemMeta();
-
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-
-        PersistentDataContainer enchantments;
-
-        if(!container.has(key, PersistentDataType.TAG_CONTAINER)) {
-            enchantments = container.getAdapterContext().newPersistentDataContainer();
-        }
-        else {
-            enchantments = stack.getItemMeta().getPersistentDataContainer()
-                    .get(key, PersistentDataType.TAG_CONTAINER);
-        }
-
-        assert enchantments != null;
-        enchantments.set(enchantment.getKey(), PersistentDataType.INTEGER, level);
-        container.set(key, PersistentDataType.TAG_CONTAINER, enchantments);
-
-        result.setItemMeta(meta);
-
-        return ItemChangeProviders.update(result);
-    }
-
-    public static ItemStack removeCustomEnchantment(ItemStack stack, CustomEnchantment enchantment) {
-        ItemStack result = stack.clone();
-
-        if(!canEnchantItem(result)) {
-            return result;
-        }
-
-        ItemMeta meta = result.getItemMeta();
-
-        PersistentDataContainer container = meta.getPersistentDataContainer();
-
-        PersistentDataContainer enchantments;
-
-        if(!container.has(key, PersistentDataType.TAG_CONTAINER)) {
-            return result;
-        }
-        else {
-            enchantments = stack.getItemMeta().getPersistentDataContainer()
-                    .get(key, PersistentDataType.TAG_CONTAINER);
-        }
-
-        assert enchantments != null;
-        enchantments.remove(enchantment.getKey());
-
-        if(enchantments.isEmpty())
-        {
-            container.remove(key);
-        }
-        else
-        {
-            container.set(key, PersistentDataType.TAG_CONTAINER, enchantments);
-        }
-
-        result.setItemMeta(meta);
-
-        return ItemChangeProviders.update(result);
-    }
-
-    public static int getCustomEnchantmentLevel(ItemStack stack, CustomEnchantment enchantment) {
-        return getCustomEnchantments(stack).getOrDefault(enchantment, 0);
-    }
-
-    public static boolean hasCustomEnchantment(ItemStack stack, CustomEnchantment enchantment) {
-        return getCustomEnchantmentLevel(stack, enchantment) != 0;
     }
 
     public static boolean canEnchantItem(ItemStack stack) {
@@ -267,10 +175,6 @@ public class EnchantmentHelper implements ItemChangeProvider {
         return new Pair<>(ItemChangeProviders.update(result), cost);
     }
 
-    public static boolean hasCustomEnchantments(ItemStack stack) {
-        return !getCustomEnchantments(stack).isEmpty();
-    }
-
     public static ItemStack removeEnchantments(ItemStack stack) {
         ItemStack result = stack.clone();
 
@@ -302,11 +206,11 @@ public class EnchantmentHelper implements ItemChangeProvider {
         return getActiveEnchantmentWrapperLevel(stack, enchantment) > 0;
     }
 
-    public static Map<CustomEnchantment, Integer> getActiveEnchantmentWrappers(ItemStack stack) {
+    public static Map<EnchantmentWrapper, Integer> getActiveEnchantmentWrappers(ItemStack stack) {
         if(stack != null && stack.getType() == Material.ENCHANTED_BOOK) {
             return new HashMap<>();
         }
-        return getCustomEnchantments(stack);
+        return getEnchantmentWrappers(stack);
     }
 
     @Override

@@ -239,7 +239,7 @@ public class ClickInventorySlotEventListener implements Listener {
                 return null;
             }
 
-            book = EnchantmentHelper.setCustomEnchantment(book, enchantment.left, enchantment.right);
+            book = enchantment.left.apply(book, enchantment.right);
         }
 
         return book;

@@ -67,8 +67,12 @@ public class CustomEnchantCommand implements CommandExecutor, TabCompleter {
             level = Integer.parseInt(strings[1]);
         }
 
-        ItemStack tool = EnchantmentHelper.setCustomEnchantment(p.getInventory().getItemInMainHand(), enchantment, level);
-        p.getInventory().setItemInMainHand(tool);
+        ItemStack tool = p.getInventory().getItemInMainHand();
+
+        if(EnchantmentHelper.canEnchantItem(tool)) {
+            tool = enchantment.apply(tool, level);
+            p.getInventory().setItemInMainHand(tool);
+        }
 
         return true;
     }

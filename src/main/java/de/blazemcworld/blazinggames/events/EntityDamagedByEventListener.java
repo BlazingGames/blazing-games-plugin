@@ -20,6 +20,7 @@ import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantment;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
+import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrapper;
 import de.blazemcworld.blazinggames.items.ContextlessItem;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.CustomItems;
@@ -61,8 +62,10 @@ public class EntityDamagedByEventListener implements Listener {
         }
 
         double damageAdded = 0;
-        for(Map.Entry<CustomEnchantment, Integer> enchantment : EnchantmentHelper.getActiveEnchantmentWrappers(weapon).entrySet()) {
-            damageAdded += enchantment.getKey().getDamageIncrease(victim, enchantment.getValue());
+        for(Map.Entry<EnchantmentWrapper, Integer> enchantment : EnchantmentHelper.getActiveEnchantmentWrappers(weapon).entrySet()) {
+            if(enchantment.getKey() instanceof CustomEnchantment ce) {
+                damageAdded += ce.getDamageIncrease(victim, enchantment.getValue());
+            }
         }
 
         if (damageAdded != 0) {
