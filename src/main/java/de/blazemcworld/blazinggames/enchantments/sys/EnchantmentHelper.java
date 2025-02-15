@@ -22,11 +22,11 @@ import de.blazemcworld.blazinggames.items.predicates.ItemPredicates;
 import de.blazemcworld.blazinggames.utils.Pair;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class EnchantmentHelper implements ItemChangeProvider {
     public static Map<EnchantmentWrapper, Integer> getEnchantmentWrappers(ItemStack stack) {
@@ -36,7 +36,7 @@ public class EnchantmentHelper implements ItemChangeProvider {
 
         HashMap<EnchantmentWrapper, Integer> enchantments = new HashMap<>();
 
-        for(EnchantmentWrapper wrapper : EnchantmentWrappers.list(false)) {
+        for(EnchantmentWrapper wrapper : EnchantmentWrappers.instance.list()) {
             if(wrapper.has(stack)) {
                 enchantments.put(wrapper, wrapper.getLevel(stack));
             }
@@ -52,7 +52,7 @@ public class EnchantmentHelper implements ItemChangeProvider {
 
         Map<CustomEnchantment, Integer> enchantmentLevels = new HashMap<>();
 
-        CustomEnchantments.list().forEach((customEnchantment) -> {
+        CustomEnchantments.instance.list().forEach((customEnchantment) -> {
             if(customEnchantment.has(stack)) {
                 enchantmentLevels.put(customEnchantment, customEnchantment.getLevel(stack));
             }
@@ -98,7 +98,7 @@ public class EnchantmentHelper implements ItemChangeProvider {
         return result;
     }
 
-    public static Pair<CustomEnchantment, Integer> getCustomEnchantmentEntryByIndex(ItemStack stack, int index) {
+    public static Pair<EnchantmentWrapper, Integer> getEnchantmentWrapperEntryByIndex(ItemStack stack, int index, Predicate<EnchantmentWrapper> filter) {
         index--;
 
         ItemStack result = stack.clone();
@@ -107,50 +107,18 @@ public class EnchantmentHelper implements ItemChangeProvider {
             return null;
         }
 
-        Map<CustomEnchantment, Integer> enchantmentLevels = getCustomEnchantments(result);
-
-        for(Map.Entry<CustomEnchantment, Integer> enchantment : enchantmentLevels.entrySet()) {
-            if(index == 0) {
-                return new Pair<>(enchantment.getKey(), enchantment.getValue());
-            }
-            if(!enchantment.getKey().getEnchantmentType().canBeRemoved()) {
-                continue;
-            }
-            index--;
-        }
-
-        return null;
-    }
-
-    public static Pair<Enchantment, Integer> getEnchantmentEntryByIndex(ItemStack stack, int index) {
-        index--;
-
-        ItemStack result = stack.clone();
-
-        if(!canEnchantItem(result)) {
+        if(index < 0) {
             return null;
         }
 
-        Map<Enchantment, Integer> enchantmentLevels;
+        ArrayList<EnchantmentWrapper> enchantments = new ArrayList<>(EnchantmentWrappers.instance.list());
 
-        if(stack.getItemMeta() instanceof EnchantmentStorageMeta meta) {
-            enchantmentLevels = meta.getStoredEnchants();
-        }
-        else {
-            enchantmentLevels = result.getEnchantments();
-        }
+        enchantments.removeIf(filter.negate());
+        enchantments.removeIf(wrapper -> !wrapper.has(stack));
 
-        for(Enchantment enchantment : EnchantmentOrder.order()) {
-            if(enchantment.isCursed()) {
-                continue;
-            }
-            if(!enchantmentLevels.containsKey(enchantment)) {
-                continue;
-            }
-            if(index == 0) {
-                return new Pair<>(enchantment, enchantmentLevels.get(enchantment));
-            }
-            index--;
+        if(index < enchantments.size()) {
+            EnchantmentWrapper wrapper = enchantments.get(index);
+            return new Pair<>(wrapper, wrapper.getLevel(stack));
         }
 
         return null;
@@ -221,7 +189,11 @@ public class EnchantmentHelper implements ItemChangeProvider {
 
         List<Component> lore = new ArrayList<>();
 
-        getCustomEnchantments(stack).forEach((enchantment, level) -> lore.add(enchantment.getComponent(level)));
+        for(CustomEnchantment enchantment : CustomEnchantments.instance.list()) {
+            if(enchantment.has(stack)) {
+                lore.add(enchantment.getComponent(enchantment.getLevel(stack)));
+            }
+        }
 
         return lore;
     }

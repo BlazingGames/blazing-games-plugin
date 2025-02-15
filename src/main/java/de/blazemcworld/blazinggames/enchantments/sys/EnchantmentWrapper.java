@@ -21,6 +21,7 @@ import de.blazemcworld.blazinggames.utils.NamespacedKeyDataType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Keyed;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -31,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public interface EnchantmentWrapper {
+public interface EnchantmentWrapper extends Keyed {
     ItemStack apply(ItemStack tool, int level);
     int getLevel(ItemStack tool);
     boolean canGoOnItem(ItemStack tool);
@@ -78,7 +79,6 @@ public interface EnchantmentWrapper {
         return false;
     }
 
-    NamespacedKey getKey();
     Component getComponent(int level);
     Component getDescription();
 
@@ -177,4 +177,8 @@ public interface EnchantmentWrapper {
     }
 
     boolean canBeRemoved();
+
+    default boolean equals(EnchantmentWrapper other) {
+        return getKey().equals(other.getKey());
+    }
 }

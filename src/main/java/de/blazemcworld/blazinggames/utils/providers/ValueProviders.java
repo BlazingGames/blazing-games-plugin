@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-package de.blazemcworld.blazinggames.items;
+package de.blazemcworld.blazinggames.utils.providers;
 
-import de.blazemcworld.blazinggames.packs.PackBuildHook;
-import de.blazemcworld.blazinggames.utils.providers.ValueProvider;
+import com.google.common.collect.ImmutableList;
+import org.bukkit.Keyed;
 
-public interface ItemProvider extends ValueProvider<CustomItem<?>>, PackBuildHook {
+import java.util.List;
+
+public abstract class ValueProviders<T extends Keyed, P extends ValueProvider<T>> {
+    public abstract List<P> getProviders();
+
+    public List<T> list() {
+        ImmutableList.Builder<T> list = new ImmutableList.Builder<>();
+        for(ValueProvider<T> provider : getProviders()) {
+            list.addAll(provider.list());
+        }
+        return list.build();
+    }
 }

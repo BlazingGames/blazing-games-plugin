@@ -15,21 +15,22 @@
  */
 package de.blazemcworld.blazinggames.events;
 
-import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantment;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
+import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrapper;
+import de.blazemcworld.blazinggames.enchantments.sys.VanillaEnchantmentWrapper;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.change.ItemChangeProviders;
 import de.blazemcworld.blazinggames.items.predicates.BreakableItemPredicate;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicates;
 import de.blazemcworld.blazinggames.utils.Pair;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareGrindstoneEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+
+import java.util.function.Predicate;
 
 public class PrepareGrindstoneEventListener implements Listener {
     @EventHandler
@@ -55,36 +56,33 @@ public class PrepareGrindstoneEventListener implements Listener {
             }
         }
 
-        if(!CustomItem.isCustomItem(sponge) && sponge.getType() == Material.SPONGE) {
-            Pair<Enchantment, Integer> entry = EnchantmentHelper.getEnchantmentEntryByIndex(tool, sponge.getAmount());
+        Predicate<EnchantmentWrapper> filter = null;
 
-            if(entry != null) {
-                if(result.getItemMeta() instanceof EnchantmentStorageMeta meta) {
-                    meta.removeStoredEnchant(entry.left);
-                    result.setItemMeta(meta);
-                }
-                else {
-                    result.removeEnchantment(entry.left);
-                }
+        if(!CustomItem.isCustomItem(sponge)) {
+            if(sponge.getType() == Material.SPONGE) {
+                filter = (wrapper) -> wrapper instanceof VanillaEnchantmentWrapper;
             }
-        }
-        if(!CustomItem.isCustomItem(sponge) && sponge.getType() == Material.WET_SPONGE) {
-            Pair<CustomEnchantment, Integer> entry = EnchantmentHelper.getCustomEnchantmentEntryByIndex(tool, sponge.getAmount());
-
-            if(entry != null) {
-                result = entry.left.remove(result);
+            else if(sponge.getType() == Material.WET_SPONGE) {
+                filter = (wrapper) -> wrapper instanceof CustomEnchantment;
             }
         }
 
-        BlazingGames.get().log(result);
+        if(filter == null) {
+            return null;
+        }
+
+        Pair<EnchantmentWrapper, Integer> entry = EnchantmentHelper.getEnchantmentWrapperEntryByIndex(tool, sponge.getAmount(),
+                filter.and(EnchantmentWrapper::canBeRemoved));
+
+        if(entry != null) {
+            result = entry.left.remove(result);
+        }
 
         if(result.equals(tool)) {
             return null;
         }
 
-        result = ItemChangeProviders.update(result);
-
-        return result;
+        return ItemChangeProviders.update(result);
     }
 
     public ItemStack grindstoneItem(ItemStack up, ItemStack down) {

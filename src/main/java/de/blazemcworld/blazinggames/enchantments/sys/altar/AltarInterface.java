@@ -146,22 +146,36 @@ public class AltarInterface extends PagedUserInterface {
         }
     }
 
-    public Set<EnchantmentWrapper> getAvailable() {
+    public List<EnchantmentWrapper> getAvailable() {
         ItemStack tool = getItem(1,1);
 
-        Set<EnchantmentWrapper> result = EnchantmentWrappers.list(true);
+        List<EnchantmentWrapper> treasured = new ArrayList<>();
 
-        result.removeIf((wrapper) -> wrapper.getRecipe(1).tier() > tier);
+        List<EnchantmentWrapper> result = new ArrayList<>(EnchantmentWrappers.instance.list());
 
         if(altars != null) {
             for(ItemStack tome : altars.values()) {
                 if(CustomItem.getCustomItem(tome) instanceof EnchantmentTome customTome) {
-                    result.add(customTome.getWrapper());
+                    treasured.add(customTome.getWrapper());
                 }
             }
         }
 
-        result.removeIf((wrapper) -> !wrapper.canEnchantItem(tool));
+        result.removeIf((wrapper) -> {
+            if(wrapper.getRecipe(1).tier() > tier) {
+                return true;
+            }
+
+            if(!wrapper.canEnchantItem(tool)) {
+                return true;
+            }
+
+            if(wrapper.isTreasure()) {
+                return !treasured.contains(wrapper);
+            }
+
+            return false;
+        });
 
         return result;
     }

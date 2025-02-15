@@ -102,8 +102,8 @@ public class CustomSlabs implements ItemProvider {
     }
 
     @Override
-    public Set<CustomItem<?>> getItems() {
-        return new HashSet<>(slabs);
+    public List<? extends CustomItem<?>> list() {
+        return slabs;
     }
 
     public static class CustomSlab extends ContextlessItem {
@@ -200,7 +200,7 @@ public class CustomSlabs implements ItemProvider {
             logger.warning("Failed to load custom slab models");
             return;
         }
-        for (CustomItem<?> item : getItems()) {
+        for (CustomItem<?> item : list()) {
             CustomSlab slab = (CustomSlab) item;
             // install slab models
             String[] jsons = new String[]{

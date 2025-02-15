@@ -16,9 +16,9 @@
 package de.blazemcworld.blazinggames.commands;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantment;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
+import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrapper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -54,7 +54,7 @@ public class CustomEnchantCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        CustomEnchantment enchantment = CustomEnchantments.getByKey(BlazingGames.get().key(strings[0]));
+        EnchantmentWrapper enchantment = CustomEnchantments.instance.getByKey(BlazingGames.get().key(strings[0]));
         int level = 1;
 
         if(enchantment == null)
@@ -83,7 +83,7 @@ public class CustomEnchantCommand implements CommandExecutor, TabCompleter {
         List<String> tabs = new ArrayList<>();
 
         if(strings.length == 1) {
-            CustomEnchantments.list().forEach(enchantment -> tabs.add(enchantment.getKey().getKey()));
+            CustomEnchantments.instance.list().forEach(enchantment -> tabs.add(enchantment.getKey().getKey()));
         }
 
         return tabs;

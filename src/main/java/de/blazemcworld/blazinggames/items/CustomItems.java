@@ -15,7 +15,6 @@
  */
 package de.blazemcworld.blazinggames.items;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 
 import de.blazemcworld.blazinggames.BlazingGames;
@@ -26,16 +25,13 @@ import de.blazemcworld.blazinggames.crates.SkeletonKey;
 import de.blazemcworld.blazinggames.crates.ToGoBoxItem;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentTome;
-import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrappers;
+import de.blazemcworld.blazinggames.enchantments.sys.VanillaEnchantmentWrappers;
 import de.blazemcworld.blazinggames.multiblocks.Blueprint;
 import de.blazemcworld.blazinggames.packs.HookContext;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-
-import javax.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -78,21 +74,21 @@ public class CustomItems implements ItemProvider {
             BuilderWandMode.EAST_WEST, BuilderWandMode.EAST_WEST_VERTICAL
     );
 
-    public static final EnchantmentTome FUSE_TOME = new EnchantmentTome(BlazingGames.get().key("fuse_tome"), "Fuse Tome", EnchantmentWrappers.MENDING);
-    public static final EnchantmentTome BIND_TOME = new EnchantmentTome(BlazingGames.get().key("bind_tome"), "Bind Tome", EnchantmentWrappers.BINDING_CURSE);
-    public static final EnchantmentTome VANISH_TOME = new EnchantmentTome(BlazingGames.get().key("vanish_tome"), "Vanish Tome", EnchantmentWrappers.VANISHING_CURSE);
-    public static final EnchantmentTome CHILL_TOME = new EnchantmentTome(BlazingGames.get().key("chill_tome"), "Chill Tome", EnchantmentWrappers.FROST_WALKER);
-    public static final EnchantmentTome NETHER_TOME = new EnchantmentTome(BlazingGames.get().key("nether_tome"), "Nether Tome", EnchantmentWrappers.SOUL_SPEED);
-    public static final EnchantmentTome ECHO_TOME = new EnchantmentTome(BlazingGames.get().key("echo_tome"), "Echo Tome", EnchantmentWrappers.SWIFT_SNEAK);
-    public static final EnchantmentTome STORM_TOME = new EnchantmentTome(BlazingGames.get().key("storm_tome"), "Storm Tome", EnchantmentWrappers.WIND_BURST);
+    public static final EnchantmentTome FUSE_TOME = new EnchantmentTome(BlazingGames.get().key("fuse_tome"), "Fuse Tome", VanillaEnchantmentWrappers.MENDING);
+    public static final EnchantmentTome BIND_TOME = new EnchantmentTome(BlazingGames.get().key("bind_tome"), "Bind Tome", VanillaEnchantmentWrappers.BINDING_CURSE);
+    public static final EnchantmentTome VANISH_TOME = new EnchantmentTome(BlazingGames.get().key("vanish_tome"), "Vanish Tome", VanillaEnchantmentWrappers.VANISHING_CURSE);
+    public static final EnchantmentTome CHILL_TOME = new EnchantmentTome(BlazingGames.get().key("chill_tome"), "Chill Tome", VanillaEnchantmentWrappers.FROST_WALKER);
+    public static final EnchantmentTome NETHER_TOME = new EnchantmentTome(BlazingGames.get().key("nether_tome"), "Nether Tome", VanillaEnchantmentWrappers.SOUL_SPEED);
+    public static final EnchantmentTome ECHO_TOME = new EnchantmentTome(BlazingGames.get().key("echo_tome"), "Echo Tome", VanillaEnchantmentWrappers.SWIFT_SNEAK);
+    public static final EnchantmentTome STORM_TOME = new EnchantmentTome(BlazingGames.get().key("storm_tome"), "Storm Tome", VanillaEnchantmentWrappers.WIND_BURST);
     public static final EnchantmentTome BLACK_TOME = new EnchantmentTome(BlazingGames.get().key("black_tome"), "Black Tome", CustomEnchantments.CAPTURING);
     public static final EnchantmentTome GUST_TOME = new EnchantmentTome(BlazingGames.get().key("gust_tome"), "Gust Tome", CustomEnchantments.UPDRAFT);
     public static final EnchantmentTome GREED_TOME = new EnchantmentTome(BlazingGames.get().key("greed_tome"), "Greed Tome", CustomEnchantments.SCAVENGER);
     public static final EnchantmentTome DIM_TOME = new EnchantmentTome(BlazingGames.get().key("dim_tome"), "Dim Tome", CustomEnchantments.UNSHINY);
 
     @Override
-    public Set<CustomItem<?>> getItems() {
-        return Set.of(
+    public List<? extends CustomItem<?>> list() {
+        return List.of(
                 PORTABLE_CRAFTING_TABLE,
                 TELEPORT_ANCHOR,
                 BLUEPRINT,
@@ -118,37 +114,9 @@ public class CustomItems implements ItemProvider {
         );
     }
 
-    public static Set<ItemProvider> getItemProviders() {
-        ImmutableSet.Builder<ItemProvider> providers = new ImmutableSet.Builder<>();
-
-        providers.add(new CustomItems());
-        providers.add(CUSTOM_SLABS);
-
-        return providers.build();
-    }
-
-    public static Set<CustomItem<?>> getAllItems() {
-        Set<CustomItem<?>> items = new HashSet<>();
-
-        for(ItemProvider provider : getItemProviders()) {
-            items.addAll(provider.getItems());
-        }
-
-        return items;
-    }
-
-    public static @Nullable CustomItem<?> getByKey(NamespacedKey key) {
-        for(CustomItem<?> curr : getAllItems()) {
-            if(curr.getKey().equals(key)) {
-                return curr;
-            }
-        }
-        return null;
-    }
-
     @Override
     public void runHook(Logger logger, HookContext context) {
-        for (CustomItem<?> item : getItems()) {
+        for (CustomItem<?> item : list()) {
             // install texture
             try (InputStream stream = item.getClass().getResourceAsStream("/customitems/" + item.getKey().getKey() + ".png")) {
                 if (stream != null) context.installTexture(item.getKey(), "item", stream.readAllBytes());

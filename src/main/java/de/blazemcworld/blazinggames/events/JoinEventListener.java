@@ -19,9 +19,9 @@ import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.discord.DiscordApp;
 import de.blazemcworld.blazinggames.discord.DiscordNotification;
+import de.blazemcworld.blazinggames.items.recipes.RecipeProviders;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
-import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 
@@ -34,7 +34,7 @@ public class JoinEventListener implements Listener {
 
     @EventHandler
     public void join(PlayerJoinEvent event) {
-        event.getPlayer().discoverRecipes(CustomRecipes.getAllRecipes().keySet());
+        event.getPlayer().discoverRecipes(RecipeProviders.instance.getRecipes().keySet());
         DiscordApp.send(DiscordNotification.playerJoin(event.getPlayer()));
 
         if (BlazingGames.get().getPackConfig() != null) {

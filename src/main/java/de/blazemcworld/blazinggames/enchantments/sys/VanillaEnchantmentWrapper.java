@@ -18,14 +18,21 @@ package de.blazemcworld.blazinggames.enchantments.sys;
 import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarRecipe;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.registry.TypedKey;
+import io.papermc.paper.registry.keys.tags.EnchantmentTagKeys;
+import io.papermc.paper.registry.tag.Tag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -38,11 +45,14 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
     private final List<AltarRecipe> recipes;
     private final List<Warning> warnings;
 
+    private final int order;
+
     public VanillaEnchantmentWrapper(Enchantment enchantment, NamespacedKey model, List<Warning> warnings, AltarRecipe... recipes) {
         this.enchantment = enchantment;
         this.model = model;
         this.recipes = List.of(recipes);
         this.warnings = warnings;
+        this.order = getTooltipOrderIndex(enchantment);
     }
 
     public VanillaEnchantmentWrapper(Enchantment enchantment, NamespacedKey model, AltarRecipe... recipes) {
@@ -50,6 +60,7 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
         this.model = model;
         this.recipes = List.of(recipes);
         this.warnings = List.of();
+        this.order = getTooltipOrderIndex(enchantment);
     }
 
     public VanillaEnchantmentWrapper(Enchantment enchantment, Material model, List<Warning> warnings, AltarRecipe... recipes) {
@@ -57,6 +68,7 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
         this.model = model.getKey();
         this.recipes = List.of(recipes);
         this.warnings = warnings;
+        this.order = getTooltipOrderIndex(enchantment);
     }
 
     public VanillaEnchantmentWrapper(Enchantment enchantment, Material model, AltarRecipe... recipes) {
@@ -64,6 +76,7 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
         this.model = model.getKey();
         this.recipes = List.of(recipes);
         this.warnings = List.of();
+        this.order = getTooltipOrderIndex(enchantment);
     }
     @Override
     public ItemStack apply(ItemStack tool, int level) {
@@ -147,10 +160,30 @@ public class VanillaEnchantmentWrapper implements EnchantmentWrapper {
 
     @Override
     public boolean canBeRemoved() {
-        return enchantment.isCursed();
+        return !enchantment.isCursed();
     }
 
     public Enchantment getEnchantment() {
         return enchantment;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    private static int getTooltipOrderIndex(Enchantment enchantment) {
+        Registry<@NotNull Enchantment> enchantmentRegistry =
+                RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT);
+
+        if(enchantmentRegistry.hasTag(EnchantmentTagKeys.TOOLTIP_ORDER)) {
+            Tag<@NotNull Enchantment> tooltipOrderTag = enchantmentRegistry.getTag(EnchantmentTagKeys.TOOLTIP_ORDER);
+            List<TypedKey<Enchantment>> tooltipOrder = tooltipOrderTag.values().stream().toList();
+
+            TypedKey<Enchantment> key = TypedKey.create(RegistryKey.ENCHANTMENT, enchantment.getKey());
+            int index = tooltipOrder.indexOf(key);
+
+            if(index >= 0) return index;
+        }
+        return Integer.MAX_VALUE;
     }
 }

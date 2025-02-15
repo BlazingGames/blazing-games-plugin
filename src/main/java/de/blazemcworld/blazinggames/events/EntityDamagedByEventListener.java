@@ -23,7 +23,7 @@ import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrapper;
 import de.blazemcworld.blazinggames.items.ContextlessItem;
 import de.blazemcworld.blazinggames.items.CustomItem;
-import de.blazemcworld.blazinggames.items.CustomItems;
+import de.blazemcworld.blazinggames.items.ItemProviders;
 import de.blazemcworld.blazinggames.utils.InventoryUtils;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -115,7 +115,7 @@ public class EntityDamagedByEventListener implements Listener {
                     }
                 });
 
-                CustomItem<?> slab = CustomItems.getByKey(BlazingGames.get().key(slabType + "_slab"));
+                CustomItem<?> slab = ItemProviders.instance.getByKey(BlazingGames.get().key(slabType + "_slab"));
 
                 if(slab instanceof ContextlessItem contextlessSlab)
                 {

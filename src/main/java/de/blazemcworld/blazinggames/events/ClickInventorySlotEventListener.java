@@ -18,6 +18,9 @@ package de.blazemcworld.blazinggames.events;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantment;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
+import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrapper;
+import de.blazemcworld.blazinggames.enchantments.sys.VanillaEnchantmentWrapper;
+import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.CustomItems;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicates;
 import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
@@ -25,14 +28,14 @@ import de.blazemcworld.blazinggames.utils.InventoryUtils;
 import de.blazemcworld.blazinggames.utils.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+
+import java.util.function.Predicate;
 
 public class ClickInventorySlotEventListener implements Listener {
     @EventHandler
@@ -216,30 +219,26 @@ public class ClickInventorySlotEventListener implements Listener {
     private ItemStack scrubResultClick(ItemStack up, ItemStack down) {
         ItemStack book = new ItemStack(Material.ENCHANTED_BOOK);
 
-        if(down.getType() == Material.SPONGE) {
-            Pair<Enchantment, Integer> enchantment = EnchantmentHelper.getEnchantmentEntryByIndex(up, down.getAmount());
+        Predicate<EnchantmentWrapper> filter = null;
 
-            if(enchantment == null) {
-                return null;
+        if(!CustomItem.isCustomItem(down)) {
+            if(down.getType() == Material.SPONGE) {
+                filter = (wrapper) -> wrapper instanceof VanillaEnchantmentWrapper;
             }
-
-            if(book.getItemMeta() instanceof EnchantmentStorageMeta meta) {
-                meta.addStoredEnchant(enchantment.left, enchantment.right, true);
-                book.setItemMeta(meta);
-            }
-            else {
-                return null;
+            else if(down.getType() == Material.WET_SPONGE) {
+                filter = (wrapper) -> wrapper instanceof CustomEnchantment;
             }
         }
-        if(down.getType() == Material.WET_SPONGE) {
-            Pair<CustomEnchantment, Integer> enchantment
-                    = EnchantmentHelper.getCustomEnchantmentEntryByIndex(up, down.getAmount());
 
-            if(enchantment == null) {
-                return null;
-            }
+        if(filter == null) {
+            return null;
+        }
 
-            book = enchantment.left.apply(book, enchantment.right);
+        Pair<EnchantmentWrapper, Integer> entry = EnchantmentHelper.getEnchantmentWrapperEntryByIndex(up, down.getAmount(),
+                filter.and(EnchantmentWrapper::canBeRemoved));
+
+        if(entry != null) {
+            book = entry.left.apply(book, entry.right);
         }
 
         return book;

@@ -30,7 +30,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Set;
+import java.util.List;
 
 public class EnchantmentSlot extends IndexedUserInterfaceSlot {
     public EnchantmentSlot(int index) {
@@ -43,20 +43,16 @@ public class EnchantmentSlot extends IndexedUserInterfaceSlot {
             return;
         }
 
-        Set<EnchantmentWrapper> wrappers = altarInterface.getAvailable();
+        List<EnchantmentWrapper> wrappers = altarInterface.getAvailable();
         ItemStack tool = altarInterface.getTool();
         int lapis = altarInterface.getLapis().getAmount();
         ItemStack material = altarInterface.getMaterial();
 
         int index = getIndex(inventory);
 
-        int cur = 0;
-        for(EnchantmentWrapper wrapper : wrappers) {
-            if(cur == index) {
-                inventory.setItem(slot, wrapper.getIcon(tool, lapis, material, altarInterface.getTier()));
-                return;
-            }
-            cur++;
+        if(index >= 0 && index < wrappers.size()) {
+            inventory.setItem(slot, wrappers.get(index).getIcon(tool, lapis, material, altarInterface.getTier()));
+            return;
         }
 
         inventory.setItem(slot, ItemStack.empty());
@@ -68,61 +64,59 @@ public class EnchantmentSlot extends IndexedUserInterfaceSlot {
             return false;
         }
 
-        Set<EnchantmentWrapper> wrappers = altarInterface.getAvailable();
+        List<EnchantmentWrapper> wrappers = altarInterface.getAvailable();
         ItemStack tool = altarInterface.getTool();
         ItemStack lapis = altarInterface.getLapis();
         ItemStack material = altarInterface.getMaterial();
 
         int index = getIndex(inventory);
 
-        int cur = 0;
-        for(EnchantmentWrapper wrapper : wrappers) {
-            if(cur == index) {
-                int level = wrapper.getLevel(tool);
+        if(index >= 0 && index < wrappers.size()) {
+            EnchantmentWrapper wrapper = wrappers.get(index);
 
-                if(level >= wrapper.getMaxLevel()) {
-                    return false;
-                }
+            int level = wrapper.getLevel(tool);
 
-                if(altarInterface.getTier() < wrapper.getRecipe(level).tier()) {
-                    return false;
-                }
-
-                if(!(event.getWhoClicked() instanceof Player player)) {
-                    return false;
-                }
-
-                AltarRecipe recipe = wrapper.getRecipe(level+1);
-
-                if(lapis.getAmount() >= recipe.lapisAmount()) {
-                    if(recipe.matchMaterial(material)) {
-                        if(player.getLevel() >= recipe.expAmount()) {
-                            ItemStack result = wrapper.apply(tool, level+1);
-                            result = ItemChangeProviders.update(result);
-
-                            altarInterface.setItem(1, 1, result);
-                            lapis.subtract(recipe.lapisAmount());
-                            material.subtract(recipe.itemAmount());
-                            player.setLevel(player.getLevel() - recipe.expAmount());
-
-                            player.getWorld().playSound(player, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
-                            
-                            Advancement advancement = Bukkit.getAdvancement(NamespacedKey.minecraft("story/enchant_item"));
-                            AdvancementProgress progress = player.getAdvancementProgress(advancement);
-                            if (!progress.isDone()) {
-                                progress.getRemainingCriteria().forEach(progress::awardCriteria);
-                            }
-
-                            return false;
-                        }
-                    }
-                }
-
-                player.playSound(player, Sound.ENTITY_SHULKER_HURT_CLOSED, 1, 1);
-
+            if(level >= wrapper.getMaxLevel()) {
                 return false;
             }
-            cur++;
+
+            if(altarInterface.getTier() < wrapper.getRecipe(level).tier()) {
+                return false;
+            }
+
+            if(!(event.getWhoClicked() instanceof Player player)) {
+                return false;
+            }
+
+            AltarRecipe recipe = wrapper.getRecipe(level+1);
+
+            if(lapis.getAmount() >= recipe.lapisAmount()) {
+                if(recipe.matchMaterial(material)) {
+                    if(player.getLevel() >= recipe.expAmount()) {
+                        ItemStack result = wrapper.apply(tool, level+1);
+                        result = ItemChangeProviders.update(result);
+
+                        altarInterface.setItem(1, 1, result);
+                        lapis.subtract(recipe.lapisAmount());
+                        material.subtract(recipe.itemAmount());
+                        player.setLevel(player.getLevel() - recipe.expAmount());
+
+                        player.getWorld().playSound(player, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
+
+                        Advancement advancement = Bukkit.getAdvancement(NamespacedKey.minecraft("story/enchant_item"));
+                        AdvancementProgress progress = player.getAdvancementProgress(advancement);
+                        if (!progress.isDone()) {
+                            progress.getRemainingCriteria().forEach(progress::awardCriteria);
+                        }
+
+                        return false;
+                    }
+                }
+            }
+
+            player.playSound(player, Sound.ENTITY_SHULKER_HURT_CLOSED, 1, 1);
+
+            return false;
         }
 
         return false;
