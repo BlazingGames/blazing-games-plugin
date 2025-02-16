@@ -67,7 +67,7 @@ public class ComputerItemWrapper extends CustomItem<ComputerItemContext> {
 
     @Override
     protected Material baseMaterial() {
-        return Material.ICE;
+        return Material.TINTED_GLASS;
     }
 
     @Override

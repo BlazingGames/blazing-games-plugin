@@ -15,21 +15,19 @@
  */
 package de.blazemcworld.blazinggames.computing;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.bukkit.Location;
-
 import com.google.gson.JsonObject;
-
 import de.blazemcworld.blazinggames.computing.types.ComputerItemContext;
 import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
 import de.blazemcworld.blazinggames.computing.upgrades.UpgradeType;
 import de.blazemcworld.blazinggames.utils.GetGson;
 import de.blazemcworld.blazinggames.utils.TextLocation;
+import org.bukkit.Location;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ComputerMetadata {
     public final String id;
@@ -63,7 +61,12 @@ public class ComputerMetadata {
         this.name = GetGson.getString(json, "name", e.apply("name"));
         this.address = UUID.fromString(GetGson.getString(json, "address", e.apply("address")));
         this.type = ComputerTypes.valueOf(GetGson.getString(json, "type", e.apply("type")));
-        this.upgrades = List.copyOf(Arrays.stream(GetGson.getString(json, "upgrades", e.apply("upgrades")).split(",")).map(UpgradeType::valueOf).collect(Collectors.toList()));
+
+        String upgrades = GetGson.getString(json, "upgrades", e.apply("upgrades"));
+        if (upgrades.isEmpty()) this.upgrades = List.of();
+        else
+            this.upgrades = List.copyOf(Arrays.stream(upgrades.split(",")).map(UpgradeType::valueOf).collect(Collectors.toList()));
+
         this.location = TextLocation.deserialize(json.get("location").isJsonNull() ? null : json.get("location").getAsString());
         this.owner = UUID.fromString(GetGson.getString(json, "owner", e.apply("owner")));
         this.collaborators = Arrays.stream(GetGson.getString(json, "collaborators", e.apply("collaborators")).split(",")).filter(s -> !s.isEmpty()).map(UUID::fromString).toArray(UUID[]::new);

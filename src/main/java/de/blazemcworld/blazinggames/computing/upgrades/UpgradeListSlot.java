@@ -15,13 +15,12 @@
  */
 package de.blazemcworld.blazinggames.computing.upgrades;
 
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-
 import de.blazemcworld.blazinggames.computing.ComputerEditor;
 import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
 import de.blazemcworld.blazinggames.userinterfaces.UserInterfaceSlot;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class UpgradeListSlot implements UserInterfaceSlot {
     @Override
@@ -31,8 +30,11 @@ public class UpgradeListSlot implements UserInterfaceSlot {
             return;
         }
 
-        if (parent.slots.size() > (slot + 1)) {
-            inventory.setItem(slot, new UpgradeItem(parent.slots.get(slot)).create());
+        int offset = (int) (13 - Math.floor(parent.maxSlots / 2.0));
+        if (parent.slots.size() >= (slot + 1 - offset)) {
+            inventory.setItem(slot, new UpgradeItem(parent.slots.get(slot - offset)).create());
+        } else {
+            inventory.setItem(slot, ItemStack.empty());
         }
     }
 
@@ -44,13 +46,12 @@ public class UpgradeListSlot implements UserInterfaceSlot {
             return false;
         }
 
-        if (parent.slots.size() > (slot + 1)) {
-            UpgradeType type = parent.slots.get(slot);
-            if (type != null) {
-                ComputerEditor.removeUpgrade(parent.computerId, type);
-                event.getWhoClicked().getInventory().addItem(new UpgradeItem(type).create());
-                parent.reload();
-            }
+        int offset = (int) (13 - Math.floor(parent.maxSlots / 2.0));
+        if (parent.slots.size() >= (slot + 1 - offset)) {
+            UpgradeType type = parent.slots.get(slot - offset);
+            ComputerEditor.removeUpgradeAtPosition(parent.computerId, slot - offset);
+            event.getWhoClicked().getInventory().addItem(new UpgradeItem(type).create());
+            parent.reload();
         }
 
         return false;

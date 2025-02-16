@@ -15,15 +15,14 @@
  */
 package de.blazemcworld.blazinggames.computing;
 
+import com.google.gson.JsonObject;
+import de.blazemcworld.blazinggames.computing.upgrades.UpgradeType;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import com.google.gson.JsonObject;
-
-import de.blazemcworld.blazinggames.computing.upgrades.UpgradeType;
 
 /**
  * Utility class for directly modifiying computers.
@@ -111,6 +110,17 @@ public class ComputerEditor {
         if (metadataObj == null) return;
         ArrayList<UpgradeType> existing = new ArrayList<>(metadataObj.upgrades);
         existing.remove(type);
+        setUpgrades(computer, existing.toArray(UpgradeType[]::new));
+    }
+
+    /**
+     * Remove upgrade at a specific position from a computer.
+     */
+    public static void removeUpgradeAtPosition(final String computer, int position) {
+        ComputerMetadata metadataObj = getMetadata(computer);
+        if (metadataObj == null) return;
+        ArrayList<UpgradeType> existing = new ArrayList<>(metadataObj.upgrades);
+        existing.remove(position);
         setUpgrades(computer, existing.toArray(UpgradeType[]::new));
     }
 

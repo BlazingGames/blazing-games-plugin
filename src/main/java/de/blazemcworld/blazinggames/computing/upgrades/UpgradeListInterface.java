@@ -15,12 +15,13 @@
  */
 package de.blazemcworld.blazinggames.computing.upgrades;
 
-import java.util.ArrayList;
-
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.ComputerEditor;
 import de.blazemcworld.blazinggames.computing.ComputerMetadata;
+import de.blazemcworld.blazinggames.userinterfaces.StaticUserInterfaceSlot;
 import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
+
+import java.util.ArrayList;
 
 public class UpgradeListInterface extends UserInterface {
     private static final int rows = 3;
@@ -33,13 +34,16 @@ public class UpgradeListInterface extends UserInterface {
         this.computerId = computerId;
         this.slots = new ArrayList<>();
         this.maxSlots = maxSlots;
+        preload();
         refresh();
     }
     
     @Override
     protected void preload() {
         for (int i = 0; i < rows * 9; i++) {
-            addSlot(i, new UpgradeListSlot());
+            if (i >= 13 - Math.floor(maxSlots / 2.0) && i <= 13 + Math.floor(maxSlots / 2.0))
+                addSlot(i, new UpgradeListSlot());
+            else addSlot(i, StaticUserInterfaceSlot.blank);
         }
     }
 
