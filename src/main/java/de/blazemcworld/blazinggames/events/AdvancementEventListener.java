@@ -1,12 +1,12 @@
 /*
  * Copyright 2025 The Blazing Games Maintainers
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,18 +15,12 @@
  */
 package de.blazemcworld.blazinggames.events;
 
-import de.blazemcworld.blazinggames.discord.DiscordApp;
-import de.blazemcworld.blazinggames.discord.DiscordNotification;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import de.blazemcworld.blazinggames.discord.eventhandlers.DiscordAdvancementHandler;
+import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 
-public class AdvancementEventListener implements Listener {
-    @EventHandler
-    public void onAdvancementDone(PlayerAdvancementDoneEvent event) {
-        if (event.getAdvancement().getDisplay() != null && event.getAdvancement().getDisplay().doesAnnounceToChat()) {
-            DiscordApp.send(DiscordNotification.playerAdvancement(
-                    event.getPlayer(), event.getAdvancement().getDisplay()));
-        }
+public class AdvancementEventListener extends BlazingEventListener<PlayerAdvancementDoneEvent> {
+    public AdvancementEventListener() {
+        this.handlers.add(new DiscordAdvancementHandler());
     }
 }

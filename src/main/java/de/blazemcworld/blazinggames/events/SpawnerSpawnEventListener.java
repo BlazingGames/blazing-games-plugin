@@ -15,24 +15,12 @@
  */
 package de.blazemcworld.blazinggames.events;
 
-import de.blazemcworld.blazinggames.BlazingGames;
-import org.bukkit.block.CreatureSpawner;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
+import de.blazemcworld.blazinggames.events.handlers.spawners.SpawnerSpawnHandler;
 import org.bukkit.event.entity.SpawnerSpawnEvent;
-import org.bukkit.persistence.PersistentDataType;
 
-public class SpawnerSpawnEventListener implements Listener {
-
-    @EventHandler
-    public void onSpawnerActivate(SpawnerSpawnEvent event) {
-        CreatureSpawner spawner = event.getSpawner();
-        if(spawner == null) return;
-
-        if(spawner.getPersistentDataContainer().getOrDefault(BlazingGames.get().key("redstone_control"), PersistentDataType.BOOLEAN, false)) {
-            if(!spawner.getBlock().isBlockIndirectlyPowered()) {
-                event.setCancelled(true);
-            }
-        }
+public class SpawnerSpawnEventListener extends BlazingEventListener<SpawnerSpawnEvent> {
+    public SpawnerSpawnEventListener() {
+        this.handlers.add(new SpawnerSpawnHandler());
     }
 }

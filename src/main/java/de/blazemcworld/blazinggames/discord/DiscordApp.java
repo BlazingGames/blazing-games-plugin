@@ -20,7 +20,7 @@ import club.minnced.discord.webhook.send.WebhookMessage;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.discord.commands.*;
-import de.blazemcworld.blazinggames.events.ChatEventListener;
+import de.blazemcworld.blazinggames.discord.eventhandlers.DiscordChatHandler;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import de.blazemcworld.blazinggames.utils.PlayerInfo;
 import de.blazemcworld.blazinggames.utils.TextUtils;
@@ -46,21 +46,20 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import javax.annotation.Nonnull;
+import java.awt.*;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.awt.Color;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
+import java.util.List;
 import java.util.*;
-import java.util.function.Function;
-
-import javax.annotation.Nonnull;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 
 public class DiscordApp extends ListenerAdapter {
     private final List<ICommand> commands = List.of(
@@ -242,11 +241,11 @@ public class DiscordApp extends ListenerAdapter {
     private void sendDiscordMessage(Player player, String content) {
         PlayerConfig config = PlayerConfig.forPlayer(player);
         String out;
-        if (ChatEventListener.meFormat(content) != null) {
-            out = config.buildNameStringShort() + " " + ChatEventListener.meFormat(content);
-        } else if (ChatEventListener.greentextFormat(content) != null) {
+        if (DiscordChatHandler.meFormat(content) != null) {
+            out = config.buildNameStringShort() + " " + DiscordChatHandler.meFormat(content);
+        } else if (DiscordChatHandler.greentextFormat(content) != null) {
             StringBuilder builder = new StringBuilder();
-            String[] parts = ChatEventListener.greentextFormat(content);
+            String[] parts = DiscordChatHandler.greentextFormat(content);
             for (String part : parts) {
                 builder.append("\\> ").append(part).append("\n");
             }

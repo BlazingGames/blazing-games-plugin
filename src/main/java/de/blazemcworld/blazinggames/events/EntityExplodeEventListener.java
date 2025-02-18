@@ -15,25 +15,12 @@
  */
 package de.blazemcworld.blazinggames.events;
 
-import de.blazemcworld.blazinggames.teleportanchor.LodestoneStorage;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
+import de.blazemcworld.blazinggames.teleportanchor.eventhandlers.LodestoneEntityExplodeHandler;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
-import java.util.List;
-
-public class EntityExplodeEventListener implements Listener {
-
-    @EventHandler
-    public void onExplosion(EntityExplodeEvent event) {
-        List<Block> blocks = event.blockList();
-        for (Block block : blocks) {
-            if (block.getType() == Material.LODESTONE) {
-                LodestoneStorage.destroyLodestone(block.getLocation());
-                LodestoneStorage.refreshAllInventories();
-            }
-        }
+public class EntityExplodeEventListener extends BlazingEventListener<EntityExplodeEvent> {
+    public EntityExplodeEventListener() {
+        this.handlers.add(new LodestoneEntityExplodeHandler());
     }
 }

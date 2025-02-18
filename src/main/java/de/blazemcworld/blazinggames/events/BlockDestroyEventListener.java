@@ -16,18 +16,11 @@
 package de.blazemcworld.blazinggames.events;
 
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
-import de.blazemcworld.blazinggames.teleportanchor.LodestoneStorage;
-import org.bukkit.Material;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
+import de.blazemcworld.blazinggames.teleportanchor.eventhandlers.LodestoneDestroyHandler;
 
-public class BlockDestroyEventListener implements Listener {
-
-    @EventHandler
-    public void onExplosion(BlockDestroyEvent event) {
-        if (event.getBlock().getType() == Material.LODESTONE) {
-            LodestoneStorage.destroyLodestone(event.getBlock().getLocation());
-            LodestoneStorage.refreshAllInventories();
-        }
+public class BlockDestroyEventListener extends BlazingEventListener<BlockDestroyEvent> {
+    public BlockDestroyEventListener() {
+        this.handlers.add(new LodestoneDestroyHandler());
     }
 }

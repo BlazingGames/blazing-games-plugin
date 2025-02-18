@@ -15,43 +15,20 @@
  */
 package de.blazemcworld.blazinggames.events;
 
-import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
-import de.blazemcworld.blazinggames.discord.DiscordApp;
-import de.blazemcworld.blazinggames.discord.DiscordNotification;
-import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
-import de.blazemcworld.blazinggames.utils.PlayerConfig;
-import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
-
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+import de.blazemcworld.blazinggames.discord.eventhandlers.DiscordJoinHandler;
+import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
+import de.blazemcworld.blazinggames.events.handlers.player.PlayerJoinHandler;
+import de.blazemcworld.blazinggames.packs.eventhandlers.SendPackHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class JoinEventListener implements Listener {
-    public static final TextColor color = TextColor.color(0xD1F990);
+import java.util.List;
 
-    @EventHandler
-    public void join(PlayerJoinEvent event) {
-        event.getPlayer().discoverRecipes(CustomRecipes.getAllRecipes().keySet());
-        DiscordApp.send(DiscordNotification.playerJoin(event.getPlayer()));
-
-        if (BlazingGames.get().getPackConfig() != null) {
-            PackConfig config = BlazingGames.get().getPackConfig();
-            byte[] sha1 = BlazingGames.get().getPackSha1();
-            event.getPlayer().setResourcePack(
-                config.uuid(),
-                BlazingAPI.getConfig().apiConfig().findAt() + "/pack.zip",
-                sha1,
-                Component.text("Custom features require this resource pack."),
-                true
-            );
-        }
-
-        PlayerConfig config = PlayerConfig.forPlayer(event.getPlayer());
-        config.updatePlayer();
-        Component name = config.buildNameComponent();
-        event.joinMessage(Component.empty().append(name).append(Component.text(" joined the game").color(color)));
+public class JoinEventListener extends BlazingEventListener<PlayerJoinEvent> {
+    public JoinEventListener() {
+        this.handlers.addAll(List.of(
+                new PlayerJoinHandler(),
+                new DiscordJoinHandler(),
+                new SendPackHandler()
+        ));
     }
 }
