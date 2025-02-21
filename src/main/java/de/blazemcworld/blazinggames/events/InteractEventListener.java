@@ -30,6 +30,7 @@ import de.blazemcworld.blazinggames.events.handlers.spawners.SpawnerInteractionH
 import de.blazemcworld.blazinggames.events.handlers.tome_altars.TomeAltarBreakHandler;
 import de.blazemcworld.blazinggames.events.handlers.tome_altars.TomeAltarInteractHandler;
 import de.blazemcworld.blazinggames.events.handlers.vaults.VaultInteractHandler;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.List;
@@ -52,5 +53,10 @@ public class InteractEventListener extends BlazingEventListener<PlayerInteractEv
                 new VaultInteractHandler(),
                 new CustomSlabPlaceBlockHandler()
         ));
+    }
+
+    @EventHandler
+    public void event(PlayerInteractEvent event) {
+        executeEvent(event);
     }
 }

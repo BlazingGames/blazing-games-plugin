@@ -17,10 +17,16 @@ package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.villagers.VillagerAcquireTradeHandler;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.VillagerAcquireTradeEvent;
 
 public class VillagerAcquireTradeEventListener extends BlazingEventListener<VillagerAcquireTradeEvent> {
     public VillagerAcquireTradeEventListener() {
         this.handlers.add(new VillagerAcquireTradeHandler());
+    }
+
+    @EventHandler
+    public void event(VillagerAcquireTradeEvent event) {
+        executeEvent(event);
     }
 }

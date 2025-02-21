@@ -18,9 +18,15 @@ package de.blazemcworld.blazinggames.events;
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.teleportanchor.eventhandlers.LodestoneDestroyHandler;
+import org.bukkit.event.EventHandler;
 
 public class BlockDestroyEventListener extends BlazingEventListener<BlockDestroyEvent> {
     public BlockDestroyEventListener() {
         this.handlers.add(new LodestoneDestroyHandler());
+    }
+
+    @EventHandler
+    public void event(BlockDestroyEvent event) {
+        executeEvent(event);
     }
 }

@@ -18,6 +18,7 @@ package de.blazemcworld.blazinggames.events.handlers.bottle;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import org.bukkit.FluidCollisionMode;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -49,14 +50,21 @@ public class BottleInteractHandler extends BlazingEventHandler<PlayerInteractEve
         if (hand == null) return;
 
         event.setCancelled(true);
-        player.setLevel(player.getLevel() - 1);
-        if (player.getInventory().getItem(hand).getAmount() == 1) {
-            player.getInventory().setItem(hand, new ItemStack(Material.EXPERIENCE_BOTTLE, 1));
-        } else {
-            player.getInventory().getItem(hand).subtract(1);
+        if (player.getGameMode() != GameMode.CREATIVE) player.setLevel(player.getLevel() - 1);
+        if (player.getGameMode() == GameMode.CREATIVE) {
             HashMap<Integer, ItemStack> remaining = event.getPlayer().getInventory().addItem(new ItemStack(Material.EXPERIENCE_BOTTLE));
             for (ItemStack item : remaining.values()) {
                 event.getPlayer().getWorld().dropItem(event.getPlayer().getLocation(), item);
+            }
+        } else {
+            if (player.getInventory().getItem(hand).getAmount() == 1) {
+                player.getInventory().setItem(hand, new ItemStack(Material.EXPERIENCE_BOTTLE, 1));
+            } else {
+                player.getInventory().getItem(hand).subtract(1);
+                HashMap<Integer, ItemStack> remaining = event.getPlayer().getInventory().addItem(new ItemStack(Material.EXPERIENCE_BOTTLE));
+                for (ItemStack item : remaining.values()) {
+                    event.getPlayer().getWorld().dropItem(event.getPlayer().getLocation(), item);
+                }
             }
         }
         event.getPlayer().getWorld().playSound(event.getPlayer().getLocation(), Sound.BLOCK_BREWING_STAND_BREW, 1, 1);

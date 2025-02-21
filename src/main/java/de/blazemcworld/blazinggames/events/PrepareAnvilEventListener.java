@@ -17,10 +17,16 @@ package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.anvils.PrepareAnvilHandler;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 
 public class PrepareAnvilEventListener extends BlazingEventListener<PrepareAnvilEvent> {
     public PrepareAnvilEventListener() {
         this.handlers.add(new PrepareAnvilHandler());
+    }
+
+    @EventHandler
+    public void event(PrepareAnvilEvent event) {
+        executeEvent(event);
     }
 }

@@ -17,7 +17,6 @@
 package de.blazemcworld.blazinggames.events.base;
 
 import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
@@ -26,7 +25,8 @@ import java.util.List;
 public abstract class BlazingEventListener<T extends Event> implements Listener {
     protected List<BlazingEventHandler<T>> handlers = new ArrayList<>();
 
-    @EventHandler
+    public abstract void event(T event);
+
     public void executeEvent(T event) {
         for (BlazingEventHandler<T> handler : handlers) {
             if (handler.fitCriteria(event)) handler.execute(event);

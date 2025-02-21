@@ -17,11 +17,17 @@ package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.userinterfaces.eventhandlers.UserInterfaceCloseHandler;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public class InventoryCloseEventListener extends BlazingEventListener<InventoryCloseEvent> {
     public InventoryCloseEventListener() {
         this.handlers.add(new UserInterfaceCloseHandler());
+    }
+
+    @EventHandler
+    public void event(InventoryCloseEvent event) {
+        executeEvent(event);
     }
 }
 

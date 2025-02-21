@@ -24,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 public class BlueprintEnchantingTableInteractHandler extends BlazingEventHandler<PlayerInteractEvent> {
@@ -31,7 +32,8 @@ public class BlueprintEnchantingTableInteractHandler extends BlazingEventHandler
     public boolean fitCriteria(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         ItemStack eventItem = event.getItem();
-        return block != null && event.getAction() == Action.RIGHT_CLICK_BLOCK && event.useInteractedBlock() != Event.Result.DENY && block.getType() == Material.ENCHANTING_TABLE && CustomItems.BLUEPRINT.matchItem(eventItem);
+        EquipmentSlot hand = event.getHand();
+        return block != null && event.getAction() == Action.RIGHT_CLICK_BLOCK && event.useInteractedBlock() != Event.Result.DENY && block.getType() == Material.ENCHANTING_TABLE && CustomItems.BLUEPRINT.matchItem(eventItem) && hand == EquipmentSlot.HAND;
     }
 
     @Override

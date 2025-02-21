@@ -17,11 +17,17 @@ package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.grindstones.PrepareGrindstoneHandler;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.PrepareGrindstoneEvent;
 
 public class PrepareGrindstoneEventListener extends BlazingEventListener<PrepareGrindstoneEvent> {
     public PrepareGrindstoneEventListener() {
         this.handlers.add(new PrepareGrindstoneHandler());
+    }
+
+    @EventHandler
+    public void event(PrepareGrindstoneEvent event) {
+        executeEvent(event);
     }
 }
 

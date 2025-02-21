@@ -18,9 +18,15 @@ package de.blazemcworld.blazinggames.events;
 import de.blazemcworld.blazinggames.discord.eventhandlers.DiscordChatHandler;
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import org.bukkit.event.EventHandler;
 
 public class ChatEventListener extends BlazingEventListener<AsyncChatEvent> {
     public ChatEventListener() {
         this.handlers.add(new DiscordChatHandler());
+    }
+
+    @EventHandler
+    public void event(AsyncChatEvent event) {
+        executeEvent(event);
     }
 }

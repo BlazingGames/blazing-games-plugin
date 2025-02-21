@@ -22,6 +22,7 @@ import de.blazemcworld.blazinggames.events.handlers.portable_crafting_table.Port
 import de.blazemcworld.blazinggames.userinterfaces.eventhandlers.UserInterfaceClickhandler;
 import de.blazemcworld.blazinggames.userinterfaces.eventhandlers.UserInterfacePlayerInventoryShiftClickHandler;
 import de.blazemcworld.blazinggames.userinterfaces.eventhandlers.UserInterfaceShiftClickHandler;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.List;
@@ -36,6 +37,11 @@ public class ClickInventorySlotEventListener extends BlazingEventListener<Invent
                 new UserInterfaceShiftClickHandler(),
                 new UserInterfacePlayerInventoryShiftClickHandler()
         ));
+    }
+
+    @EventHandler
+    public void event(InventoryClickEvent event) {
+        executeEvent(event);
     }
 }
 

@@ -20,6 +20,7 @@ import de.blazemcworld.blazinggames.enchantments.eventhandlers.ExtraDamageHandle
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.player.PlayerBlockHandler;
 import de.blazemcworld.blazinggames.events.handlers.slabs.CustomSlabBreakHandler;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.List;
@@ -32,5 +33,10 @@ public class EntityDamagedByEventListener extends BlazingEventListener<EntityDam
                 new PlayerBlockHandler(),
                 new CustomSlabBreakHandler()
         ));
+    }
+
+    @EventHandler
+    public void event(EntityDamageByEntityEvent event) {
+        executeEvent(event);
     }
 }

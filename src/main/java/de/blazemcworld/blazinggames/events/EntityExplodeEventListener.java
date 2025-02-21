@@ -17,10 +17,16 @@ package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.teleportanchor.eventhandlers.LodestoneEntityExplodeHandler;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
 public class EntityExplodeEventListener extends BlazingEventListener<EntityExplodeEvent> {
     public EntityExplodeEventListener() {
         this.handlers.add(new LodestoneEntityExplodeHandler());
+    }
+
+    @EventHandler
+    public void event(EntityExplodeEvent event) {
+        executeEvent(event);
     }
 }

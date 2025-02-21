@@ -20,6 +20,8 @@ import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.slabs.CustomSlabPlaceHandler;
 import de.blazemcworld.blazinggames.events.handlers.spawners.SpawnerPlaceHandler;
 import de.blazemcworld.blazinggames.events.handlers.tome_altars.TomeAltarPlaceHandler;
+import de.blazemcworld.blazinggames.items.eventhandlers.CustomItemPlaceHandler;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import java.util.List;
@@ -27,10 +29,16 @@ import java.util.List;
 public class BlockPlaceEventListener extends BlazingEventListener<BlockPlaceEvent> {
     public BlockPlaceEventListener() {
         this.handlers.addAll(List.of(
+                new CustomItemPlaceHandler(),
                 new SpawnerPlaceHandler(),
                 new TomeAltarPlaceHandler(),
                 new CustomSlabPlaceHandler(),
                 new ComputerPlaceHandler()
         ));
+    }
+
+    @EventHandler
+    public void event(BlockPlaceEvent event) {
+        executeEvent(event);
     }
 }

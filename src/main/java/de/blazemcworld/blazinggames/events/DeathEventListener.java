@@ -16,7 +16,6 @@
 package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.crates.eventhandlers.MakeCrateHandler;
-import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -26,11 +25,8 @@ public class DeathEventListener extends BlazingEventListener<PlayerDeathEvent> {
         this.handlers.add(new MakeCrateHandler());
     }
 
-    @Override
     @EventHandler(ignoreCancelled = true)
-    public void executeEvent(PlayerDeathEvent event) {
-        for (BlazingEventHandler<PlayerDeathEvent> handler : handlers) {
-            if (handler.fitCriteria(event)) handler.execute(event);
-        }
+    public void event(PlayerDeathEvent event) {
+        executeEvent(event);
     }
 }

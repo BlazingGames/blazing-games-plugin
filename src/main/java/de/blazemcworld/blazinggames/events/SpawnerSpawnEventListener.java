@@ -17,10 +17,16 @@ package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.spawners.SpawnerSpawnHandler;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.SpawnerSpawnEvent;
 
 public class SpawnerSpawnEventListener extends BlazingEventListener<SpawnerSpawnEvent> {
     public SpawnerSpawnEventListener() {
         this.handlers.add(new SpawnerSpawnHandler());
+    }
+
+    @EventHandler
+    public void event(SpawnerSpawnEvent event) {
+        executeEvent(event);
     }
 }

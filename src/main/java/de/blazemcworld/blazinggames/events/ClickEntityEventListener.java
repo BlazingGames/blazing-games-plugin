@@ -18,6 +18,7 @@ package de.blazemcworld.blazinggames.events;
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.slabs.CustomSlabInteractHandler;
 import de.blazemcworld.blazinggames.events.handlers.villagers.VillagerRClickHandler;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import java.util.List;
@@ -28,5 +29,10 @@ public class ClickEntityEventListener extends BlazingEventListener<PlayerInterac
                 new CustomSlabInteractHandler(),
                 new VillagerRClickHandler()
         ));
+    }
+
+    @EventHandler
+    public void event(PlayerInteractEntityEvent event) {
+        executeEvent(event);
     }
 }

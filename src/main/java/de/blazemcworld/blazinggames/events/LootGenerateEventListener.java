@@ -17,6 +17,7 @@ package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.tomes.*;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.world.LootGenerateEvent;
 
 import java.util.List;
@@ -36,5 +37,10 @@ public class LootGenerateEventListener extends BlazingEventListener<LootGenerate
                 new NetherTomeHandler(),
                 new UnshinyTomeHandler()
         ));
+    }
+
+    @EventHandler
+    public void event(LootGenerateEvent event) {
+        executeEvent(event);
     }
 }

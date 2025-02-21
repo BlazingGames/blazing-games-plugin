@@ -17,10 +17,16 @@ package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.tomes.NetherTomeBarterHandler;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PiglinBarterEvent;
 
 public class PiglinBarterEventListener extends BlazingEventListener<PiglinBarterEvent> {
     public PiglinBarterEventListener() {
         this.handlers.add(new NetherTomeBarterHandler());
+    }
+
+    @EventHandler
+    public void event(PiglinBarterEvent event) {
+        executeEvent(event);
     }
 }

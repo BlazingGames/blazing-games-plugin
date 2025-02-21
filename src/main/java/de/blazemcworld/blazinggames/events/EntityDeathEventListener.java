@@ -19,6 +19,7 @@ import de.blazemcworld.blazinggames.enchantments.eventhandlers.CapturingHandler;
 import de.blazemcworld.blazinggames.enchantments.eventhandlers.ScavagerHandler;
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.slabs.CustomSlabShulkerDeathHandler;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.List;
@@ -30,5 +31,10 @@ public class EntityDeathEventListener extends BlazingEventListener<EntityDeathEv
                 new CapturingHandler(),
                 new ScavagerHandler()
         ));
+    }
+
+    @EventHandler
+    public void event(EntityDeathEvent event) {
+        executeEvent(event);
     }
 }
