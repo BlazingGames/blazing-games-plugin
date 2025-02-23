@@ -33,6 +33,9 @@ public class CustomRecipes implements RecipeProvider {
         providers.addAll(CustomItems.getAllItems().stream().toList());
 
         providers.add(new SlabsToBlockRecipes());
+        providers.add(new NametagRecipe());
+        providers.add(new SaddleRecipe());
+        providers.add(new HorseArmorRecipes());
         providers.add(new CustomRecipes());
 
         return providers.build();
