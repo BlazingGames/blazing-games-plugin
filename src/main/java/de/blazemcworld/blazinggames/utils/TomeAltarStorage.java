@@ -15,19 +15,20 @@
  */
 package de.blazemcworld.blazinggames.utils;
 
-import de.blazemcworld.blazinggames.data.DataStorage;
-import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
-import de.blazemcworld.blazinggames.data.name.ArbitraryNameProvider;
-import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+
+import de.blazemcworld.blazinggames.BlazingGames;
+import dev.ivycollective.datastorage.DataStorage;
+import dev.ivycollective.datastorage.name.ArbitraryNameProvider;
+import dev.ivycollective.datastorage.storage.GsonStorageProvider;
 
 import java.util.List;
 
 public class TomeAltarStorage {
-    private static DataStorage<ItemStack, String> dataStorage = DataStorage.forClass(
+    private static DataStorage<ItemStack, String> dataStorage = BlazingGames.dataStorageConfig().makeDataStorage(
         TomeAltarStorage.class, null,
-        new GsonStorageProvider<>(ItemStack.class), new ArbitraryNameProvider(), new GZipCompressionProvider()
+        new GsonStorageProvider<>(ItemStack.class), new ArbitraryNameProvider()
     );
 
     public static void addTomeAltar(Location location) {
