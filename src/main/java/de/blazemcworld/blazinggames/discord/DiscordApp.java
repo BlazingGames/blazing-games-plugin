@@ -255,6 +255,10 @@ public class DiscordApp extends ListenerAdapter {
             out = content;
         }
 
+        if (isWhitelistManaged()) {
+            out = getWhitelistManagement().formatMentionsMinecraftToDiscord(out);
+        }
+
         WebhookMessage message = new WebhookMessageBuilder()
                 .setUsername(config.buildNameString())
                 .setAvatarUrl("https://cravatar.eu/helmavatar/" + player.getUniqueId() + "/128.png")
@@ -418,6 +422,9 @@ public class DiscordApp extends ListenerAdapter {
 
         Component messageSegment;
         if (!content.isBlank()) {
+            if (isWhitelistManaged()) {
+                content = getWhitelistManagement().formatMentionsDiscordToMinecraft(content);
+            }
             messageSegment = Component.text(": ")
                     .color(NamedTextColor.WHITE)
                     .append(TextUtils.colorCodeParser(TextUtils.stringToComponent(content).color(NamedTextColor.WHITE)));
