@@ -15,22 +15,20 @@
  */
 package de.blazemcworld.blazinggames.teleportanchor;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
 import com.google.common.reflect.TypeToken;
-
 import de.blazemcworld.blazinggames.data.DataStorage;
 import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
 import de.blazemcworld.blazinggames.data.name.ULIDNameProvider;
 import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
 import de.blazemcworld.blazinggames.utils.TextLocation;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class LodestoneStorage {
     private LodestoneStorage() {}
@@ -65,7 +63,7 @@ public class LodestoneStorage {
 
     public static void refreshAllInventories() {
         for (Player p : Bukkit.getOnlinePlayers()) {
-            if (p.getInventory().getHolder(false) instanceof TeleportAnchorInterface tpi) {
+            if (p.getOpenInventory().getTopInventory().getHolder() instanceof TeleportAnchorInterface tpi) {
                 tpi.reload();
             }
         }

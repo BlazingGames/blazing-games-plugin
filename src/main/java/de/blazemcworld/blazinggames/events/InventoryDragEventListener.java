@@ -15,17 +15,19 @@
  */
 package de.blazemcworld.blazinggames.events;
 
-import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
+import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
+import de.blazemcworld.blazinggames.userinterfaces.eventhandlers.UserInterfaceDragHandler;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.InventoryDragEvent;
 
-public class InventoryDragEventListener implements Listener {
+public class InventoryDragEventListener extends BlazingEventListener<InventoryDragEvent> {
+    public InventoryDragEventListener() {
+        this.handlers.add(new UserInterfaceDragHandler());
+    }
+
     @EventHandler
-    public void onDrag(InventoryDragEvent event) {
-        if(event.getInventory().getHolder() instanceof UserInterface ui) {
-            ui.onDrag(event);
-        }
+    public void event(InventoryDragEvent event) {
+        executeEvent(event);
     }
 }
 
