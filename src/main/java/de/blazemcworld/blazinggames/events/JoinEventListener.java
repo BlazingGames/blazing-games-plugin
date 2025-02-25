@@ -53,7 +53,7 @@ public class JoinEventListener implements Listener {
         PlayerConfig config = PlayerConfig.forPlayer(event.getPlayer());
         config.updatePlayer();
         Component name = config.toDisplayTag(false).buildNameComponent();
-        event.joinMessage(Component.empty().append(name).append(Component.text(" joined the game").color(color)));
+        event.joinMessage(Component.text().append(name).append(Component.text(" joined the game").color(color)).build());
 
         if (config.isPlural()) {
             event.getPlayer().sendMessage(Component.text("Reminder: set a front with /front to autoproxy your messages", reminderColor));

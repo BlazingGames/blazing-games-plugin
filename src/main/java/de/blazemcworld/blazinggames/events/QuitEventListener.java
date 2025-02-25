@@ -42,6 +42,6 @@ public class QuitEventListener implements Listener {
 
         Component name = PlayerConfig.forPlayer(event.getPlayer())
             .toDisplayTag(false).buildNameComponent();
-        event.quitMessage(Component.empty().append(name).append(Component.text(" left the game").color(color)));
+        event.quitMessage(Component.text().append(name).append(Component.text(" left the game").color(color)).build());
     }
 }

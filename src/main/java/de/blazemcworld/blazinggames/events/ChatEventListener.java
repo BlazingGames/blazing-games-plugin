@@ -65,14 +65,16 @@ public class ChatEventListener implements Listener, ChatRenderer {
         DisplayTag displayTag = pair.right;
         if (meFormat(message) != null) {
             // me when a oneliner needs to be multiline
-            return Component.text("*").color(NamedTextColor.WHITE)
+            return Component.text()
+                .append(Component.text("*").color(NamedTextColor.WHITE))
                 .appendSpace()
                 .append(displayTag.buildNameComponentShort())
                 .appendSpace()
-                .append(TextUtils.parseMinimessage(meFormat(message)).color(NamedTextColor.WHITE));
+                .append(TextUtils.parseMinimessage(meFormat(message)).color(NamedTextColor.WHITE))
+                .build();
         } else {
-            return Component.empty().append(displayTag.buildNameComponent()).append(Component.text(": ").color(NamedTextColor.WHITE))
-                .append(TextUtils.parseMinimessage(message).color(NamedTextColor.WHITE));
+            return Component.text().append(displayTag.buildNameComponent()).append(Component.text(": ").color(NamedTextColor.WHITE))
+                .append(TextUtils.parseMinimessage(message).color(NamedTextColor.WHITE)).build();
         }
     }
 
