@@ -92,7 +92,7 @@ public record DiscordNotification(
         if (player != null) {
             PlayerConfig config = PlayerConfig.forPlayer(player);
             builder.setAuthor(
-                    config.buildNameString(), null,
+                    config.toDisplayTag(false).buildNameString(), null,
                     "http://cravatar.eu/helmhead/" + player.getUniqueId() + "/128.png"
             );
         }
