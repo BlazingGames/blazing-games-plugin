@@ -19,13 +19,8 @@ import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.BootedComputer;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.enchantments.PatternEnchantment;
-import de.blazemcworld.blazinggames.enchantments.eventhandlers.PatternHandler;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
-import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
-import de.blazemcworld.blazinggames.events.handlers.blocks.BlockBreakEventHandler;
-import de.blazemcworld.blazinggames.events.handlers.blocks.LogBreakHandler;
-import de.blazemcworld.blazinggames.events.handlers.tools.ToolDamageHandler;
 import de.blazemcworld.blazinggames.items.recipes.RecipeHelper;
 import de.blazemcworld.blazinggames.teleportanchor.LodestoneStorage;
 import de.blazemcworld.blazinggames.utils.Drops;
@@ -64,20 +59,179 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 
-public class BreakBlockEventListener extends BlazingEventListener<BlockBreakEvent> {
-    public BreakBlockEventListener() {
-        this.handlers.addAll(List.of(
-                new BlockBreakEventHandler(),
-                new ToolDamageHandler(),
-                new LogBreakHandler(),
-                new PatternHandler()
-        ));
-    }
+public class BreakBlockEventListener implements Listener {
+    private final Set<Material> logs = Set.of(
+            Material.OAK_LOG,
+            Material.DARK_OAK_LOG,
+            Material.ACACIA_LOG,
+            Material.BIRCH_LOG,
+            Material.JUNGLE_LOG,
+            Material.MANGROVE_LOG,
+            Material.SPRUCE_LOG,
+            Material.CHERRY_LOG,
+            Material.WARPED_STEM,
+            Material.CRIMSON_STEM,
+            Material.PALE_OAK_LOG
+    );
+
+    private final Set<Material> leaves = Set.of(
+            Material.OAK_LEAVES,
+            Material.DARK_OAK_LEAVES,
+            Material.ACACIA_LEAVES,
+            Material.BIRCH_LEAVES,
+            Material.JUNGLE_LEAVES,
+            Material.MANGROVE_LEAVES,
+            Material.SPRUCE_LEAVES,
+            Material.CHERRY_LEAVES,
+            Material.AZALEA_LEAVES,
+            Material.FLOWERING_AZALEA_LEAVES,
+            Material.WARPED_WART_BLOCK,
+            Material.NETHER_WART_BLOCK,
+            Material.PALE_OAK_LEAVES
+    );
 
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void event(BlockBreakEvent event) {
-        executeEvent(event);
+    public void onBreakBlock(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        BlockFace playerDir = player.getFacing();
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        BlockFace face = event.getPlayer().getTargetBlockFace(6);
+
+        event.setDropItems(false);
+        event.setExpToDrop(0);
+
+        if(mainHand.hasData(DataComponentTypes.TOOL)) {
+            Tool toolComponent = mainHand.getData(DataComponentTypes.TOOL);
+            if(toolComponent != null) {
+                int damagePerBlock = toolComponent.damagePerBlock();
+                if(mainHand.getType() == Material.SHEARS) {
+                    if(event.getBlock().getType() != Material.FIRE && event.getBlock().getType() != Material.SOUL_FIRE) {
+                        Bukkit.getScheduler().runTask(BlazingGames.get(), () -> player.damageItemStack(EquipmentSlot.HAND, 1));
+                    }
+                }
+                else if(event.getBlock().getType().getHardness() > 0) {
+                    Bukkit.getScheduler().runTask(BlazingGames.get(), () -> player.damageItemStack(EquipmentSlot.HAND, damagePerBlock));
+                }
+            }
+        }
+
+        if (EnchantmentHelper.hasActiveEnchantmentWrapper(mainHand, CustomEnchantments.TREE_FELLER)) {
+            if (logs.contains(event.getBlock().getType())) {
+                if (player.getFoodLevel() <= 6) {
+                    return;
+                }
+
+                ItemStack axe = player.getInventory().getItemInMainHand();
+
+                int treeFeller = EnchantmentHelper.getActiveEnchantmentWrapperLevel(axe, CustomEnchantments.TREE_FELLER);
+
+                if (treeFeller <= 0) {
+                    return;
+                }
+
+                List<Block> blocksToBreak = new ArrayList<>();
+                blocksToBreak.add(event.getBlock());
+
+                boolean foundLeaves = false;
+
+                for (int i = 0; i < blocksToBreak.size(); i++) {
+                    Block block = blocksToBreak.get(i);
+                    for (int x = -1; x <= 1; x++) {
+                        for (int z = -1; z <= 1; z++) {
+                            for (int y = -1; y <= 1; y++) {
+                                Block relBlock = block.getRelative(x, 1, z);
+
+                                if (leaves.contains(relBlock.getType())) {
+                                    if (relBlock.getBlockData() instanceof Leaves leaf) {
+                                        if (!leaf.isPersistent()) {
+                                            foundLeaves = true;
+                                        }
+                                    }
+                                } else if (logs.contains(relBlock.getType())) {
+                                    if (!blocksToBreak.contains(relBlock)) {
+                                        blocksToBreak.add(relBlock);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!foundLeaves) {
+                    return;
+                }
+
+                Bukkit.getScheduler().runTaskLater(BlazingGames.get(), () -> treeFeller(player, blocksToBreak), 1);
+            }
+        }
+
+        int pattern = EnchantmentHelper.getActiveEnchantmentWrapperLevel(mainHand, CustomEnchantments.PATTERN);
+
+        if (pattern > 0 && face != null) {
+            Pair<Integer, Integer> dimensions = PatternEnchantment.dimensions.get(pattern - 1);
+
+            for (int i = 0; i < dimensions.left; i++) {
+                int x = -dimensions.left / 2 + i;
+                for (int j = 0; j < dimensions.right; j++) {
+                    Vector vec = new Vector(0, 0, 0);
+                    if (face.getModY() != 0) {
+                        int y = -dimensions.right / 2 + j;
+                        switch (playerDir) {
+                            case EAST -> vec = new Vector(y, 0, x);
+                            case WEST -> vec = new Vector(-y, 0, -x);
+                            case NORTH -> vec = new Vector(x, 0, -y);
+                            case SOUTH -> vec = new Vector(-x, 0, y);
+                        }
+                    } else {
+                        switch (face) {
+                            case EAST -> vec = new Vector(0, j, -x);
+                            case WEST -> vec = new Vector(0, j, x);
+                            case NORTH -> vec = new Vector(-x, j, 0);
+                            case SOUTH -> vec = new Vector(x, j, 0);
+                        }
+                    }
+                    if (!vec.isZero()) {
+                        fakeBreakBlock(player, event.getBlock().getLocation().clone().add(vec).getBlock());
+                    }
+                }
+            }
+        }
+
+        fakeBreakBlock(player, event.getBlock(), false);
+    }
+
+    private void treeFeller(Player player, List<Block> blocksToBreak) {
+        if (blocksToBreak.isEmpty()) {
+            return;
+        }
+
+        if (player.getFoodLevel() <= 0) {
+            return;
+        }
+
+        ItemStack axe = player.getInventory().getItemInMainHand();
+
+        int treeFeller = EnchantmentHelper.getActiveEnchantmentWrapperLevel(axe, CustomEnchantments.TREE_FELLER);
+
+        if (treeFeller <= 0) {
+            return;
+        }
+
+        Block block = blocksToBreak.getFirst();
+
+        fakeBreakBlock(player, block);
+        blocksToBreak.removeFirst();
+
+        player.damageItemStack(EquipmentSlot.HAND, 1);
+
+        int chance = 100 - treeFeller * 20;
+
+        if (new Random().nextInt(100) + 1 <= chance) {
+            player.setFoodLevel(player.getFoodLevel() - 1);
+        }
+
+        Bukkit.getScheduler().runTaskLater(BlazingGames.get(), () -> treeFeller(player, blocksToBreak), 1);
     }
 
     public static Drops getBlockDrops(Player player, Block block) {
