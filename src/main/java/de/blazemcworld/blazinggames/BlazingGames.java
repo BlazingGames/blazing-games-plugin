@@ -226,7 +226,9 @@ public class BlazingGames extends JavaPlugin {
         pluginManager.registerEvents(new ClickInventorySlotEventListener(), this);
         pluginManager.registerEvents(new ChatEventListener(), this);
         pluginManager.registerEvents(new ClickEntityEventListener(), this);
-        pluginManager.registerEvents(new BreakBlockEventListener(), this);
+        pluginManager.registerEvents(new BlockBreakEventListener(), this);
+        pluginManager.registerEvents(new BlazingBlockDropEventListener(), this);
+        pluginManager.registerEvents(new BlazingBlockDisappearEventListener(), this);
         pluginManager.registerEvents(new EntityDeathEventListener(), this);
         pluginManager.registerEvents(new AdvancementEventListener(), this);
         pluginManager.registerEvents(new JoinEventListener(), this);
