@@ -28,9 +28,6 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -72,36 +69,16 @@ public class ChatEventListener implements Listener, ChatRenderer {
                 .appendSpace()
                 .append(displayTag.buildNameComponentShort())
                 .appendSpace()
-                .append(TextUtils.colorCodeParser(meFormat(message)).color(NamedTextColor.WHITE));
-        } else if (greentextFormat(message) != null) {
-            Component txt = Component.empty().append(displayTag.buildNameComponent()).append(Component.text(": ").color(NamedTextColor.WHITE));
-            String[] parts = greentextFormat(message);
-            for (String part : parts) {
-                txt = txt.appendNewline().append(Component.text("    > ").color(NamedTextColor.WHITE))
-                    .append(TextUtils.colorCodeParser(part).color(NamedTextColor.WHITE));
-            }
-            return txt;
+                .append(TextUtils.parseMinimessage(meFormat(message)).color(NamedTextColor.WHITE));
         } else {
             return Component.empty().append(displayTag.buildNameComponent()).append(Component.text(": ").color(NamedTextColor.WHITE))
-                .append(TextUtils.colorCodeParser(message).color(NamedTextColor.WHITE));
+                .append(TextUtils.parseMinimessage(message).color(NamedTextColor.WHITE));
         }
     }
 
     public static String meFormat(String existingContent) {
         if (existingContent.startsWith("* ")) {
             return existingContent.substring(1).trim();
-        }
-        return null;
-    }
-
-    public static String[] greentextFormat(String existingContent) {
-        if (existingContent.startsWith(">")) {
-            String[] parts = existingContent.split(">");
-            if (parts.length > 1) {
-                ArrayList<String> output = new ArrayList<>(List.of(parts));
-                output.remove(0);
-                return output.stream().map(String::trim).toArray(String[]::new);
-            }
         }
         return null;
     }

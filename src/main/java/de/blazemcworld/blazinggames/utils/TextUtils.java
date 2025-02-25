@@ -16,31 +16,33 @@
 package de.blazemcworld.blazinggames.utils;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 
 public class TextUtils {
-    public static String componentToString(Component component) {
-        return LegacyComponentSerializer.legacySection().serialize(component);
-    }
+    public static final MiniMessage restrictedParser = MiniMessage.builder()
+        .tags(TagResolver.builder()
+            .resolver(StandardTags.color())
+            .resolver(StandardTags.decorations())
+            .resolver(StandardTags.gradient())
+            .resolver(StandardTags.shadowColor())
+            .resolver(StandardTags.pride())
+            .resolver(StandardTags.rainbow())
+            .resolver(StandardTags.keybind())
+            .resolver(StandardTags.reset())
+            .resolver(StandardTags.newline())
+        .build()).build();
 
-    public static String componentToAmpersandString(Component component) {
-        return LegacyComponentSerializer.legacyAmpersand().serialize(component);
+    public static String componentToString(Component component) {
+        return restrictedParser.serialize(component);
     }
 
     public static Component stringToComponent(String string) {
         return Component.text(string);
     }
 
-    public static Component ampersandStringToComponent(String string) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(string);
-    }
-
-    public static Component colorCodeParser(String message) {
-        String text = message.replaceAll("&([a-fk-or0-9])", "§$1");
-        return Component.text(text);
-    }
-
-    public static String stripColorCodes(String message) {
-        return message.replaceAll("&[0-9a-fk-or]", "");
+    public static Component parseMinimessage(String message) {
+        return restrictedParser.deserialize(message);
     }
 }

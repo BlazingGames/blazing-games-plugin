@@ -91,7 +91,7 @@ public class DiscordApp extends ListenerAdapter {
 
     public static void messageHook(Player player, String message, DisplayTag displayTag) {
         if (app == null) return;
-        app.sendDiscordMessage(player, TextUtils.stripColorCodes(message), displayTag);
+        app.sendDiscordMessage(player, message, displayTag);
     }
 
     /**
@@ -244,13 +244,6 @@ public class DiscordApp extends ListenerAdapter {
         String out;
         if (ChatEventListener.meFormat(content) != null) {
             out = displayTag.buildNameStringShort() + " " + ChatEventListener.meFormat(content);
-        } else if (ChatEventListener.greentextFormat(content) != null) {
-            StringBuilder builder = new StringBuilder();
-            String[] parts = ChatEventListener.greentextFormat(content);
-            for (String part : parts) {
-                builder.append("\\> ").append(part).append("\n");
-            }
-            out = builder.toString().trim();
         } else {
             out = content;
         }
@@ -427,7 +420,7 @@ public class DiscordApp extends ListenerAdapter {
             }
             messageSegment = Component.text(": ")
                     .color(NamedTextColor.WHITE)
-                    .append(TextUtils.colorCodeParser(content));
+                    .append(TextUtils.parseMinimessage(content));
         } else if (attachmentsRaw.length > 0) {
             messageSegment = Component.text(" sent attachments").color(NamedTextColor.WHITE);
         } else if (stickersRaw.length > 0) {
