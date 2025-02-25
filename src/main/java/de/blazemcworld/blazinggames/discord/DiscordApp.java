@@ -29,9 +29,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
+import net.dv8tion.jda.api.entities.messages.MessagePoll;
 import net.dv8tion.jda.api.entities.sticker.Sticker;
-import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -208,11 +209,10 @@ public class DiscordApp extends ListenerAdapter {
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         if (!event.isFromGuild()) return;
         if (event.getAuthor().isBot()) return;
+        if (event.getMessage().getType().isSystem()) return;
+        if (event.isFromThread()) return;
         if (event.getChannel().getId().equals(this.channel.getId())) {
-            sendMinecraftMessage(Objects.requireNonNull(event.getMember()),
-                    event.getMessage().getContentRaw(),
-                    event.getMessage().getAttachments().toArray(new Message.Attachment[0]),
-                    event.getMessage().getStickers().toArray(new StickerItem[0]));
+            sendMinecraftMessage(Objects.requireNonNull(event.getMember()), event.getMessage());
         } else if (event.getChannel().getId().equals(this.consoleChannel.getId())) {
             lastMessageId = 0;
             String command = event.getMessage().getContentRaw();
@@ -315,14 +315,18 @@ public class DiscordApp extends ListenerAdapter {
     }
 
     // https://stackoverflow.com/a/4247219
+    private final Random random = new Random();
     private Component prettyName(String text) {
-        Random random = new Random(text.hashCode()); // use hashCode for consistency
         final float hue = random.nextFloat();
         // Saturation between 0.1 and 0.3
         final float saturation = (random.nextInt(2000) + 1000) / 10000f;
         final float luminance = 0.9f;
         final Color color = Color.getHSBColor(hue, saturation, luminance);
         return Component.text(text).color(TextColor.color(color.getRGB()));
+    }
+
+    private Component messageExtensionComponent(String title, Component contents) {
+        return Component.newline().append(Component.text("↳ " + title + ": ").color(NamedTextColor.WHITE)).append(contents);
     }
 
     private <T> Component formatArrayIntoComponent(
@@ -340,7 +344,7 @@ public class DiscordApp extends ListenerAdapter {
                         textComponent.append(Component.text(", ").color(NamedTextColor.WHITE))
                                 .append(textComponent2)
                 );
-        return Component.newline().append(Component.text("↳ " + title + ": ").color(NamedTextColor.WHITE)).append(attachmentList);
+        return messageExtensionComponent(title, attachmentList);
     }
 
     private static Component createAttachmentDataString(Message.Attachment attachment) {
@@ -400,20 +404,30 @@ public class DiscordApp extends ListenerAdapter {
         return config.toDisplayTag(true).buildNameComponent();
     }
 
-    private void sendMinecraftMessage(Member member, String content, Message.Attachment[] attachmentsRaw, Sticker[] stickersRaw) {
+    private void sendMinecraftMessage(Member member, Message message) {
+        String content = message.getContentRaw();
+
+        Message.Attachment[] attachmentsRaw = message.getAttachments().toArray(Message.Attachment[]::new);
         Component attachments = (attachmentsRaw.length > 0) ? formatArrayIntoComponent(
                 "Attachments", attachmentsRaw, attachment -> prettyName(attachment.getFileName()),
                 DiscordApp::createAttachmentDataString, // fun fact: if that method is not static, intellij complains for some reason
                 Message.Attachment::getUrl
         ) : Component.empty();
 
+        Sticker[] stickersRaw = message.getStickers().toArray(Sticker[]::new);
         Component stickers = (stickersRaw.length > 0) ? formatArrayIntoComponent(
                 "Stickers", stickersRaw, sticker -> prettyName(sticker.getName()),
                 sticker -> Component.text("Open Discord to view this sticker"),
                 sticker -> ""
         ) : Component.empty();
 
+        Message referencedMessage = message.getReferencedMessage();
+        Component reply = (referencedMessage != null) ? messageExtensionComponent("Replying to", referencedMessage.getContentRaw().isBlank() ? Component.text("(unknown contents)") : TextUtils.parseMinimessage(referencedMessage.getContentRaw()))
+            : (message.getType().equals(MessageType.INLINE_REPLY) ? messageExtensionComponent("Replying to", Component.text("(inaccessible message)")) : Component.empty());
+
+        MessagePoll poll = message.getPoll();
         Component messageSegment;
+        Component extra = Component.empty();
         if (!content.isBlank()) {
             if (isWhitelistManaged()) {
                 content = getWhitelistManagement().formatMentionsDiscordToMinecraft(content);
@@ -425,6 +439,9 @@ public class DiscordApp extends ListenerAdapter {
             messageSegment = Component.text(" sent attachments").color(NamedTextColor.WHITE);
         } else if (stickersRaw.length > 0) {
             messageSegment = Component.text(" sent stickers").color(NamedTextColor.WHITE);
+        } else if (poll != null) {
+            messageSegment = Component.text(" sent a poll").color(NamedTextColor.WHITE);
+            extra = messageExtensionComponent("Poll Name", Component.text(poll.getQuestion().getText()));
         } else {
             messageSegment = Component.text(" sent something").color(NamedTextColor.WHITE);
         }
@@ -437,6 +454,8 @@ public class DiscordApp extends ListenerAdapter {
                 .append(messageSegment)
                 .append(attachments)
                 .append(stickers)
+                .append(reply)
+                .append(extra)
                 .build());
     }
 
