@@ -18,6 +18,7 @@ package de.blazemcworld.blazinggames.events.handlers.slabs;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -34,5 +35,9 @@ public class CustomSlabShulkerDeathHandler extends BlazingEventHandler<EntityDea
     @Override
     public void execute(EntityDeathEvent event) {
         event.setCancelled(true);
+        if (event.getDamageSource().getDamageType() == DamageType.GENERIC_KILL) {
+            event.getEntity().remove();
+            if (event.getEntity().getVehicle() != null) event.getEntity().getVehicle().remove();
+        }
     }
 }
