@@ -18,6 +18,9 @@ package de.blazemcworld.blazinggames;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.blazemcworld.blazinggames.commands.*;
+import de.blazemcworld.blazinggames.commands.plural.FrontCommand;
+import de.blazemcworld.blazinggames.commands.plural.MemberCommand;
+import de.blazemcworld.blazinggames.commands.plural.SystemCommand;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry.ComputerPrivileges;
 import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
@@ -37,6 +40,7 @@ import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.WeakKeyException;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -206,6 +210,12 @@ public class BlazingGames extends JavaPlugin {
         }
 
         // Commands
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
+            commands.registrar().register(SystemCommand.command());
+            commands.registrar().register(FrontCommand.command());
+            commands.registrar().register(MemberCommand.command());
+        });
+
         registerCommand("customenchant", new CustomEnchantCommand());
         registerCommand("customgive", new CustomGiveCommand());
         registerCommand("killme", new KillMeCommand());

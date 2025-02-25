@@ -35,9 +35,8 @@ public class TextUtils {
         return LegacyComponentSerializer.legacyAmpersand().deserialize(string);
     }
 
-    public static Component colorCodeParser(Component message) {
-        String text = componentToString(message)
-                .replaceAll("&([a-fk-or0-9])", "§$1");
+    public static Component colorCodeParser(String message) {
+        String text = message.replaceAll("&([a-fk-or0-9])", "§$1");
         return Component.text(text);
     }
 

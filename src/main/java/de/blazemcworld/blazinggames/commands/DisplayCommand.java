@@ -27,6 +27,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import de.blazemcworld.blazinggames.utils.DisplayTag;
+import de.blazemcworld.blazinggames.utils.FrontManager;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -43,6 +45,15 @@ public class DisplayCommand implements CommandExecutor, TabCompleter {
                     .color(NamedTextColor.RED));
             return false;
         }
+
+        if (FrontManager.hasFront(player.getUniqueId())) {
+            player.sendMessage(Component.text((
+                "You currently have a front set. Either change your front's display settings with /member" +
+                " or remove your front with /front before making account modifications with /display."
+            ), colorFailure));
+            return true;
+        }
+
         PlayerConfig config = PlayerConfig.forPlayer(player);
         player.sendMessage("");
 
@@ -134,15 +145,16 @@ public class DisplayCommand implements CommandExecutor, TabCompleter {
 
     private static void sendNameplates(Player player) {
         PlayerConfig config = PlayerConfig.forPlayer(player);
+        DisplayTag tag = config.toDisplayTag(false);
         player.sendMessage(Component.text("Preview:").color(colorSuccess));
         player.sendMessage(Component.text("- Current nameplate: ").color(colorSuccess)
-                .append(config.buildNameComponent()));
+                .append(tag.buildNameComponent()));
         player.sendMessage(Component.text("- Current nameplate (short): ").color(colorSuccess)
-                .append(config.buildNameComponentShort()));
+                .append(tag.buildNameComponentShort()));
         player.sendMessage(Component.text("- Current discord name: ").color(colorSuccess)
-                .append(Component.text(config.buildNameString()).color(NamedTextColor.WHITE)));
+                .append(Component.text(tag.buildNameString()).color(NamedTextColor.WHITE)));
         player.sendMessage(Component.text("- Current discord name (short): ").color(colorSuccess)
-                .append(Component.text(config.buildNameStringShort()).color(NamedTextColor.WHITE)));
+                .append(Component.text(tag.buildNameStringShort()).color(NamedTextColor.WHITE)));
         config.updatePlayer();
     }
 }

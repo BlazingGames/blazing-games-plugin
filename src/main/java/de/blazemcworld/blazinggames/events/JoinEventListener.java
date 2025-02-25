@@ -31,6 +31,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class JoinEventListener implements Listener {
     public static final TextColor color = TextColor.color(0xD1F990);
+    public static final TextColor reminderColor = TextColor.color(0xFCB279);
 
     @EventHandler
     public void join(PlayerJoinEvent event) {
@@ -51,7 +52,11 @@ public class JoinEventListener implements Listener {
 
         PlayerConfig config = PlayerConfig.forPlayer(event.getPlayer());
         config.updatePlayer();
-        Component name = config.buildNameComponent();
+        Component name = config.toDisplayTag(false).buildNameComponent();
         event.joinMessage(Component.empty().append(name).append(Component.text(" joined the game").color(color)));
+
+        if (config.isPlural()) {
+            event.getPlayer().sendMessage(Component.text("Reminder: set a front with /front to autoproxy your messages", reminderColor));
+        }
     }
 }

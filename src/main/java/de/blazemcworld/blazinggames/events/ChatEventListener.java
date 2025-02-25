@@ -16,7 +16,11 @@
 package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.discord.DiscordApp;
+import de.blazemcworld.blazinggames.utils.DisplayTag;
+import de.blazemcworld.blazinggames.utils.MemberData;
+import de.blazemcworld.blazinggames.utils.Pair;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
+import de.blazemcworld.blazinggames.utils.PluralConfig;
 import de.blazemcworld.blazinggames.utils.TextUtils;
 import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
@@ -37,31 +41,48 @@ public class ChatEventListener implements Listener, ChatRenderer {
     @EventHandler
     public void onChat(AsyncChatEvent event) {
         event.renderer(this); // Tell the event to use our renderer
-        DiscordApp.messageHook(event.getPlayer(), event.message());
+
+        Pair<String, DisplayTag> pair = getShownMessageAndDisplayTag(TextUtils.componentToString(event.message()), event.getPlayer());
+        DiscordApp.messageHook(event.getPlayer(), pair.left, pair.right);
+    }
+
+    private Pair<String, DisplayTag> getShownMessageAndDisplayTag(String message, Player speaker) {
+        PlayerConfig config = PlayerConfig.forPlayer(speaker);
+        if (config.isPlural()) {
+            PluralConfig cfg = config.getPluralConfig();
+            MemberData member = cfg.detectProxiedMember(message);
+            if (member != null) {
+                return new Pair<>(
+                    message.substring(member.proxyStart.length(), message.length() - member.proxyEnd.length()),
+                cfg.toDisplayTag(member.name, config));
+            }
+        }
+
+        return new Pair<>(message, config.toDisplayTag(true));
     }
 
     @Override
-    public @NotNull Component render(@NotNull Player source, @NotNull Component sourceDisplayName, @NotNull Component message, @NotNull Audience viewer) {
-        PlayerConfig config = PlayerConfig.forPlayer(source);
-        Component username = config.buildNameComponent();
-        String rawMessage = TextUtils.componentToString(message);
-        if (meFormat(rawMessage) != null) {
+    public @NotNull Component render(@NotNull Player source, @NotNull Component sourceDisplayName, @NotNull Component messageComponent, @NotNull Audience viewer) {
+        Pair<String, DisplayTag> pair = getShownMessageAndDisplayTag(TextUtils.componentToString(messageComponent), source);
+        String message = pair.left;
+        DisplayTag displayTag = pair.right;
+        if (meFormat(message) != null) {
             // me when a oneliner needs to be multiline
             return Component.text("*").color(NamedTextColor.WHITE)
                 .appendSpace()
-                .append(config.buildNameComponentShort())
+                .append(displayTag.buildNameComponentShort())
                 .appendSpace()
-                .append(TextUtils.colorCodeParser(TextUtils.stringToComponent(meFormat(rawMessage))).color(NamedTextColor.WHITE));
-        } else if (greentextFormat(rawMessage) != null) {
-            Component txt = Component.empty().append(username).append(Component.text(": ").color(NamedTextColor.WHITE));
-            String[] parts = greentextFormat(rawMessage);
+                .append(TextUtils.colorCodeParser(meFormat(message)).color(NamedTextColor.WHITE));
+        } else if (greentextFormat(message) != null) {
+            Component txt = Component.empty().append(displayTag.buildNameComponent()).append(Component.text(": ").color(NamedTextColor.WHITE));
+            String[] parts = greentextFormat(message);
             for (String part : parts) {
                 txt = txt.appendNewline().append(Component.text("    > ").color(NamedTextColor.WHITE))
-                    .append(TextUtils.colorCodeParser(TextUtils.stringToComponent(part)).color(NamedTextColor.WHITE));
+                    .append(TextUtils.colorCodeParser(part).color(NamedTextColor.WHITE));
             }
             return txt;
         } else {
-            return Component.empty().append(username).append(Component.text(": ").color(NamedTextColor.WHITE))
+            return Component.empty().append(displayTag.buildNameComponent()).append(Component.text(": ").color(NamedTextColor.WHITE))
                 .append(TextUtils.colorCodeParser(message).color(NamedTextColor.WHITE));
         }
     }

@@ -21,6 +21,7 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.discord.commands.*;
 import de.blazemcworld.blazinggames.events.ChatEventListener;
+import de.blazemcworld.blazinggames.utils.DisplayTag;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import de.blazemcworld.blazinggames.utils.PlayerInfo;
 import de.blazemcworld.blazinggames.utils.TextUtils;
@@ -88,9 +89,9 @@ public class DiscordApp extends ListenerAdapter {
         app = null;
     }
 
-    public static void messageHook(Player player, Component message) {
+    public static void messageHook(Player player, String message, DisplayTag displayTag) {
         if (app == null) return;
-        app.sendDiscordMessage(player, TextUtils.stripColorCodes(TextUtils.componentToString(message)));
+        app.sendDiscordMessage(player, TextUtils.stripColorCodes(message), displayTag);
     }
 
     /**
@@ -239,11 +240,10 @@ public class DiscordApp extends ListenerAdapter {
         }
     }
 
-    private void sendDiscordMessage(Player player, String content) {
-        PlayerConfig config = PlayerConfig.forPlayer(player);
+    private void sendDiscordMessage(Player player, String content, DisplayTag displayTag) {
         String out;
         if (ChatEventListener.meFormat(content) != null) {
-            out = config.buildNameStringShort() + " " + ChatEventListener.meFormat(content);
+            out = displayTag.buildNameStringShort() + " " + ChatEventListener.meFormat(content);
         } else if (ChatEventListener.greentextFormat(content) != null) {
             StringBuilder builder = new StringBuilder();
             String[] parts = ChatEventListener.greentextFormat(content);
@@ -260,7 +260,7 @@ public class DiscordApp extends ListenerAdapter {
         }
 
         WebhookMessage message = new WebhookMessageBuilder()
-                .setUsername(config.buildNameString())
+                .setUsername(displayTag.buildNameString())
                 .setAvatarUrl("https://cravatar.eu/helmavatar/" + player.getUniqueId() + "/128.png")
                 .setContent(out)
                 .build();
@@ -404,7 +404,7 @@ public class DiscordApp extends ListenerAdapter {
         }
 
         PlayerConfig config = PlayerConfig.forPlayer(info);
-        return config.buildNameComponent();
+        return config.toDisplayTag(true).buildNameComponent();
     }
 
     private void sendMinecraftMessage(Member member, String content, Message.Attachment[] attachmentsRaw, Sticker[] stickersRaw) {
@@ -427,7 +427,7 @@ public class DiscordApp extends ListenerAdapter {
             }
             messageSegment = Component.text(": ")
                     .color(NamedTextColor.WHITE)
-                    .append(TextUtils.colorCodeParser(TextUtils.stringToComponent(content).color(NamedTextColor.WHITE)));
+                    .append(TextUtils.colorCodeParser(content));
         } else if (attachmentsRaw.length > 0) {
             messageSegment = Component.text(" sent attachments").color(NamedTextColor.WHITE);
         } else if (stickersRaw.length > 0) {
