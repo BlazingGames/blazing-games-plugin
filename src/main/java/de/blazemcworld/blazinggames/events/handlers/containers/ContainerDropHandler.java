@@ -16,15 +16,12 @@
 
 package de.blazemcworld.blazinggames.events.handlers.containers;
 
-import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
-import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrappers;
 import de.blazemcworld.blazinggames.events.BlazingBlockDropEvent;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.utils.ItemUtils;
 import io.papermc.paper.block.TileStateInventoryHolder;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Container;
 import org.bukkit.inventory.ItemStack;
 
 public class ContainerDropHandler extends BlazingEventHandler<BlazingBlockDropEvent> {

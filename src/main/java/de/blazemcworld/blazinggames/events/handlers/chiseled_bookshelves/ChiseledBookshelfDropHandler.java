@@ -20,13 +20,7 @@ import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrappers;
 import de.blazemcworld.blazinggames.events.BlazingBlockDropEvent;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.block.CraftBlock;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 public class ChiseledBookshelfDropHandler extends BlazingEventHandler<BlazingBlockDropEvent> {

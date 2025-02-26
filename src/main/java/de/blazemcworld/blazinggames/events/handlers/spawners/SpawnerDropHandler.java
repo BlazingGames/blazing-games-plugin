@@ -26,10 +26,8 @@ import de.blazemcworld.blazinggames.utils.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.persistence.PersistentDataType;
 
 public class SpawnerDropHandler extends BlazingEventHandler<BlazingBlockDropEvent> {
@@ -43,7 +41,6 @@ public class SpawnerDropHandler extends BlazingEventHandler<BlazingBlockDropEven
     public void execute(BlazingBlockDropEvent event) {
         Drops drops = event.getDrops();
         Block block = event.getBlock();
-        ItemStack mainHand = event.getTool();
 
         drops.setExperience(0);
         CreatureSpawner spawner = (CreatureSpawner) block.getState();

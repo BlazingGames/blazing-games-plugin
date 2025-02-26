@@ -23,6 +23,7 @@ import de.blazemcworld.blazinggames.events.BlockBreakEventListener;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.utils.ItemUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Leaves;
@@ -36,6 +37,8 @@ import java.util.List;
 import java.util.Random;
 
 public class TreeFellerHandler extends BlazingEventHandler<BlockBreakEvent> {
+    private static final int treeFellerMax = 128;
+
     @Override
     public boolean fitCriteria(BlockBreakEvent event) {
         Player player = event.getPlayer();
@@ -49,28 +52,33 @@ public class TreeFellerHandler extends BlazingEventHandler<BlockBreakEvent> {
     public void execute(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
-        List<Block> blocksToBreak = new ArrayList<>();
-        blocksToBreak.add(event.getBlock());
+        List<Location> blocksToBreak = new ArrayList<>();
+        blocksToBreak.add(event.getBlock().getLocation());
 
         boolean foundLeaves = false;
 
+        treeLoop:
         for (int i = 0; i < blocksToBreak.size(); i++) {
-            Block block = blocksToBreak.get(i);
+            Block block = blocksToBreak.get(i).getBlock();
             for (int x = -1; x <= 1; x++) {
                 for (int z = -1; z <= 1; z++) {
                     for (int y = -1; y <= 1; y++) {
                         Block relBlock = block.getRelative(x, 1, z);
 
-                        if (ItemUtils.getUncoloredType(block) == Material.OAK_LEAVES) {
+                        if (ItemUtils.getUncoloredType(relBlock) == Material.OAK_LEAVES) {
                             if (relBlock.getBlockData() instanceof Leaves leaf) {
                                 if (!leaf.isPersistent()) {
                                     foundLeaves = true;
                                 }
                             }
-                        } else if (ItemUtils.getUncoloredType(event.getBlock()) == Material.OAK_LOG) {
-                            if (!blocksToBreak.contains(relBlock)) {
-                                blocksToBreak.add(relBlock);
+                        } else if (ItemUtils.getUncoloredType(relBlock) == Material.OAK_LOG) {
+                            if (!blocksToBreak.contains(relBlock.getLocation())) {
+                                blocksToBreak.add(relBlock.getLocation());
                             }
+                        }
+
+                        if(blocksToBreak.size() >= treeFellerMax) {
+                            break treeLoop;
                         }
                     }
                 }
@@ -84,7 +92,7 @@ public class TreeFellerHandler extends BlazingEventHandler<BlockBreakEvent> {
         Bukkit.getScheduler().runTaskLater(BlazingGames.get(), () -> treeFeller(player, blocksToBreak), 1);
     }
 
-    private void treeFeller(Player player, List<Block> blocksToBreak) {
+    private void treeFeller(Player player, List<Location> blocksToBreak) {
         if (blocksToBreak.isEmpty()) {
             return;
         }
@@ -101,7 +109,7 @@ public class TreeFellerHandler extends BlazingEventHandler<BlockBreakEvent> {
             return;
         }
 
-        Block block = blocksToBreak.getFirst();
+        Block block = blocksToBreak.getFirst().getBlock();
 
         BlockBreakEventListener.fakeBreakBlock(player, block);
         blocksToBreak.removeFirst();
