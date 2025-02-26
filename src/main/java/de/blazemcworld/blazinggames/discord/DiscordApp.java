@@ -22,9 +22,9 @@ import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.discord.commands.*;
 import de.blazemcworld.blazinggames.events.ChatEventListener;
 import de.blazemcworld.blazinggames.utils.DisplayTag;
+import de.blazemcworld.blazinggames.utils.EmojiRegistry;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import de.blazemcworld.blazinggames.utils.PlayerInfo;
-import de.blazemcworld.blazinggames.utils.TextUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -241,12 +241,7 @@ public class DiscordApp extends ListenerAdapter {
     }
 
     private void sendDiscordMessage(Player player, String content, DisplayTag displayTag) {
-        String out;
-        if (ChatEventListener.meFormat(content) != null) {
-            out = displayTag.buildNameStringShort() + " " + ChatEventListener.meFormat(content);
-        } else {
-            out = content;
-        }
+        String out = EmojiRegistry.discordParseEmoji(content);
 
         if (isWhitelistManaged()) {
             out = getWhitelistManagement().formatMentionsMinecraftToDiscord(out);
@@ -422,7 +417,7 @@ public class DiscordApp extends ListenerAdapter {
         ) : Component.empty();
 
         Message referencedMessage = message.getReferencedMessage();
-        Component reply = (referencedMessage != null) ? messageExtensionComponent("Replying to", referencedMessage.getContentRaw().isBlank() ? Component.text("(unknown contents)") : TextUtils.parseMinimessage(referencedMessage.getContentRaw()))
+        Component reply = (referencedMessage != null) ? messageExtensionComponent("Replying to", referencedMessage.getContentRaw().isBlank() ? Component.text("(unknown contents)") : ChatEventListener.parseGoodChat(referencedMessage.getContentRaw()))
             : (message.getType().equals(MessageType.INLINE_REPLY) ? messageExtensionComponent("Replying to", Component.text("(inaccessible message)")) : Component.empty());
 
         MessagePoll poll = message.getPoll();
@@ -434,7 +429,7 @@ public class DiscordApp extends ListenerAdapter {
             }
             messageSegment = Component.text(": ")
                     .color(NamedTextColor.WHITE)
-                    .append(TextUtils.parseMinimessage(content));
+                    .append(ChatEventListener.parseGoodChat(content));
         } else if (attachmentsRaw.length > 0) {
             messageSegment = Component.text(" sent attachments").color(NamedTextColor.WHITE);
         } else if (stickersRaw.length > 0) {

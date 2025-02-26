@@ -1,0 +1,18 @@
+# Lines starting with a "#" are comments
+
+# The format is the file name (without the .png), followed by one or more parameters (formatted as key=value)
+# Available parameters
+# - alias: can be specified more than once, other names in chat that can be used for this emoji
+# - discord_name: the code used to get the same emoji inside of discord, omit if there is no equivalent
+
+
+
+
+# Common Emoji
+heart alias=love discord_name=heart
+
+# Pride Flags
+trans alias=transgender_flag alias=trans_flag discord_name=transgender_flag
+
+# Misc
+colonthree

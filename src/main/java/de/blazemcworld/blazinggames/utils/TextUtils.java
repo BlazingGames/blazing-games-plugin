@@ -19,6 +19,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 public class TextUtils {
     public static final MiniMessage restrictedParser = MiniMessage.builder()
@@ -36,6 +37,10 @@ public class TextUtils {
 
     public static String componentToString(Component component) {
         return restrictedParser.serialize(component);
+    }
+
+    public static String stripStyles(Component component) {
+        return PlainTextComponentSerializer.plainText().serialize(component);
     }
 
     public static Component stringToComponent(String string) {

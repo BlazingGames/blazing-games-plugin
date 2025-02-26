@@ -20,6 +20,7 @@ import de.blazemcworld.blazinggames.packs.hooks.*;
 public enum HookList {
     CUSTOM_ITEMS(new CustomItemsHook()),
     GUI_ELEMENTS(new GuiElementsHook()),
+    EMOJIS(new EmojisHook()),
 
     ;
 

@@ -17,8 +17,8 @@ package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.discord.DiscordApp;
 import de.blazemcworld.blazinggames.utils.DisplayTag;
+import de.blazemcworld.blazinggames.utils.EmojiRegistry;
 import de.blazemcworld.blazinggames.utils.MemberData;
-import de.blazemcworld.blazinggames.utils.Pair;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import de.blazemcworld.blazinggames.utils.PluralConfig;
 import de.blazemcworld.blazinggames.utils.TextUtils;
@@ -27,55 +27,57 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
-public class ChatEventListener implements Listener, ChatRenderer {
+public class ChatEventListener implements Listener {
 
-    @EventHandler
+    @EventHandler(
+        priority = EventPriority.LOWEST // this event doesn't work well with others, so it runs first
+    )
     public void onChat(AsyncChatEvent event) {
-        event.renderer(this); // Tell the event to use our renderer
-
-        Pair<String, DisplayTag> pair = getShownMessageAndDisplayTag(TextUtils.componentToString(event.message()), event.getPlayer());
-        DiscordApp.messageHook(event.getPlayer(), pair.left, pair.right);
-    }
-
-    private Pair<String, DisplayTag> getShownMessageAndDisplayTag(String message, Player speaker) {
-        PlayerConfig config = PlayerConfig.forPlayer(speaker);
+        String message = PlainTextComponentSerializer.plainText().serialize(event.message());
+        PlayerConfig config = PlayerConfig.forPlayer(event.getPlayer());
         if (config.isPlural()) {
             PluralConfig cfg = config.getPluralConfig();
             MemberData member = cfg.detectProxiedMember(message);
             if (member != null) {
-                return new Pair<>(
-                    message.substring(member.proxyStart.length(), message.length() - member.proxyEnd.length()),
-                cfg.toDisplayTag(member.name, config));
+                String proxyMessage = message.substring(member.proxyStart.length(), message.length() - member.proxyEnd.length());
+                DisplayTag displayTag = cfg.toDisplayTag(member.name, config);
+                event.renderer(new GenericRenderer(displayTag));
+                event.message(parseGoodChat(proxyMessage));
+                DiscordApp.messageHook(event.getPlayer(), proxyMessage, displayTag);
+                return;
             }
         }
 
-        return new Pair<>(message, config.toDisplayTag(true));
+        DisplayTag displayTag = config.toDisplayTag(true);
+        event.renderer(new GenericRenderer(displayTag));
+        event.message(parseGoodChat(message));
+        DiscordApp.messageHook(event.getPlayer(), message, displayTag);
     }
 
-    @Override
-    public @NotNull Component render(@NotNull Player source, @NotNull Component sourceDisplayName, @NotNull Component messageComponent, @NotNull Audience viewer) {
-        Pair<String, DisplayTag> pair = getShownMessageAndDisplayTag(TextUtils.componentToString(messageComponent), source);
-        String message = pair.left;
-        DisplayTag displayTag = pair.right;
-        if (meFormat(message) != null) {
-            // me when a oneliner needs to be multiline
-            return Component.text()
-                .append(Component.text("*").color(NamedTextColor.WHITE))
-                .appendSpace()
-                .append(displayTag.buildNameComponentShort())
-                .appendSpace()
-                .append(TextUtils.parseMinimessage(meFormat(message)).color(NamedTextColor.WHITE))
-                .build();
-        } else {
-            return Component.text().append(displayTag.buildNameComponent()).append(Component.text(": ").color(NamedTextColor.WHITE))
-                .append(TextUtils.parseMinimessage(message).color(NamedTextColor.WHITE)).build();
+    public static class GenericRenderer implements ChatRenderer {
+        public final DisplayTag tag;
+
+        public GenericRenderer(DisplayTag tag) {
+            this.tag = tag;
         }
+
+        @Override
+        public @NotNull Component render(@NotNull Player source, @NotNull Component sourceDisplayName, @NotNull Component messageComponent, @NotNull Audience viewer) {
+            return Component.text().append(tag.buildNameComponent()).append(Component.text(": ").color(NamedTextColor.WHITE))
+                .append(messageComponent).build();
+        }
+    }
+
+    public static Component parseGoodChat(String message) {
+        return EmojiRegistry.parseEmoji(TextUtils.parseMinimessage(message));
     }
 
     public static String meFormat(String existingContent) {
