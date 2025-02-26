@@ -12,7 +12,17 @@
 heart alias=love discord_name=heart
 
 # Pride Flags
-trans alias=transgender_flag alias=trans_flag discord_name=transgender_flag
+pride discord_name=rainbow_flag
+agender
+aroace
+aromantic alias=aro
+asexual alias=ace
+bi alias=bigender alias=biromantic alias=bisexual
+pan alias=panromantic alias=pansexual
+enby alias=nonbinary
+lesbian alias=wlw
+vincian alias=mlm alias=homosexual
+trans alias=transgender discord_name=transgender_flag
 
 # Misc
 colonthree
