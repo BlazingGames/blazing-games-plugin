@@ -103,7 +103,7 @@ public record DisplayTag(
                 .hoverEvent(HoverEvent.showText(Component.text("Server Operator"))));
         }
 
-        return builder;
+        return EmojiRegistry.parseEmoji(builder);
     }
 
     public Component buildNameComponentShort() {
@@ -124,9 +124,11 @@ public record DisplayTag(
                 .appendNewline().append(Component.text("System tag: " + (systemTag() != null ? systemTag() : "Undefined")));
         }
 
-        return Component.text(shownName)
+        Component name = Component.text(shownName)
             .color(color() != null ? color() : NamedTextColor.WHITE)
             .hoverEvent(event.asHoverEvent());
+
+        return EmojiRegistry.parseEmoji(name);
     }
 
     public String buildNameString() {
