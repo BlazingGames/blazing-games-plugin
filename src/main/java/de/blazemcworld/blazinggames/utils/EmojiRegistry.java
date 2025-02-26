@@ -33,6 +33,7 @@ import de.blazemcworld.blazinggames.BlazingGames;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 
 public class EmojiRegistry {
     public static final String namespace = "blazinggamesemoji";
@@ -69,6 +70,7 @@ public class EmojiRegistry {
                         switch (key) {
                             case "discord_name" -> props.discordName = value;
                             case "alias" -> props.aliases.add(value);
+                            case "attribution" -> props.attribution = value;
                             default -> {
                                 BlazingGames.get().log("Unknown parameters " + key + " for emoji " + emojiName);
                             }
@@ -90,6 +92,35 @@ public class EmojiRegistry {
         }
     }
 
+    public static Component lookup(String name) {
+        String realName = lookupMap.getOrDefault(name, null);
+        if (realName == null) return null;
+        EmojiProperties props = emojiMap.getOrDefault(realName, null);
+        if (props == null) return null;
+        return render(realName, props);
+    }
+
+    public static final TextColor nameColor = TextColor.color(0x9BE8DA);
+    public static final TextColor propColor = TextColor.color(0x7C7C7C);
+    public static Component render(String name, EmojiProperties props) {
+        Component tooltip = Component.text(":" + name + ":", nameColor);
+
+        if (props.aliases.size() > 0) {
+            tooltip = tooltip.appendNewline().append(Component.text("Aliases: " + String.join(", ", props.aliases), propColor));
+        }
+
+        if (props.attribution != null) {
+            tooltip = tooltip.appendNewline().append(Component.text("Attribution: " + props.attribution, propColor));
+        }
+
+        return Component.text().content(props.character.toString())
+            .font(Key.key(EmojiRegistry.namespace, EmojiRegistry.namespace))
+            .color(NamedTextColor.WHITE)
+            .decorations(Map.of())
+            .hoverEvent(tooltip.asHoverEvent())
+            .build();
+    }
+
     public static void reset() {
         emojiMap.clear();
         lookupMap.clear();
@@ -107,11 +138,7 @@ public class EmojiRegistry {
             if (lookupMap.containsKey(emojiName)) {
                 String realName = lookupMap.get(emojiName);
                 EmojiProperties props = emojiMap.get(realName);
-                return builder.content(props.character.toString())
-                    .font(Key.key(EmojiRegistry.namespace, EmojiRegistry.namespace))
-                    .color(NamedTextColor.WHITE)
-                    .decorations(Map.of())
-                    .build();
+                return render(realName, props);
             }
             return builder.build();
         }));
@@ -140,6 +167,7 @@ public class EmojiRegistry {
 
     public static class EmojiProperties {
         public String discordName = null;
+        public String attribution = null;
         public List<String> aliases = new ArrayList<>();
         public Character character = null;
     }

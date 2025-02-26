@@ -4,25 +4,26 @@
 # Available parameters
 # - alias: can be specified more than once, other names in chat that can be used for this emoji
 # - discord_name: the code used to get the same emoji inside of discord, omit if there is no equivalent
+# - attribution: name (without spaces) of who made the emoji
 
 
 
 
 # Common Emoji
-heart alias=love discord_name=heart
+heart alias=love discord_name=heart attribution=ivycollective
 
 # Pride Flags
-pride discord_name=rainbow_flag
-agender
-aroace
-aromantic alias=aro
-asexual alias=ace
-bi alias=bigender alias=biromantic alias=bisexual
-pan alias=panromantic alias=pansexual
-enby alias=nonbinary
-lesbian alias=wlw
-vincian alias=mlm alias=homosexual
-trans alias=transgender discord_name=transgender_flag
+pride discord_name=rainbow_flag attribution=sbot50
+agender attribution=ivycollective
+aroace attribution=ivycollective
+aromantic alias=aro attribution=ivycollective
+asexual alias=ace attribution=ivycollective
+bi alias=bigender alias=biromantic alias=bisexual attribution=sbot50
+pan alias=panromantic alias=pansexual attribution=sbot50
+enby alias=nonbinary attribution=sbot50
+lesbian alias=wlw attribution=sbot50
+vincian alias=mlm alias=homosexual attribution=sbot50
+trans alias=transgender discord_name=transgender_flag attribution=ivycollective
 
 # Misc
-colonthree
+colonthree attribution=ivycollective
