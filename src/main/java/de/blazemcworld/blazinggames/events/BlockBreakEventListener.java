@@ -81,7 +81,7 @@ public class BlockBreakEventListener extends BlazingEventListener<BlockBreakEven
 
         block.setType(waterlogged ? Material.WATER : Material.AIR, true);
 
-        InventoryUtils.collectableDrop(player, block.getLocation(), drops);
+        InventoryUtils.collectableDrop(player, block.getLocation().toCenterLocation(), drops);
     }
 
     public static void awardBlock(Location location, int amount, Player trigger) {
