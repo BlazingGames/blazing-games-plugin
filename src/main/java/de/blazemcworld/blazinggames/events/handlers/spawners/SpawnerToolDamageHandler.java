@@ -45,5 +45,7 @@ public class SpawnerToolDamageHandler extends BlazingEventHandler<BlazingBlockDi
             case NETHERITE_PICKAXE -> itemMeta.setDamage(itemMeta.getDamage() + Material.NETHERITE_PICKAXE.getMaxDurability() / 2 - 1);
             default -> itemMeta.setDamage(Material.IRON_PICKAXE.getMaxDurability());
         }
+
+        tool.setItemMeta(itemMeta);
     }
 }
