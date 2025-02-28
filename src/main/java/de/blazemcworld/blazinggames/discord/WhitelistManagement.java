@@ -151,7 +151,7 @@ public class WhitelistManagement {
     }
 
     public String createLinkCode(String username, UUID user) {
-        byte[] bytes = new byte[8];
+        byte[] bytes = new byte[3];
         new Random().nextBytes(bytes);
         StringBuilder out = new StringBuilder();
 
@@ -159,15 +159,15 @@ public class WhitelistManagement {
             out.append(String.format("%02x", b));
         }
 
-        linkCodes.put(out.toString(), new Pair<>(username, user));
+        linkCodes.put(out.toString().toUpperCase(), new Pair<>(username, user));
         return out.toString();
     }
 
     public Pair<String, UUID> getLinkCodeUser(String code) {
-        return linkCodes.getIfPresent(code);
+        return linkCodes.getIfPresent(code.toUpperCase());
     }
 
     public void invalidateLinkCode(String code) {
-        linkCodes.invalidate(code);
+        linkCodes.invalidate(code.toUpperCase());
     }
 }
