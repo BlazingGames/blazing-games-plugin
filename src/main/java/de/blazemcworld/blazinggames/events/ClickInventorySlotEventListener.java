@@ -19,7 +19,7 @@ import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.grindstones.GrindstoneShiftClickHandler;
 import de.blazemcworld.blazinggames.events.handlers.grindstones.GrindstoneSlotHandler;
 import de.blazemcworld.blazinggames.events.handlers.portable_crafting_table.PortableCraftingTableClickHandler;
-import de.blazemcworld.blazinggames.userinterfaces.eventhandlers.UserInterfaceClickhandler;
+import de.blazemcworld.blazinggames.userinterfaces.eventhandlers.UserInterfaceClickHandler;
 import de.blazemcworld.blazinggames.userinterfaces.eventhandlers.UserInterfacePlayerInventoryShiftClickHandler;
 import de.blazemcworld.blazinggames.userinterfaces.eventhandlers.UserInterfaceShiftClickHandler;
 import org.bukkit.event.EventHandler;
@@ -33,7 +33,7 @@ public class ClickInventorySlotEventListener extends BlazingEventListener<Invent
                 new PortableCraftingTableClickHandler(),
                 new GrindstoneShiftClickHandler(),
                 new GrindstoneSlotHandler(),
-                new UserInterfaceClickhandler(),
+                new UserInterfaceClickHandler(),
                 new UserInterfaceShiftClickHandler(),
                 new UserInterfacePlayerInventoryShiftClickHandler()
         ));

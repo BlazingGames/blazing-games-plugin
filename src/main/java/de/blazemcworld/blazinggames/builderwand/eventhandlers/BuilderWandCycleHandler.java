@@ -25,7 +25,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-public class BuilderWandCyclehandler extends BlazingEventHandler<PlayerInteractEvent> {
+public class BuilderWandCycleHandler extends BlazingEventHandler<PlayerInteractEvent> {
     @Override
     public boolean fitCriteria(PlayerInteractEvent event) {
         Player player = event.getPlayer();

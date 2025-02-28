@@ -21,7 +21,7 @@ import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 
-public class UserInterfaceClickhandler extends BlazingEventHandler<InventoryClickEvent> {
+public class UserInterfaceClickHandler extends BlazingEventHandler<InventoryClickEvent> {
     @Override
     public boolean fitCriteria(InventoryClickEvent event) {
         Inventory inventory = event.getClickedInventory();

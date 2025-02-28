@@ -15,7 +15,7 @@
  */
 package de.blazemcworld.blazinggames.events;
 
-import de.blazemcworld.blazinggames.builderwand.eventhandlers.BuilderWandCyclehandler;
+import de.blazemcworld.blazinggames.builderwand.eventhandlers.BuilderWandCycleHandler;
 import de.blazemcworld.blazinggames.builderwand.eventhandlers.BuilderWandPlaceHandler;
 import de.blazemcworld.blazinggames.crates.eventhandlers.CrateInteractHandler;
 import de.blazemcworld.blazinggames.enchantments.eventhandlers.NaturesBlessingHandler;
@@ -39,7 +39,7 @@ public class InteractEventListener extends BlazingEventListener<PlayerInteractEv
     public InteractEventListener() {
         this.handlers.addAll(List.of(
                 new NaturesBlessingHandler(),
-                new BuilderWandCyclehandler(),
+                new BuilderWandCycleHandler(),
                 new BuilderWandPlaceHandler(),
                 new CrateInteractHandler(),
                 new BlueprintEnchantingTableInteractHandler(),
