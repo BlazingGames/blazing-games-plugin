@@ -38,7 +38,7 @@ public class ReflectiveDefencesHandler extends BlazingEventHandler<EntityDamageB
         if (victim instanceof Player p && damager instanceof Damageable) {
             if (p.isBlocking() && event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) != 0) {
                 ItemStack shield = p.getActiveItem();
-                int reflectiveDefenses = EnchantmentHelper.getActiveEnchantmentWrapperLevel(shield, CustomEnchantments.REFLECTIVE_DEFENSES);
+                int reflectiveDefenses = EnchantmentHelper.getActiveEnchantmentWrapperLevel(shield, CustomEnchantments.REFLECTIVE_DEFENCES);
                 return reflectiveDefenses != 0 && new Random().nextInt(Math.max(7 - reflectiveDefenses, 2)) == 0;
             }
         }

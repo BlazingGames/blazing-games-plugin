@@ -27,7 +27,7 @@ public class CustomEnchantments {
     public static final CustomEnchantment TREE_FELLER = new TreeFellerEnchantment();
     public static final CustomEnchantment CAPTURING = new CapturingEnchantment();
     public static final CustomEnchantment NATURE_BLESSING = new NatureBlessingEnchantment();
-    public static final CustomEnchantment REFLECTIVE_DEFENSES = new ReflectiveDefencesEnchantment();
+    public static final CustomEnchantment REFLECTIVE_DEFENCES = new ReflectiveDefencesEnchantment();
     public static final CustomEnchantment BANE_OF_ILLAGERS = new BaneOfIllagersEnchantment();
     public static final CustomEnchantment SEA_INFUSION = new SeaInfusionEnchantment();
     public static final CustomEnchantment HELL_INFUSION = new HellInfusionEnchantment();
@@ -43,7 +43,7 @@ public class CustomEnchantments {
                 TREE_FELLER,
                 CAPTURING,
                 NATURE_BLESSING,
-                REFLECTIVE_DEFENSES,
+                REFLECTIVE_DEFENCES,
                 BANE_OF_ILLAGERS,
                 SEA_INFUSION,
                 HELL_INFUSION,
