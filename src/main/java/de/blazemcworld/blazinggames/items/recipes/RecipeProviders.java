@@ -37,6 +37,9 @@ public class RecipeProviders extends ValueProviders<RecipeWrapper, RecipeProvide
         providers.addAll(ItemProviders.instance.list());
 
         providers.add(new SlabsToBlockRecipes());
+        providers.add(new NametagRecipe());
+        providers.add(new SaddleRecipe());
+        providers.add(new HorseArmorRecipes());
         providers.add(new CustomRecipes());
 
         return providers.build();

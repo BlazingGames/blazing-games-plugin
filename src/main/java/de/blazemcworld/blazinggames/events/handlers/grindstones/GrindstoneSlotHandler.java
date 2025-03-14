@@ -18,18 +18,21 @@ package de.blazemcworld.blazinggames.events.handlers.grindstones;
 
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantment;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
+import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrapper;
+import de.blazemcworld.blazinggames.enchantments.sys.VanillaEnchantmentWrapper;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
+import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicates;
 import de.blazemcworld.blazinggames.utils.InventoryUtils;
 import de.blazemcworld.blazinggames.utils.Pair;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.GrindstoneInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+
+import java.util.function.Predicate;
 
 public class GrindstoneSlotHandler extends BlazingEventHandler<InventoryClickEvent> {
     @Override
@@ -135,8 +138,6 @@ public class GrindstoneSlotHandler extends BlazingEventHandler<InventoryClickEve
                             if (giveItemStack(event, result)) {
                                 grindstone.setLowerItem(book);
                             }
-
-                            return;
                         } else if (ItemPredicates.grindstoneScrubber.matchItem(down)) {
                             ItemStack book = scrubResultClick(up, down);
 
@@ -159,29 +160,26 @@ public class GrindstoneSlotHandler extends BlazingEventHandler<InventoryClickEve
     private ItemStack scrubResultClick(ItemStack up, ItemStack down) {
         ItemStack book = new ItemStack(Material.ENCHANTED_BOOK);
 
-        if (down.getType() == Material.SPONGE) {
-            Pair<Enchantment, Integer> enchantment = EnchantmentHelper.getEnchantmentEntryByIndex(up, down.getAmount());
+        Predicate<EnchantmentWrapper> filter = null;
 
-            if (enchantment == null) {
-                return null;
+        if(!CustomItem.isCustomItem(down)) {
+            if(down.getType() == Material.SPONGE) {
+                filter = (wrapper) -> wrapper instanceof VanillaEnchantmentWrapper;
             }
-
-            if (book.getItemMeta() instanceof EnchantmentStorageMeta meta) {
-                meta.addStoredEnchant(enchantment.left, enchantment.right, true);
-                book.setItemMeta(meta);
-            } else {
-                return null;
+            else if(down.getType() == Material.WET_SPONGE) {
+                filter = (wrapper) -> wrapper instanceof CustomEnchantment;
             }
         }
-        if (down.getType() == Material.WET_SPONGE) {
-            Pair<CustomEnchantment, Integer> enchantment
-                    = EnchantmentHelper.getCustomEnchantmentEntryByIndex(up, down.getAmount());
 
-            if (enchantment == null) {
-                return null;
-            }
+        if(filter == null) {
+            return null;
+        }
 
-            book = EnchantmentHelper.setCustomEnchantment(book, enchantment.left, enchantment.right);
+        Pair<EnchantmentWrapper, Integer> entry = EnchantmentHelper.getEnchantmentWrapperEntryByIndex(up, down.getAmount(),
+                filter.and(EnchantmentWrapper::canBeRemoved));
+
+        if(entry != null) {
+            book = entry.left.apply(book, entry.right);
         }
 
         return book;
