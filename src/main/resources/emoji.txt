@@ -18,7 +18,7 @@ agender attribution=ivycollective
 aroace attribution=ivycollective
 aromantic alias=aro attribution=ivycollective
 asexual alias=ace attribution=ivycollective
-bi alias=bigender alias=biromantic alias=bisexual attribution=sbot50
+bi alias=biromantic alias=bisexual attribution=sbot50
 pan alias=panromantic alias=pansexual attribution=sbot50
 enby alias=nonbinary attribution=sbot50
 lesbian alias=wlw attribution=sbot50
