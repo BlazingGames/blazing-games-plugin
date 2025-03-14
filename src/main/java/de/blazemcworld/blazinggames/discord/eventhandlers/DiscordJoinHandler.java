@@ -23,8 +23,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class DiscordJoinHandler extends BlazingEventHandler<PlayerJoinEvent> {
     @Override
-    public boolean fitCriteria(PlayerJoinEvent event) {
-        return true;
+    public boolean fitCriteria(PlayerJoinEvent event, boolean cancelled) {
+       return DiscordApp.isEnabled();
     }
 
     @Override

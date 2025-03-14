@@ -27,7 +27,7 @@ import org.bukkit.inventory.meta.Damageable;
 
 public class SpawnerToolDamageHandler extends BlazingEventHandler<BlazingBlockDisappearEvent> {
     @Override
-    public boolean fitCriteria(BlazingBlockDisappearEvent event) {
+    public boolean fitCriteria(BlazingBlockDisappearEvent event, boolean cancelled) {
         ItemStack tool = event.getPlayer().getInventory().getItemInMainHand();
 
         return event.getBlock().getType() == Material.SPAWNER && ItemUtils.getUncoloredType(tool) == Material.WOODEN_PICKAXE

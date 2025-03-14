@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.blazemcworld.blazinggames.events.handlers.player;
+package de.blazemcworld.blazinggames.enchantments.eventhandlers;
 
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
@@ -29,9 +29,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Random;
 
-public class PlayerBlockHandler extends BlazingEventHandler<EntityDamageByEntityEvent> {
+public class ReflectiveDefencesHandler extends BlazingEventHandler<EntityDamageByEntityEvent> {
     @Override
-    public boolean fitCriteria(EntityDamageByEntityEvent event) {
+    public boolean fitCriteria(EntityDamageByEntityEvent event, boolean cancelled) {
         Entity victim = event.getEntity();
         Entity damager = event.getDamager();
 

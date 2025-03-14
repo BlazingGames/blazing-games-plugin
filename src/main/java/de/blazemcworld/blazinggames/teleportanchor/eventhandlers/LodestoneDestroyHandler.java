@@ -23,7 +23,7 @@ import org.bukkit.Material;
 
 public class LodestoneDestroyHandler extends BlazingEventHandler<BlockDestroyEvent> {
     @Override
-    public boolean fitCriteria(BlockDestroyEvent event) {
+    public boolean fitCriteria(BlockDestroyEvent event, boolean cancelled) {
         return event.getBlock().getType() == Material.LODESTONE;
     }
 

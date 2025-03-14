@@ -39,7 +39,7 @@ import java.util.Objects;
 
 public class CustomSlabPlaceBlockHandler extends BlazingEventHandler<PlayerInteractEvent> {
     @Override
-    public boolean fitCriteria(PlayerInteractEvent event) {
+    public boolean fitCriteria(PlayerInteractEvent event, boolean cancelled) {
         Player player = event.getPlayer();
         EquipmentSlot hand = event.getHand();
         Block block = event.getClickedBlock();

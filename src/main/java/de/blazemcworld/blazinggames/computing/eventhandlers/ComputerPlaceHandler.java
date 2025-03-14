@@ -35,7 +35,7 @@ import java.util.UUID;
 
 public class ComputerPlaceHandler extends BlazingEventHandler<BlockPlaceEvent> {
     @Override
-    public boolean fitCriteria(BlockPlaceEvent event) {
+    public boolean fitCriteria(BlockPlaceEvent event, boolean cancelled) {
         ItemStack handItem = event.getItemInHand();
         if (handItem.hasItemMeta()) {
             PersistentDataContainer container = handItem.getItemMeta().getPersistentDataContainer();

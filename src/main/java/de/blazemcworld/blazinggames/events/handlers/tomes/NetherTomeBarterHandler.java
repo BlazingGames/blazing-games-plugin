@@ -18,16 +18,16 @@ package de.blazemcworld.blazinggames.events.handlers.tomes;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.items.CustomItems;
+import de.blazemcworld.blazinggames.utils.Enchantments;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.entity.PiglinBarterEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
 import java.util.List;
 
 public class NetherTomeBarterHandler extends BlazingEventHandler<PiglinBarterEvent> {
     @Override
-    public boolean fitCriteria(PiglinBarterEvent event) {
+    public boolean fitCriteria(PiglinBarterEvent event, boolean cancelled) {
         return true;
     }
 
@@ -36,16 +36,9 @@ public class NetherTomeBarterHandler extends BlazingEventHandler<PiglinBarterEve
         List<ItemStack> loot = event.getOutcome();
 
         for (int j = 0; j < loot.size(); j++) {
-            if (hasStoredEnchantment(loot.get(j), Enchantment.SOUL_SPEED)) {
+            if (Enchantments.hasStoredEnchantment(loot.get(j), Enchantment.SOUL_SPEED)) {
                 loot.set(j, CustomItems.NETHER_TOME.create());
             }
         }
-    }
-
-    private boolean hasStoredEnchantment(ItemStack book, Enchantment enchantment) {
-        if (book.getItemMeta() instanceof EnchantmentStorageMeta esm) {
-            return esm.hasStoredEnchant(enchantment);
-        }
-        return false;
     }
 }

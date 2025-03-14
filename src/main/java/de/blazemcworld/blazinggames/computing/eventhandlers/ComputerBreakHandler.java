@@ -24,7 +24,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class ComputerBreakHandler extends BlazingEventHandler<EntityDamageByEntityEvent> {
     @Override
-    public boolean fitCriteria(EntityDamageByEntityEvent event) {
+    public boolean fitCriteria(EntityDamageByEntityEvent event, boolean cancelled) {
         Entity victim = event.getEntity();
         Entity damager = event.getDamager();
         return damager instanceof Player && ComputerRegistry.getComputerByActorUUID(victim.getUniqueId()) != null;

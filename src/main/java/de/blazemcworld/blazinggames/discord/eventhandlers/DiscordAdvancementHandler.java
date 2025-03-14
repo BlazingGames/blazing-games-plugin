@@ -23,7 +23,7 @@ import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 
 public class DiscordAdvancementHandler extends BlazingEventHandler<PlayerAdvancementDoneEvent> {
     @Override
-    public boolean fitCriteria(PlayerAdvancementDoneEvent event) {
+    public boolean fitCriteria(PlayerAdvancementDoneEvent event, boolean cancelled) {
         return event.getAdvancement().getDisplay() != null && event.getAdvancement().getDisplay().doesAnnounceToChat();
     }
 

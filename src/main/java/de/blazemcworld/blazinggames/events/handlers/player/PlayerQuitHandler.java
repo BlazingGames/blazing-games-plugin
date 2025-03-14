@@ -26,7 +26,7 @@ public class PlayerQuitHandler extends BlazingEventHandler<PlayerQuitEvent> {
     public static final TextColor color = TextColor.color(0xF99490);
 
     @Override
-    public boolean fitCriteria(PlayerQuitEvent event) {
+    public boolean fitCriteria(PlayerQuitEvent event, boolean cancelled) {
         return true;
     }
 

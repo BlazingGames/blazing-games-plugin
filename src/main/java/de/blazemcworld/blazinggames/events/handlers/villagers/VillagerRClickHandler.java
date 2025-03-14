@@ -26,15 +26,18 @@ import org.bukkit.inventory.PlayerInventory;
 
 public class VillagerRClickHandler extends BlazingEventHandler<PlayerInteractEntityEvent> {
     @Override
-    public boolean fitCriteria(PlayerInteractEntityEvent event) {
-        return event.getRightClicked() instanceof Villager;
+    public boolean fitCriteria(PlayerInteractEntityEvent event, boolean cancelled) {
+        if (event.getRightClicked() instanceof Villager) {
+            PlayerInventory inventory = event.getPlayer().getInventory();
+            return inventory.getItemInMainHand().getType() != Material.LEAD;
+        }
+        return false;
     }
 
     @Override
     public void execute(PlayerInteractEntityEvent event) {
         Villager villager = (Villager) event.getRightClicked();
         PlayerInventory inventory = event.getPlayer().getInventory();
-        if (inventory.getItemInMainHand().getType() != Material.LEAD) return;
         event.setCancelled(true);
 
         if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {

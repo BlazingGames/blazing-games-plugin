@@ -23,7 +23,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class RebuildPackHandler extends BlazingEventHandler<PlayerQuitEvent> {
     @Override
-    public boolean fitCriteria(PlayerQuitEvent event) {
+    public boolean fitCriteria(PlayerQuitEvent event, boolean cancelled) {
         return Bukkit.getOnlinePlayers().size() == 1 && BlazingGames.get().getPackConfig() != null;
     }
 

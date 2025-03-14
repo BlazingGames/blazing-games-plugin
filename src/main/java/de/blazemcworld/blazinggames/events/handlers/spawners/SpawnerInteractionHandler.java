@@ -33,7 +33,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class SpawnerInteractionHandler extends BlazingEventHandler<PlayerInteractEvent> {
     @Override
-    public boolean fitCriteria(PlayerInteractEvent event) {
+    public boolean fitCriteria(PlayerInteractEvent event, boolean cancelled) {
         ItemStack eventItem = event.getItem();
         EquipmentSlot hand = event.getHand();
         Block block = event.getClickedBlock();

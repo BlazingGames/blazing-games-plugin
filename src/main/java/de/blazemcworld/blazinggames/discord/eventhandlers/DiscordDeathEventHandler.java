@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package de.blazemcworld.blazinggames.teleportanchor.eventhandlers;
+package de.blazemcworld.blazinggames.discord.eventhandlers;
 
-import de.blazemcworld.blazinggames.events.BlazingBlockDisappearEvent;
+import de.blazemcworld.blazinggames.discord.DiscordApp;
+import de.blazemcworld.blazinggames.discord.DiscordNotification;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
-import de.blazemcworld.blazinggames.teleportanchor.LodestoneStorage;
-import org.bukkit.Material;
+import de.blazemcworld.blazinggames.utils.TextUtils;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
-public class LodestoneDisappearHandler extends BlazingEventHandler<BlazingBlockDisappearEvent> {
+public class DiscordDeathEventHandler extends BlazingEventHandler<PlayerDeathEvent> {
     @Override
-    public boolean fitCriteria(BlazingBlockDisappearEvent event, boolean cancelled) {
-        return event.getBlock().getType() == Material.LODESTONE;
+    public boolean fitCriteria(PlayerDeathEvent event, boolean cancelled) {
+        return DiscordApp.isEnabled();
     }
 
     @Override
-    public void execute(BlazingBlockDisappearEvent event) {
-        LodestoneStorage.destroyLodestone(event.getBlock().getLocation());
-        LodestoneStorage.refreshAllInventories();
+    public void execute(PlayerDeathEvent event) {
+        DiscordApp.send(DiscordNotification.playerDeath(event.getPlayer(), TextUtils.componentToString(event.deathMessage())));
     }
 }

@@ -19,15 +19,17 @@ package de.blazemcworld.blazinggames.events.handlers.portable_crafting_table;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.items.CustomItems;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.MenuType;
 import org.bukkit.inventory.PlayerInventory;
 
 public class PortableCraftingTableClickHandler extends BlazingEventHandler<InventoryClickEvent> {
     @Override
-    public boolean fitCriteria(InventoryClickEvent event) {
+    public boolean fitCriteria(InventoryClickEvent event, boolean cancelled) {
         Inventory inventory = event.getClickedInventory();
         if (inventory == null) return false;
 
@@ -40,6 +42,6 @@ public class PortableCraftingTableClickHandler extends BlazingEventHandler<Inven
     @Override
     public void execute(InventoryClickEvent event) {
         event.setCancelled(true);
-        Bukkit.getScheduler().runTask(BlazingGames.get(), () -> event.getWhoClicked().openWorkbench(null, true));
+        Bukkit.getScheduler().runTask(BlazingGames.get(), () -> event.getWhoClicked().openInventory(MenuType.CRAFTING.builder().title(Component.text("Crafting")).checkReachable(false).build(event.getWhoClicked())));
     }
 }

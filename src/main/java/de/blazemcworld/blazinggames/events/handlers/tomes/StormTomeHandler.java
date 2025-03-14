@@ -18,18 +18,18 @@ package de.blazemcworld.blazinggames.events.handlers.tomes;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.items.CustomItems;
+import de.blazemcworld.blazinggames.utils.Enchantments;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.world.LootGenerateEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.loot.LootTables;
 
 import java.util.ArrayList;
 
 public class StormTomeHandler extends BlazingEventHandler<LootGenerateEvent> {
     @Override
-    public boolean fitCriteria(LootGenerateEvent event) {
+    public boolean fitCriteria(LootGenerateEvent event, boolean cancelled) {
         NamespacedKey key = event.getLootTable().getKey();
         return key.equals(LootTables.TRIAL_CHAMBERS_REWARD_OMINOUS_RARE.getKey());
     }
@@ -38,10 +38,8 @@ public class StormTomeHandler extends BlazingEventHandler<LootGenerateEvent> {
     public void execute(LootGenerateEvent event) {
         ArrayList<ItemStack> loot = new ArrayList<>(event.getLoot());
         for (int j = 0; j < loot.size(); j++) {
-            if (loot.get(j).getItemMeta() instanceof EnchantmentStorageMeta esm) {
-                if (esm.hasStoredEnchant(Enchantment.WIND_BURST)) {
-                    loot.set(j, CustomItems.STORM_TOME.create());
-                }
+            if (Enchantments.hasStoredEnchantment(loot.get(j), Enchantment.WIND_BURST)) {
+                loot.set(j, CustomItems.STORM_TOME.create());
             }
         }
         event.setLoot(loot);

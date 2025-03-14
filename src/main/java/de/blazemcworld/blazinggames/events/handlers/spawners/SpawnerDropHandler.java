@@ -32,7 +32,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class SpawnerDropHandler extends BlazingEventHandler<BlazingBlockDropEvent> {
     @Override
-    public boolean fitCriteria(BlazingBlockDropEvent event) {
+    public boolean fitCriteria(BlazingBlockDropEvent event, boolean cancelled) {
         return event.getBlock().getType() == Material.SPAWNER && ItemUtils.getUncoloredType(event.getTool()) == Material.WOODEN_PICKAXE
                 && EnchantmentHelper.getActiveEnchantmentWrapperLevel(event.getTool(), EnchantmentWrappers.SILK_TOUCH) > 1;
     }

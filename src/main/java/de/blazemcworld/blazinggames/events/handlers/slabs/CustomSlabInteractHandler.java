@@ -38,7 +38,7 @@ import java.util.Objects;
 public class CustomSlabInteractHandler extends BlazingEventHandler<PlayerInteractEntityEvent> {
 
     @Override
-    public boolean fitCriteria(PlayerInteractEntityEvent event) {
+    public boolean fitCriteria(PlayerInteractEntityEvent event, boolean cancelled) {
         if (event.getRightClicked() instanceof Shulker shulker) {
             PersistentDataContainer container = shulker.getPersistentDataContainer();
 

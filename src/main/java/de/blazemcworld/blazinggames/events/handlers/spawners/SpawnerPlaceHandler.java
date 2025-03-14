@@ -26,7 +26,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class SpawnerPlaceHandler extends BlazingEventHandler<BlockPlaceEvent> {
     @Override
-    public boolean fitCriteria(BlockPlaceEvent event) {
+    public boolean fitCriteria(BlockPlaceEvent event, boolean cancelled) {
         return event.getItemInHand().getType() == Material.SPAWNER;
     }
 

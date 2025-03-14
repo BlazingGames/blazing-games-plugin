@@ -28,7 +28,7 @@ import org.bukkit.inventory.MerchantRecipe;
 import java.util.List;
 import java.util.Random;
 
-public class VillagerAcquireTradeHandler extends BlazingEventHandler<VillagerAcquireTradeEvent> {
+public class LibrarianAcquireTradeHandler extends BlazingEventHandler<VillagerAcquireTradeEvent> {
     private final List<Material> bannerPatterns = List.of(
             Material.CREEPER_BANNER_PATTERN,
             Material.FLOWER_BANNER_PATTERN,
@@ -37,7 +37,7 @@ public class VillagerAcquireTradeHandler extends BlazingEventHandler<VillagerAcq
     );
 
     @Override
-    public boolean fitCriteria(VillagerAcquireTradeEvent event) {
+    public boolean fitCriteria(VillagerAcquireTradeEvent event, boolean cancelled) {
         AbstractVillager av = event.getEntity();
         MerchantRecipe recipe = event.getRecipe();
         if (av instanceof Villager villager) {

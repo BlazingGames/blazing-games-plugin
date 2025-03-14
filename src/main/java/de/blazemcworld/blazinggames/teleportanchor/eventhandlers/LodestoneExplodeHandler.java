@@ -26,7 +26,7 @@ import java.util.List;
 
 public class LodestoneExplodeHandler extends BlazingEventHandler<BlockExplodeEvent> {
     @Override
-    public boolean fitCriteria(BlockExplodeEvent event) {
+    public boolean fitCriteria(BlockExplodeEvent event, boolean cancelled) {
         List<Block> blocks = event.blockList();
         blocks = blocks.stream().filter(block -> block.getType() == Material.LODESTONE).toList();
         return !blocks.isEmpty();

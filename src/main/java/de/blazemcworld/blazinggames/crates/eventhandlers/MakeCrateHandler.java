@@ -18,11 +18,8 @@ package de.blazemcworld.blazinggames.crates.eventhandlers;
 
 import de.blazemcworld.blazinggames.crates.CrateManager;
 import de.blazemcworld.blazinggames.crates.DeathCrateKey;
-import de.blazemcworld.blazinggames.discord.DiscordApp;
-import de.blazemcworld.blazinggames.discord.DiscordNotification;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.items.CustomItems;
-import de.blazemcworld.blazinggames.utils.TextUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
@@ -48,7 +45,7 @@ public class MakeCrateHandler extends BlazingEventHandler<PlayerDeathEvent> {
     );
 
     @Override
-    public boolean fitCriteria(PlayerDeathEvent event) {
+    public boolean fitCriteria(PlayerDeathEvent event, boolean cancelled) {
         return true;
     }
 
@@ -56,7 +53,6 @@ public class MakeCrateHandler extends BlazingEventHandler<PlayerDeathEvent> {
     public void execute(PlayerDeathEvent event) {
         event.setKeepLevel(false);
         event.setKeepInventory(false);
-        DiscordApp.send(DiscordNotification.playerDeath(event.getPlayer(), TextUtils.componentToString(event.deathMessage())));
 
         Player player = event.getEntity();
         Location deathLocation = event.getEntity().getLocation();

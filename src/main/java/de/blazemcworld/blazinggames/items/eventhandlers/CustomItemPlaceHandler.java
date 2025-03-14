@@ -24,7 +24,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class CustomItemPlaceHandler extends BlazingEventHandler<BlockPlaceEvent> {
     @Override
-    public boolean fitCriteria(BlockPlaceEvent event) {
+    public boolean fitCriteria(BlockPlaceEvent event, boolean cancelled) {
         ItemStack item = event.getItemInHand();
         return CustomItem.isCustomItem(item) && item.getType() == Material.STRUCTURE_BLOCK;
     }

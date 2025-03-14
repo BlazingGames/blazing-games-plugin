@@ -29,7 +29,7 @@ import java.util.Random;
 
 public class UnshinyTomeHandler extends BlazingEventHandler<LootGenerateEvent> {
     @Override
-    public boolean fitCriteria(LootGenerateEvent event) {
+    public boolean fitCriteria(LootGenerateEvent event, boolean cancelled) {
         NamespacedKey key = event.getLootTable().getKey();
         return key.equals(LootTables.BASTION_BRIDGE.getKey())
                 || key.equals(LootTables.BASTION_OTHER.getKey())

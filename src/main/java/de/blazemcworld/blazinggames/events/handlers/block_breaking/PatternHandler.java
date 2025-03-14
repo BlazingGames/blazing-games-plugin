@@ -30,7 +30,7 @@ import org.bukkit.util.Vector;
 
 public class PatternHandler extends BlazingEventHandler<BlockBreakEvent> {
     @Override
-    public boolean fitCriteria(BlockBreakEvent event) {
+    public boolean fitCriteria(BlockBreakEvent event, boolean cancelled) {
         Player player = event.getPlayer();
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         BlockFace face = event.getPlayer().getTargetBlockFace(6);

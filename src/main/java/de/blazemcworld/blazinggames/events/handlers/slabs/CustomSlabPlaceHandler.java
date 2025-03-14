@@ -40,7 +40,7 @@ import java.util.UUID;
 
 public class CustomSlabPlaceHandler extends BlazingEventHandler<BlockPlaceEvent> {
     @Override
-    public boolean fitCriteria(BlockPlaceEvent event) {
+    public boolean fitCriteria(BlockPlaceEvent event, boolean cancelled) {
         return CustomItem.getCustomItem(event.getItemInHand()) instanceof CustomSlabs.CustomSlab;
     }
 

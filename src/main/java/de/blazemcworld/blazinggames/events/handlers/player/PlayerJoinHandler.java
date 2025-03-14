@@ -27,7 +27,7 @@ public class PlayerJoinHandler extends BlazingEventHandler<PlayerJoinEvent> {
     public static final TextColor color = TextColor.color(0xD1F990);
 
     @Override
-    public boolean fitCriteria(PlayerJoinEvent event) {
+    public boolean fitCriteria(PlayerJoinEvent event, boolean cancelled) {
         return true;
     }
 

@@ -23,7 +23,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public class UserInterfaceCloseHandler extends BlazingEventHandler<InventoryCloseEvent> {
     @Override
-    public boolean fitCriteria(InventoryCloseEvent event) {
+    public boolean fitCriteria(InventoryCloseEvent event, boolean cancelled) {
         if (event.getInventory().getHolder() instanceof UserInterface) {
             return event.getPlayer() instanceof Player;
         }

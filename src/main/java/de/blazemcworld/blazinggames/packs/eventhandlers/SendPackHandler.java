@@ -25,7 +25,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class SendPackHandler extends BlazingEventHandler<PlayerJoinEvent> {
     @Override
-    public boolean fitCriteria(PlayerJoinEvent event) {
+    public boolean fitCriteria(PlayerJoinEvent event, boolean cancelled) {
         return BlazingGames.get().getPackConfig() != null;
     }
 

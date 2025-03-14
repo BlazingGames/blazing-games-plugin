@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class ExtraDamageHandler extends BlazingEventHandler<EntityDamageByEntityEvent> {
     @Override
-    public boolean fitCriteria(EntityDamageByEntityEvent event) {
+    public boolean fitCriteria(EntityDamageByEntityEvent event, boolean cancelled) {
         return true;
     }
 

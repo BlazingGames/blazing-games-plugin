@@ -22,7 +22,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 
 public class UserInterfaceDragHandler extends BlazingEventHandler<InventoryDragEvent> {
     @Override
-    public boolean fitCriteria(InventoryDragEvent event) {
+    public boolean fitCriteria(InventoryDragEvent event, boolean cancelled) {
         return event.getInventory().getHolder() instanceof UserInterface;
     }
 

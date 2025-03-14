@@ -26,7 +26,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class ContainerDropHandler extends BlazingEventHandler<BlazingBlockDropEvent> {
     @Override
-    public boolean fitCriteria(BlazingBlockDropEvent event) {
+    public boolean fitCriteria(BlazingBlockDropEvent event, boolean cancelled) {
         Block block = event.getBlock();
 
         return block.getState() instanceof TileStateInventoryHolder &&

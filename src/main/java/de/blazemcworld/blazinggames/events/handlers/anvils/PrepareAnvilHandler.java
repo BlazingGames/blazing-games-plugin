@@ -29,7 +29,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class PrepareAnvilHandler extends BlazingEventHandler<PrepareAnvilEvent> {
     @Override
-    public boolean fitCriteria(PrepareAnvilEvent event) {
+    public boolean fitCriteria(PrepareAnvilEvent event, boolean cancelled) {
         return true;
     }
 

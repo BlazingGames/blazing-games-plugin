@@ -40,7 +40,7 @@ public class TreeFellerHandler extends BlazingEventHandler<BlockBreakEvent> {
     private static final int treeFellerMax = 128;
 
     @Override
-    public boolean fitCriteria(BlockBreakEvent event) {
+    public boolean fitCriteria(BlockBreakEvent event, boolean cancelled) {
         Player player = event.getPlayer();
         ItemStack mainHand = player.getInventory().getItemInMainHand();
 

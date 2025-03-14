@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-package de.blazemcworld.blazinggames.events.base;
+package de.blazemcworld.blazinggames.utils;
 
-import org.bukkit.event.Event;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
-public abstract class BlazingEventHandler<T extends Event> {
-    public abstract boolean fitCriteria(T event, boolean cancelled);
-
-    public abstract void execute(T event);
+public class Enchantments {
+    public static boolean hasStoredEnchantment(ItemStack book, Enchantment enchantment) {
+        if (book.getItemMeta() instanceof EnchantmentStorageMeta esm) {
+            return esm.hasStoredEnchant(enchantment);
+        }
+        return false;
+    }
 }
