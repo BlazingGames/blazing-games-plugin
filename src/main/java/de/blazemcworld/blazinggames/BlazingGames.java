@@ -22,15 +22,17 @@ import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry.ComputerPrivileges;
 import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.computing.api.RequiredFeature;
+import de.blazemcworld.blazinggames.discord.AppConfig;
+import de.blazemcworld.blazinggames.discord.DiscordApp;
+import de.blazemcworld.blazinggames.discord.DiscordNotification;
+import de.blazemcworld.blazinggames.events.*;
+import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
+import de.blazemcworld.blazinggames.packs.ResourcePackManager;
+import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
+import de.blazemcworld.blazinggames.teleportanchor.LodestoneInteractionEventListener;
 import de.blazemcworld.blazinggames.utils.Cooldown;
 import de.blazemcworld.blazinggames.utils.ItemStackTypeAdapter;
 import de.blazemcworld.blazinggames.utils.TextLocation;
-import de.blazemcworld.blazinggames.discord.*;
-import de.blazemcworld.blazinggames.events.*;
-import de.blazemcworld.blazinggames.packs.ResourcePackManager;
-import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
-import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
-import de.blazemcworld.blazinggames.teleportanchor.LodestoneInteractionEventListener;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.DecodingException;
@@ -51,14 +53,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.crypto.SecretKey;
 import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-
-import javax.crypto.SecretKey;
 
 public class BlazingGames extends JavaPlugin {
     public boolean API_AVAILABLE = false;
@@ -225,7 +226,9 @@ public class BlazingGames extends JavaPlugin {
         pluginManager.registerEvents(new ClickInventorySlotEventListener(), this);
         pluginManager.registerEvents(new ChatEventListener(), this);
         pluginManager.registerEvents(new ClickEntityEventListener(), this);
-        pluginManager.registerEvents(new BreakBlockEventListener(), this);
+        pluginManager.registerEvents(new BlockBreakEventListener(), this);
+        pluginManager.registerEvents(new BlazingBlockDropEventListener(), this);
+        pluginManager.registerEvents(new BlazingBlockDisappearEventListener(), this);
         pluginManager.registerEvents(new EntityDeathEventListener(), this);
         pluginManager.registerEvents(new AdvancementEventListener(), this);
         pluginManager.registerEvents(new JoinEventListener(), this);

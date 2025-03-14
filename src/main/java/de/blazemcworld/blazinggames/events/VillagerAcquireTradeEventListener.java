@@ -15,63 +15,18 @@
  */
 package de.blazemcworld.blazinggames.events;
 
-import de.blazemcworld.blazinggames.items.CustomItems;
-import org.bukkit.Material;
-import org.bukkit.entity.AbstractVillager;
-import org.bukkit.entity.Villager;
+import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
+import de.blazemcworld.blazinggames.events.handlers.villagers.LibrarianAcquireTradeHandler;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.VillagerAcquireTradeEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.MerchantRecipe;
 
-import java.util.List;
-import java.util.Random;
-
-public class VillagerAcquireTradeEventListener implements Listener {
-    private final List<Material> bannerPatterns = List.of(
-            Material.CREEPER_BANNER_PATTERN,
-            Material.FLOWER_BANNER_PATTERN,
-            Material.SKULL_BANNER_PATTERN,
-            Material.MOJANG_BANNER_PATTERN
-    );
+public class VillagerAcquireTradeEventListener extends BlazingEventListener<VillagerAcquireTradeEvent> {
+    public VillagerAcquireTradeEventListener() {
+        this.handlers.add(new LibrarianAcquireTradeHandler());
+    }
 
     @EventHandler
-    public void onVillagerAcquireTrade(VillagerAcquireTradeEvent event) {
-        AbstractVillager av = event.getEntity();
-        MerchantRecipe recipe = event.getRecipe();
-
-        Random random = new Random();
-
-        if(av instanceof Villager villager) {
-            if(recipe.getResult().getType() == Material.ENCHANTED_BOOK) {
-                if (villager.getProfession() == Villager.Profession.LIBRARIAN) {
-                    event.setRecipe(switch(villager.getVillagerLevel()) {
-                        case 2 -> createRecipe(new ItemStack(Material.GLOW_INK_SAC), new ItemStack(Material.EMERALD, 3), 12, 5, 0.05f);
-                        case 3 -> createRecipe(randomBannerPattern(random), new ItemStack(Material.EMERALD, 5), 12, 10, 0.2f);
-                        case 4 -> createRecipe(CustomItems.GREED_TOME.create(), new ItemStack(Material.EMERALD, random.nextInt(10,39)), 12, 15, 0.2f);
-                        default -> createRecipe(new ItemStack(Material.INK_SAC, 5), new ItemStack(Material.EMERALD, 1), 12, 2, 0.05f);
-                    });
-                }
-            }
-        }
-    }
-
-    private MerchantRecipe createRecipe(ItemStack result, ItemStack ingredient, int maxUses, int villagerExperience, float priceMultiplier) {
-        MerchantRecipe recipe = new MerchantRecipe(result, 0, maxUses, true, villagerExperience, priceMultiplier);
-        recipe.addIngredient(ingredient);
-        return recipe;
-    }
-
-    private MerchantRecipe createRecipe(ItemStack result, ItemStack ingredientA, ItemStack ingredientB, int maxUses, int villagerExperience, float priceMultiplier) {
-        MerchantRecipe recipe = new MerchantRecipe(result, 0, maxUses, true, villagerExperience, priceMultiplier);
-        recipe.addIngredient(ingredientA);
-        recipe.addIngredient(ingredientB);
-        return recipe;
-    }
-
-    private ItemStack randomBannerPattern(Random random) {
-        int index = random.nextInt(bannerPatterns.size());
-        return new ItemStack(bannerPatterns.get(index));
+    public void event(VillagerAcquireTradeEvent event) {
+        executeEvent(event);
     }
 }
