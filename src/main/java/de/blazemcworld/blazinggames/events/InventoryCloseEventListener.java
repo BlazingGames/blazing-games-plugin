@@ -15,20 +15,19 @@
  */
 package de.blazemcworld.blazinggames.events;
 
-import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
-import org.bukkit.entity.Player;
+import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
+import de.blazemcworld.blazinggames.userinterfaces.eventhandlers.UserInterfaceCloseHandler;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
-public class InventoryCloseEventListener implements Listener {
+public class InventoryCloseEventListener extends BlazingEventListener<InventoryCloseEvent> {
+    public InventoryCloseEventListener() {
+        this.handlers.add(new UserInterfaceCloseHandler());
+    }
+
     @EventHandler
-    public void onClose(InventoryCloseEvent event) {
-        if(event.getInventory().getHolder() instanceof UserInterface ui) {
-            if(event.getPlayer() instanceof Player p) {
-                ui.onClose(p);
-            }
-        }
+    public void event(InventoryCloseEvent event) {
+        executeEvent(event);
     }
 }
 

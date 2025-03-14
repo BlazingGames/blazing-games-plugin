@@ -15,33 +15,18 @@
  */
 package de.blazemcworld.blazinggames.events;
 
-import de.blazemcworld.blazinggames.items.CustomItems;
-import org.bukkit.enchantments.Enchantment;
+import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
+import de.blazemcworld.blazinggames.events.handlers.tomes.NetherTomeBarterHandler;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PiglinBarterEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
-import java.util.List;
-
-public class PiglinBarterEventListener implements Listener {
-
-    @EventHandler
-    public void onPiglinBarter(PiglinBarterEvent event) {
-        List<ItemStack> loot = event.getOutcome();
-
-        for (int j = 0; j < loot.size(); j++) {
-            if (hasStoredEnchantment(loot.get(j), Enchantment.SOUL_SPEED)) {
-                loot.set(j, CustomItems.NETHER_TOME.create());
-            }
-        }
+public class PiglinBarterEventListener extends BlazingEventListener<PiglinBarterEvent> {
+    public PiglinBarterEventListener() {
+        this.handlers.add(new NetherTomeBarterHandler());
     }
 
-    private boolean hasStoredEnchantment(ItemStack book, Enchantment enchantment) {
-        if(book.getItemMeta() instanceof EnchantmentStorageMeta esm) {
-            return esm.hasStoredEnchant(enchantment);
-        }
-        return false;
+    @EventHandler
+    public void event(PiglinBarterEvent event) {
+        executeEvent(event);
     }
 }
