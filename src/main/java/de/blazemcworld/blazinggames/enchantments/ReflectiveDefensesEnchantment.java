@@ -28,15 +28,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ReflectiveDefencesEnchantment extends CustomEnchantment {
+public class ReflectiveDefensesEnchantment extends CustomEnchantment {
     @Override
     public @NotNull NamespacedKey getKey() {
-        return BlazingGames.get().key("reflective_defences");
+        return BlazingGames.get().key("reflective_defenses");
     }
 
     @Override
     public @NotNull String getDisplayName() {
-        return "Reflective Defences";
+        return "Reflective Defenses";
     }
 
     public ItemPredicate getItemTarget() {
