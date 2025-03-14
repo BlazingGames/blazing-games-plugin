@@ -126,9 +126,9 @@ public class PrepareAnvilEventListener implements Listener {
             }
         }
         else {
-            if(!TextUtils.componentToAmpersandString(result.displayName()).equals(renameText)) {
+            if(!TextUtils.componentToString(result.displayName()).equals(renameText)) {
                 repairCost++;
-                result.setData(DataComponentTypes.CUSTOM_NAME, TextUtils.ampersandStringToComponent(renameText));
+                result.setData(DataComponentTypes.CUSTOM_NAME, TextUtils.parseMinimessage(renameText));
             }
         }
 
