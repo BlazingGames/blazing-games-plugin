@@ -42,6 +42,6 @@ public class PortableCraftingTableClickHandler extends BlazingEventHandler<Inven
     @Override
     public void execute(InventoryClickEvent event) {
         event.setCancelled(true);
-        Bukkit.getScheduler().runTask(BlazingGames.get(), () -> event.getWhoClicked().openInventory(MenuType.CRAFTING.builder().title(Component.text("Crafting")).checkReachable(false).build(event.getWhoClicked())));
+        Bukkit.getScheduler().runTask(BlazingGames.get(), () -> event.getWhoClicked().openInventory(MenuType.CRAFTING.builder().title(Component.translatable("container.crafting")).checkReachable(false).build(event.getWhoClicked())));
     }
 }

@@ -16,9 +16,9 @@
 
 package de.blazemcworld.blazinggames.events.handlers.tomes;
 
+import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.items.CustomItems;
-import de.blazemcworld.blazinggames.utils.Enchantments;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.world.LootGenerateEvent;
@@ -38,7 +38,7 @@ public class StormTomeHandler extends BlazingEventHandler<LootGenerateEvent> {
     public void execute(LootGenerateEvent event) {
         ArrayList<ItemStack> loot = new ArrayList<>(event.getLoot());
         for (int j = 0; j < loot.size(); j++) {
-            if (Enchantments.hasStoredEnchantment(loot.get(j), Enchantment.WIND_BURST)) {
+            if (EnchantmentHelper.hasStoredEnchantment(loot.get(j), Enchantment.WIND_BURST)) {
                 loot.set(j, CustomItems.STORM_TOME.create());
             }
         }

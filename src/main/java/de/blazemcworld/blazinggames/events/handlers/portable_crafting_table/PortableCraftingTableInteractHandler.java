@@ -35,6 +35,6 @@ public class PortableCraftingTableInteractHandler extends BlazingEventHandler<Pl
     public void execute(PlayerInteractEvent event) {
 
         Player player = event.getPlayer();
-        player.openInventory(MenuType.CRAFTING.builder().title(Component.text("Crafting")).checkReachable(false).build(player));
+        player.openInventory(MenuType.CRAFTING.builder().title(Component.translatable("container.crafting")).checkReachable(false).build(player));
     }
 }
