@@ -16,23 +16,25 @@
 
 package de.blazemcworld.blazinggames.computing.eventhandlers;
 
+import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.BootedComputer;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
+import de.blazemcworld.blazinggames.computing.upgrades.UpgradeListInterface;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
-public class ComputerBreakHandler extends BlazingEventHandler<PlayerInteractEvent> {
+public class ComputerUpgradeMenuHandler extends BlazingEventHandler<PlayerInteractEvent> {
     @Override
     public boolean fitCriteria(PlayerInteractEvent event, boolean cancelled) {
+        ItemStack eventItem = event.getItem();
         Block block = event.getClickedBlock();
-        if (block != null && block.getType() == Material.BARRIER && event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            return ComputerRegistry.getComputerByLocationRounded(block.getLocation()) != null;
-        }
-        return false;
+        return block != null && block.getType() == Material.BARRIER && event.getAction() == Action.RIGHT_CLICK_BLOCK
+                && (eventItem == null || eventItem.isEmpty()) && ComputerRegistry.getComputerByLocationRounded(block.getLocation()) != null;
     }
 
     @Override
@@ -42,7 +44,6 @@ public class ComputerBreakHandler extends BlazingEventHandler<PlayerInteractEven
         if (block == null) return;
 
         BootedComputer computer = ComputerRegistry.getComputerByLocationRounded(block.getLocation());
-        ComputerRegistry.dropComputer(computer, player);
-        ComputerRegistry.unload(computer.getId());
+        player.openInventory(new UpgradeListInterface(BlazingGames.get(), computer.getId(), computer.getType().getType().getUpgradeSlots()).getInventory());
     }
 }

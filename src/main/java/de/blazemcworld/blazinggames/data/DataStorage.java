@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -346,5 +347,49 @@ public class DataStorage<T, I> {
      */
     public boolean hasData(I identifier) {
         return useFile(identifier, File::exists);
+    }
+
+    /**
+     * Call a consumer for each file of stored data with the data
+     * @param consumer consumer accepting data
+     */
+    public void forEach(Consumer<T> consumer) {
+        try (Stream<Path> paths = Files.walk(dir.toPath())) {
+            paths.filter(Files::isRegularFile).map(path -> name.fromString(stripFileExtension(path.toFile().getName()))).forEach(i -> {
+                T data = getData(i, null);
+                if (data == null) return;
+                consumer.accept(data);
+            });
+        } catch (IOException e) {
+            BlazingGames.get().log(e);
+        }
+    }
+
+    /**
+     * Call a consumer for each file of stored data with the data's identifier
+     * @param consumer consumer accepting identifiers
+     */
+    public void forEachIdentifier(Consumer<I> consumer) {
+        try (Stream<Path> paths = Files.walk(dir.toPath())) {
+            paths.filter(Files::isRegularFile).map(path -> name.fromString(stripFileExtension(path.toFile().getName()))).forEach(consumer::accept);
+        } catch (IOException e) {
+            BlazingGames.get().log(e);
+        }
+    }
+
+    /**
+     * Call a consumer for each file of stored data with the data and the identifier
+     * @param consumer consumer accepting data and identifiers
+     */
+    public void forEachBoth(BiConsumer<T, I> consumer) {
+        try (Stream<Path> paths = Files.walk(dir.toPath())) {
+            paths.filter(Files::isRegularFile).map(path -> name.fromString(stripFileExtension(path.toFile().getName()))).forEach(i -> {
+                T data = getData(i, null);
+                if (data == null) return;
+                consumer.accept(data, i);
+            });
+        } catch (IOException e) {
+            BlazingGames.get().log(e);
+        }
     }
 }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2025 The Blazing Games Maintainers
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -66,10 +66,10 @@ public class BlazingGames extends JavaPlugin {
 
     // Gson
     public static final Gson gson = new GsonBuilder()
-        .excludeFieldsWithModifiers(Modifier.PRIVATE, Modifier.PROTECTED, Modifier.TRANSIENT, Modifier.STATIC)
-        .registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter())
-        .registerTypeAdapter(Location.class, new TextLocation.LocationTypeAdapter())
-        .create();
+            .excludeFieldsWithModifiers(Modifier.PRIVATE, Modifier.PROTECTED, Modifier.TRANSIENT, Modifier.STATIC).registerTypeAdapter(Location.class, new TextLocation.LocationTypeAdapter())
+            .registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter())
+            .registerTypeAdapter(Location.class, new TextLocation.LocationTypeAdapter())
+            .create();
 
     // Cooldowns
     public Cooldown interactCooldown;
@@ -108,6 +108,11 @@ public class BlazingGames extends JavaPlugin {
                     config.getBoolean("computing.privileges.chunkloading"),
                     config.getBoolean("computing.privileges.net")
             );
+            ComputerRegistry.metadataStorage.forEach(metadata -> {
+                if (metadata.location != null) {
+                    ComputerRegistry.loadComputerIntoWorld(metadata.id);
+                }
+            });
         }
 
         // Discord
@@ -135,12 +140,11 @@ public class BlazingGames extends JavaPlugin {
         }
 
         // Recipes
-        if (computersEnabled) ComputerRegistry.registerAllRecipes();
         CustomRecipes.loadRecipes();
 
         // Computers
         if (config.getBoolean("services.blazing-api.enabled") ||
-            config.getBoolean("services.blazing-wss.enabled")
+                config.getBoolean("services.blazing-wss.enabled")
         ) {
             log("API or WSS enabled, starting...");
 
@@ -197,8 +201,8 @@ public class BlazingGames extends JavaPlugin {
         // Resource pack
         if (config.getBoolean("resource-packs.enabled") && API_AVAILABLE) {
             this.packConfig = new PackConfig(
-                config.getString("resource-packs.metadata.description"),
-                UUID.fromString(config.getString("resource-packs.metadata.uuid"))
+                    config.getString("resource-packs.metadata.description"),
+                    UUID.fromString(config.getString("resource-packs.metadata.uuid"))
             );
 
             rebuildPack();
@@ -214,7 +218,7 @@ public class BlazingGames extends JavaPlugin {
         registerCommand("display", new DisplayCommand());
         registerCommand("setaltar", new SetAltar());
 
-        if(DiscordApp.isWhitelistManaged()) {
+        if (DiscordApp.isWhitelistManaged()) {
             registerCommand("unlink", new UnlinkCommand());
             registerCommand("discordwhitelist", new DiscordWhitelistCommand());
         }
@@ -259,28 +263,34 @@ public class BlazingGames extends JavaPlugin {
     @Override
     public void onDisable() {
         // Discord
-        DiscordApp.send(DiscordNotification.serverShutdown());
-        DiscordApp.dispose();
+        if (DiscordApp.isEnabled()) {
+            DiscordApp.send(DiscordNotification.serverShutdown());
+            DiscordApp.dispose();
+        }
 
         // Recipes
         CustomRecipes.unloadRecipes();
 
-        // Computers
+        // API
         BlazingAPI.stopAll();
         API_AVAILABLE = false; // reset value
+
+        // Computers
+        if (computersEnabled) {
+            ComputerRegistry.shutdownHook();
+        }
     }
 
     private void registerCommand(String name, CommandExecutor executor) {
         PluginCommand command = Objects.requireNonNull(getCommand(name));
         command.setExecutor(executor);
 
-        if(executor instanceof TabCompleter tc) {
+        if (executor instanceof TabCompleter tc) {
             command.setTabCompleter(tc);
         }
     }
 
-    public static BlazingGames get()
-    {
+    public static BlazingGames get() {
         return (BlazingGames) BlazingGames.getProvidingPlugin(BlazingGames.class);
     }
 
@@ -298,8 +308,8 @@ public class BlazingGames extends JavaPlugin {
                 getLogger().severe("");
                 if (notifyOpsOnError) {
                     Bukkit.broadcast(Component.text(
-                        "An exception occurred: " + exception.getMessage() + " (" + exception.getClass().getName()
-                        + ") - " + "For more info, see the console."
+                            "An exception occurred: " + exception.getMessage() + " (" + exception.getClass().getName()
+                                    + ") - " + "For more info, see the console."
                     ).color(NamedTextColor.RED), Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
                 }
             }

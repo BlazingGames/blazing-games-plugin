@@ -15,7 +15,6 @@
  */
 package de.blazemcworld.blazinggames.events;
 
-import de.blazemcworld.blazinggames.computing.eventhandlers.ComputerBreakHandler;
 import de.blazemcworld.blazinggames.enchantments.eventhandlers.ExtraDamageHandler;
 import de.blazemcworld.blazinggames.enchantments.eventhandlers.ReflectiveDefensesHandler;
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
@@ -28,7 +27,7 @@ import java.util.List;
 public class EntityDamagedByEventListener extends BlazingEventListener<EntityDamageByEntityEvent> {
     public EntityDamagedByEventListener() {
         this.handlers.addAll(List.of(
-                new ComputerBreakHandler(),
+//                new ComputerBreakHandler(),
                 new ExtraDamageHandler(),
                 new ReflectiveDefensesHandler(),
                 new CustomSlabBreakHandler()

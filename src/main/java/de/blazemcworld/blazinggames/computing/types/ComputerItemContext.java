@@ -13,26 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.computing.motor;
+package de.blazemcworld.blazinggames.computing.types;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
+import de.blazemcworld.blazinggames.items.contexts.ItemContext;
 
-public interface IComputerMotor {
-    boolean usesActor();
+public class ComputerItemContext implements ItemContext {
+    public String ulid;
 
-    EntityType actorEntityType();
+    public ComputerItemContext(String ulid) {
+        this.ulid = ulid;
+    }
 
-    void applyActorProperties(Entity actor);
-
-    void moveActor(Entity actor, Location newLocation);
-
-    boolean usesBlock();
-
-    Material blockMaterial();
-
-    void applyPropsToBlock(Block block);
+    public static ComputerItemContext defaultContext() {
+        return new ComputerItemContext(null);
+    }
 }

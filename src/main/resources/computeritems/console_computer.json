@@ -1,13 +1,13 @@
 {
   "credit": "Made with Blockbench",
   "textures": {
-    "0": "blazinggames:item/computer_default",
-    "1": "blazinggames:item/computer_front",
-    "2": "blazinggames:item/computer_side",
-    "3": "blazinggames:item/computer_front_inside",
-    "5": "blazinggames:item/gpu",
-    "6": "blazinggames:item/circuit_board",
-    "particle": "blazinggames:item/computer_default"
+    "0": "blazinggames:item/console_computer_1",
+    "1": "blazinggames:item/console_computer_2",
+    "2": "blazinggames:item/console_computer_3",
+    "3": "blazinggames:item/console_computer_4",
+    "5": "blazinggames:item/console_computer_5",
+    "6": "blazinggames:item/console_computer_6",
+    "particle": "blazinggames:item/console_computer_1"
   },
   "elements": [
     {

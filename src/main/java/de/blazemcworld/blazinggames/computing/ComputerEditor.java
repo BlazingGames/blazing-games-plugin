@@ -15,11 +15,14 @@
  */
 package de.blazemcworld.blazinggames.computing;
 
+import com.google.gson.JsonObject;
+import de.blazemcworld.blazinggames.computing.upgrades.UpgradeType;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
-import com.google.gson.JsonObject;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for directly modifiying computers.
@@ -75,6 +78,50 @@ public class ComputerEditor {
             return ComputerRegistry.defaultCode;
         }
         return ComputerRegistry.codeStorage.getData(computer);
+    }
+
+    /**
+     * Set (override) all ugprades of a computer
+     */
+    public static void setUpgrades(final String computer, UpgradeType[] upgrades) {
+        ComputerMetadata metadataObj = getMetadata(computer);
+        if (metadataObj == null) return;
+        JsonObject metadata = metadataObj.serialize();
+        metadata.addProperty("upgrades", Arrays.stream(upgrades).map(UpgradeType::toString).collect(Collectors.joining(",")));
+        _setMetadata(new ComputerMetadata(metadata));
+    }
+
+    /**
+     * Add one upgrade to a computer. Does not check if there is free space.
+     */
+    public static void addUpgrade(final String computer, UpgradeType type) {
+        ComputerMetadata metadataObj = getMetadata(computer);
+        if (metadataObj == null) return;
+        ArrayList<UpgradeType> existing = new ArrayList<>(metadataObj.upgrades);
+        existing.add(type);
+        setUpgrades(computer, existing.toArray(UpgradeType[]::new));
+    }
+
+    /**
+     * Remove exactly one of an upgrade type from a computer.
+     */
+    public static void removeUpgrade(final String computer, UpgradeType type) {
+        ComputerMetadata metadataObj = getMetadata(computer);
+        if (metadataObj == null) return;
+        ArrayList<UpgradeType> existing = new ArrayList<>(metadataObj.upgrades);
+        existing.remove(type);
+        setUpgrades(computer, existing.toArray(UpgradeType[]::new));
+    }
+
+    /**
+     * Remove upgrade at a specific position from a computer.
+     */
+    public static void removeUpgradeAtPosition(final String computer, int position) {
+        ComputerMetadata metadataObj = getMetadata(computer);
+        if (metadataObj == null) return;
+        ArrayList<UpgradeType> existing = new ArrayList<>(metadataObj.upgrades);
+        existing.remove(position);
+        setUpgrades(computer, existing.toArray(UpgradeType[]::new));
     }
 
     public static void rename(final String computerId, final String name) {
