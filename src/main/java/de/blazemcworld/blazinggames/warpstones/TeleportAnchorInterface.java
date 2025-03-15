@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.blazemcworld.blazinggames.teleportanchor;
+package de.blazemcworld.blazinggames.warpstones;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
@@ -25,11 +25,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TeleportAnchorInterface extends UserInterface {
+    private static final int rows = 6;
     private final Player player;
-    private final Map<Location, String> lodestones = new HashMap<>();
+    private final Map<Location, WarpstoneOverrideDetails> warpstones = new HashMap<>();
 
     public TeleportAnchorInterface(BlazingGames plugin, Player player) {
-        super(plugin, "Teleport Anchor", 6);
+        super(plugin, "Teleport Anchor", rows);
         this.player = player;
     }
 
@@ -37,11 +38,11 @@ public class TeleportAnchorInterface extends UserInterface {
         return player;
     }
 
-    public Map.Entry<Location, String> getLodestone(int index) {
+    public Map.Entry<Location, WarpstoneOverrideDetails> getWarpstone(int index) {
         int current = 0;
-        for(Map.Entry<Location, String> lodestone : lodestones.entrySet()) {
+        for(Map.Entry<Location, WarpstoneOverrideDetails> warpstone : warpstones.entrySet()) {
             if(current == index) {
-                return lodestone;
+                return warpstone;
             }
             current++;
         }
@@ -51,21 +52,20 @@ public class TeleportAnchorInterface extends UserInterface {
 
     @Override
     protected void preload() {
-        for(int i = 0; i < 6*9; i++) {
-            addSlot(i, new LodestoneSlot(i));
+        for(int i = 0; i < rows*9; i++) {
+            addSlot(i, new TeleportAnchorSlot(i));
         }
     }
 
     @Override
     public void reload() {
-        reloadLodestones();
+        reloadWarpstones();
 
         super.reload();
     }
 
-    private void reloadLodestones() {
-        this.lodestones.clear();
-
-        this.lodestones.putAll(LodestoneStorage.getSavedLodestones(player.getUniqueId()));
+    private void reloadWarpstones() {
+        this.warpstones.clear();
+        this.warpstones.putAll(WarpstoneStorage.getSavedWarpstones(player));
     }
 }

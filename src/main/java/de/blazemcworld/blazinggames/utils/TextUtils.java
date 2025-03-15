@@ -36,18 +36,22 @@ public class TextUtils {
         .build()).build();
 
     public static String componentToString(Component component) {
+        if (component == null) return null;
         return restrictedParser.serialize(component);
     }
 
     public static String stripStyles(Component component) {
+        if (component == null) return null;
         return PlainTextComponentSerializer.plainText().serialize(component);
     }
 
     public static Component stringToComponent(String string) {
+        if (string == null) return null;
         return Component.text(string);
     }
 
     public static Component parseMinimessage(String message) {
+        if (message == null) return null;
         return restrictedParser.deserialize(message);
     }
 }

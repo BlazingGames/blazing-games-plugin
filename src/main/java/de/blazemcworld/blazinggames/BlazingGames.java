@@ -32,9 +32,9 @@ import de.blazemcworld.blazinggames.events.*;
 import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
-import de.blazemcworld.blazinggames.teleportanchor.LodestoneInteractionEventListener;
 import de.blazemcworld.blazinggames.utils.Cooldown;
 import de.blazemcworld.blazinggames.utils.ItemStackTypeAdapter;
+import de.blazemcworld.blazinggames.utils.KeyTypeAdapter;
 import de.blazemcworld.blazinggames.utils.TextLocation;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.io.Decoders;
@@ -43,6 +43,7 @@ import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.WeakKeyException;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -73,6 +74,8 @@ public class BlazingGames extends JavaPlugin {
         .excludeFieldsWithModifiers(Modifier.PRIVATE, Modifier.PROTECTED, Modifier.TRANSIENT, Modifier.STATIC)
         .registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter())
         .registerTypeAdapter(Location.class, new TextLocation.LocationTypeAdapter())
+        .registerTypeAdapter(Key.class, new KeyTypeAdapter())
+        .registerTypeAdapter(NamespacedKey.class, new KeyTypeAdapter())
         .create();
 
     // Cooldowns
@@ -247,7 +250,6 @@ public class BlazingGames extends JavaPlugin {
         pluginManager.registerEvents(new EntityDamagedByEventListener(), this);
         pluginManager.registerEvents(new BlockPlaceEventListener(), this);
         pluginManager.registerEvents(new SpawnerSpawnEventListener(), this);
-        pluginManager.registerEvents(new LodestoneInteractionEventListener(), this);
         pluginManager.registerEvents(new BlockDestroyEventListener(), this);
         pluginManager.registerEvents(new BlockExplodeEventListener(), this);
         pluginManager.registerEvents(new EntityExplodeEventListener(), this);
