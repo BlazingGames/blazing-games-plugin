@@ -17,6 +17,9 @@ package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.builderwand.eventhandlers.BuilderWandCycleHandler;
 import de.blazemcworld.blazinggames.builderwand.eventhandlers.BuilderWandPlaceHandler;
+import de.blazemcworld.blazinggames.computing.eventhandlers.ComputerBreakHandler;
+import de.blazemcworld.blazinggames.computing.eventhandlers.ComputerUpgradeHandler;
+import de.blazemcworld.blazinggames.computing.eventhandlers.ComputerUpgradeMenuHandler;
 import de.blazemcworld.blazinggames.crates.eventhandlers.CrateInteractHandler;
 import de.blazemcworld.blazinggames.enchantments.eventhandlers.NaturesBlessingHandler;
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
@@ -51,7 +54,10 @@ public class InteractEventListener extends BlazingEventListener<PlayerInteractEv
                 new TomeAltarBreakHandler(),
                 new TomeAltarInteractHandler(),
                 new VaultInteractHandler(),
-                new CustomSlabPlaceBlockHandler()
+                new CustomSlabPlaceBlockHandler(),
+                new ComputerUpgradeMenuHandler(),
+                new ComputerUpgradeHandler(),
+                new ComputerBreakHandler()
         ));
     }
 

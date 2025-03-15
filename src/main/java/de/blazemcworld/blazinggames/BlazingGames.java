@@ -218,7 +218,7 @@ public class BlazingGames extends JavaPlugin {
         registerCommand("display", new DisplayCommand());
         registerCommand("setaltar", new SetAltar());
 
-        if(DiscordApp.isWhitelistManaged()) {
+        if (DiscordApp.isWhitelistManaged()) {
             registerCommand("unlink", new UnlinkCommand());
             registerCommand("discordwhitelist", new DiscordWhitelistCommand());
         }
@@ -263,8 +263,10 @@ public class BlazingGames extends JavaPlugin {
     @Override
     public void onDisable() {
         // Discord
-        DiscordApp.send(DiscordNotification.serverShutdown());
-        DiscordApp.dispose();
+        if (DiscordApp.isEnabled()) {
+            DiscordApp.send(DiscordNotification.serverShutdown());
+            DiscordApp.dispose();
+        }
 
         // Recipes
         CustomRecipes.unloadRecipes();

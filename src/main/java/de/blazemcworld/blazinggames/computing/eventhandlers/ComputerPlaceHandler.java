@@ -18,8 +18,9 @@ package de.blazemcworld.blazinggames.computing.eventhandlers;
 
 import de.blazemcworld.blazinggames.computing.BootedComputer;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
-import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
+import de.blazemcworld.blazinggames.computing.types.ComputerItemWrapper;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
+import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.utils.TextLocation;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -28,8 +29,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.UUID;
 
@@ -38,9 +37,7 @@ public class ComputerPlaceHandler extends BlazingEventHandler<BlockPlaceEvent> {
     public boolean fitCriteria(BlockPlaceEvent event, boolean cancelled) {
         ItemStack handItem = event.getItemInHand();
         if (handItem.hasItemMeta()) {
-            PersistentDataContainer container = handItem.getItemMeta().getPersistentDataContainer();
-            String computerTypeString = container.getOrDefault(ComputerRegistry.NAMESPACEDKEY_COMPUTER_TYPE, PersistentDataType.STRING, "");
-            return !computerTypeString.isEmpty();
+            return CustomItem.getCustomItem(handItem) instanceof ComputerItemWrapper;
         }
         return false;
     }
@@ -48,19 +45,11 @@ public class ComputerPlaceHandler extends BlazingEventHandler<BlockPlaceEvent> {
     @Override
     public void execute(BlockPlaceEvent event) {
         ItemStack handItem = event.getItemInHand();
-        PersistentDataContainer container = handItem.getItemMeta().getPersistentDataContainer();
-        String computerTypeString = container.getOrDefault(ComputerRegistry.NAMESPACEDKEY_COMPUTER_TYPE, PersistentDataType.STRING, "");
+        ComputerItemWrapper computerItem = (ComputerItemWrapper) CustomItem.getCustomItem(handItem);
+        if (computerItem == null) return;
+        
         event.setCancelled(true);
-
-        ComputerTypes computerTypes;
-        try {
-            computerTypes = ComputerTypes.valueOf(computerTypeString);
-        } catch (IllegalArgumentException ignored) {
-            event.getPlayer().sendMessage("This computer type doesn't exist?");
-            return;
-        }
-
-        String computerId = container.getOrDefault(ComputerRegistry.NAMESPACEDKEY_COMPUTER_ID, PersistentDataType.STRING, "");
+        String computerId = computerItem.useContext(handItem).ulid;
         Location placeLocation = event.getBlockPlaced().getLocation();
         UUID uuid = event.getPlayer().getUniqueId();
         if (event.getItemInHand().getAmount() > 1) {
@@ -70,10 +59,10 @@ public class ComputerPlaceHandler extends BlazingEventHandler<BlockPlaceEvent> {
         } else {
             event.getPlayer().getInventory().setItem(event.getHand(), new ItemStack(Material.AIR));
         }
-        if (computerId.isEmpty()) {
+        if (computerId == null) {
             ComputerRegistry.placeNewComputer(
                     placeLocation,
-                    computerTypes,
+                    computerItem.type,
                     uuid,
                     computer -> {
                         Player player = Bukkit.getPlayer(uuid);
