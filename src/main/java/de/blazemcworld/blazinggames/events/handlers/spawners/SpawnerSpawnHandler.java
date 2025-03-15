@@ -24,7 +24,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class SpawnerSpawnHandler extends BlazingEventHandler<SpawnerSpawnEvent> {
     @Override
-    public boolean fitCriteria(SpawnerSpawnEvent event) {
+    public boolean fitCriteria(SpawnerSpawnEvent event, boolean cancelled) {
         return true;
     }
 

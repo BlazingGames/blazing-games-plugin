@@ -29,7 +29,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class BlueprintEnchantingTableInteractHandler extends BlazingEventHandler<PlayerInteractEvent> {
     @Override
-    public boolean fitCriteria(PlayerInteractEvent event) {
+    public boolean fitCriteria(PlayerInteractEvent event, boolean cancelled) {
         Block block = event.getClickedBlock();
         ItemStack eventItem = event.getItem();
         EquipmentSlot hand = event.getHand();

@@ -19,12 +19,11 @@ package de.blazemcworld.blazinggames.computing.eventhandlers;
 import de.blazemcworld.blazinggames.computing.BootedComputer;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.events.BlazingBlockDisappearEvent;
-import de.blazemcworld.blazinggames.events.BlazingBlockDropEvent;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 
 public class ComputerDisappearHandler extends BlazingEventHandler<BlazingBlockDisappearEvent> {
     @Override
-    public boolean fitCriteria(BlazingBlockDisappearEvent event) {
+    public boolean fitCriteria(BlazingBlockDisappearEvent event, boolean cancelled) {
         return ComputerRegistry.getComputerByLocationRounded(event.getBlock().getLocation()) != null;
     }
 

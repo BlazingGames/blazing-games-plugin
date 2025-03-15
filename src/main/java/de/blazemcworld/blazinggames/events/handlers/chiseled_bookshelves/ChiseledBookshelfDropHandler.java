@@ -25,7 +25,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class ChiseledBookshelfDropHandler extends BlazingEventHandler<BlazingBlockDropEvent> {
     @Override
-    public boolean fitCriteria(BlazingBlockDropEvent event) {
+    public boolean fitCriteria(BlazingBlockDropEvent event, boolean cancelled) {
         return event.getBlock().getType() == Material.CHISELED_BOOKSHELF &&
                 !EnchantmentHelper.hasActiveEnchantmentWrapper(event.getTool(), EnchantmentWrappers.SILK_TOUCH);
     }

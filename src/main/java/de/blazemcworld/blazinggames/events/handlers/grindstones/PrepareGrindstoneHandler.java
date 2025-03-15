@@ -34,7 +34,7 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
 public class PrepareGrindstoneHandler extends BlazingEventHandler<PrepareGrindstoneEvent> {
     @Override
-    public boolean fitCriteria(PrepareGrindstoneEvent event) {
+    public boolean fitCriteria(PrepareGrindstoneEvent event, boolean cancelled) {
         return true;
     }
 

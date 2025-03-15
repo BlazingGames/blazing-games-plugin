@@ -24,7 +24,7 @@ import org.bukkit.Material;
 
 public class WarpstoneDisappearHandler extends BlazingEventHandler<BlazingBlockDisappearEvent> {
     @Override
-    public boolean fitCriteria(BlazingBlockDisappearEvent event) {
+    public boolean fitCriteria(BlazingBlockDisappearEvent event, boolean cancelled) {
         if (!Material.BARRIER.equals(event.getBlock().getType())) {
             return false;
         }

@@ -33,7 +33,7 @@ import java.util.List;
 
 public class DiscordChatHandler extends BlazingEventHandler<AsyncChatEvent> implements ChatRenderer {
     @Override
-    public boolean fitCriteria(AsyncChatEvent event) {
+    public boolean fitCriteria(AsyncChatEvent event, boolean cancelled) {
         return true;
     }
 

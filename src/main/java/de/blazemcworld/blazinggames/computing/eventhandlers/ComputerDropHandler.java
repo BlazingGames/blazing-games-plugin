@@ -23,7 +23,7 @@ import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 
 public class ComputerDropHandler extends BlazingEventHandler<BlazingBlockDropEvent> {
     @Override
-    public boolean fitCriteria(BlazingBlockDropEvent event) {
+    public boolean fitCriteria(BlazingBlockDropEvent event, boolean cancelled) {
         return ComputerRegistry.getComputerByLocationRounded(event.getBlock().getLocation()) != null;
     }
 

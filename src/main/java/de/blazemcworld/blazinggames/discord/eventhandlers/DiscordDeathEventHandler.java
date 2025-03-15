@@ -19,18 +19,17 @@ package de.blazemcworld.blazinggames.discord.eventhandlers;
 import de.blazemcworld.blazinggames.discord.DiscordApp;
 import de.blazemcworld.blazinggames.discord.DiscordNotification;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
-import org.bukkit.event.player.PlayerAdvancementDoneEvent;
+import de.blazemcworld.blazinggames.utils.TextUtils;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
-public class DiscordAdvancementHandler extends BlazingEventHandler<PlayerAdvancementDoneEvent> {
+public class DiscordDeathEventHandler extends BlazingEventHandler<PlayerDeathEvent> {
     @Override
-    public boolean fitCriteria(PlayerAdvancementDoneEvent event, boolean cancelled) {
-        return event.getAdvancement().getDisplay() != null && event.getAdvancement().getDisplay().doesAnnounceToChat();
+    public boolean fitCriteria(PlayerDeathEvent event, boolean cancelled) {
+        return DiscordApp.isEnabled();
     }
 
     @Override
-    public void execute(PlayerAdvancementDoneEvent event) {
-        if (event.getAdvancement().getDisplay() == null) return;
-        DiscordApp.send(DiscordNotification.playerAdvancement(
-                event.getPlayer(), event.getAdvancement().getDisplay()));
+    public void execute(PlayerDeathEvent event) {
+        DiscordApp.send(DiscordNotification.playerDeath(event.getPlayer(), TextUtils.componentToString(event.deathMessage())));
     }
 }

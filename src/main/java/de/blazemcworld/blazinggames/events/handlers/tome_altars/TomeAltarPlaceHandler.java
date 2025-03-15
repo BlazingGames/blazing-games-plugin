@@ -31,7 +31,7 @@ import org.bukkit.inventory.ItemStack;
 public class TomeAltarPlaceHandler extends BlazingEventHandler<BlockPlaceEvent> {
 
     @Override
-    public boolean fitCriteria(BlockPlaceEvent event) {
+    public boolean fitCriteria(BlockPlaceEvent event, boolean cancelled) {
         return CustomItems.TOME_ALTAR.matchItem(event.getItemInHand());
     }
 

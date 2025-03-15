@@ -1,12 +1,12 @@
 /*
  * Copyright 2025 The Blazing Games Maintainers
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,13 +16,19 @@
 package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.crates.eventhandlers.MakeCrateHandler;
+import de.blazemcworld.blazinggames.discord.eventhandlers.DiscordDeathEventHandler;
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
+import java.util.List;
+
 public class DeathEventListener extends BlazingEventListener<PlayerDeathEvent> {
     public DeathEventListener() {
-        this.handlers.add(new MakeCrateHandler());
+        this.handlers.addAll(List.of(
+                new MakeCrateHandler(),
+                new DiscordDeathEventHandler()
+        ));
     }
 
     @EventHandler(ignoreCancelled = true)

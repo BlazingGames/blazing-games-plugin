@@ -16,20 +16,20 @@
 
 package de.blazemcworld.blazinggames.events.handlers.tomes;
 
+import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.items.CustomItems;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.world.LootGenerateEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.loot.LootTables;
 
 import java.util.ArrayList;
 
 public class EchoTomeHandler extends BlazingEventHandler<LootGenerateEvent> {
     @Override
-    public boolean fitCriteria(LootGenerateEvent event) {
+    public boolean fitCriteria(LootGenerateEvent event, boolean cancelled) {
         NamespacedKey key = event.getLootTable().getKey();
         return key.equals(LootTables.ANCIENT_CITY.getKey());
     }
@@ -38,10 +38,8 @@ public class EchoTomeHandler extends BlazingEventHandler<LootGenerateEvent> {
     public void execute(LootGenerateEvent event) {
         ArrayList<ItemStack> loot = new ArrayList<>(event.getLoot());
         for (int j = 0; j < loot.size(); j++) {
-            if (loot.get(j).getItemMeta() instanceof EnchantmentStorageMeta esm) {
-                if (esm.hasStoredEnchant(Enchantment.SWIFT_SNEAK)) {
-                    loot.set(j, CustomItems.ECHO_TOME.create());
-                }
+            if (EnchantmentHelper.hasStoredEnchantment(loot.get(j), Enchantment.SWIFT_SNEAK)) {
+                loot.set(j, CustomItems.ECHO_TOME.create());
             }
         }
         event.setLoot(loot);

@@ -33,7 +33,7 @@ import java.util.UUID;
 
 public class CustomSlabBreakHandler extends BlazingEventHandler<EntityDamageByEntityEvent> {
     @Override
-    public boolean fitCriteria(EntityDamageByEntityEvent event) {
+    public boolean fitCriteria(EntityDamageByEntityEvent event, boolean cancelled) {
         Entity victim = event.getEntity();
         Entity damager = event.getDamager();
 

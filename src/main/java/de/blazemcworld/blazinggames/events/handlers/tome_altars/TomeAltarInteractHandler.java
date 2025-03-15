@@ -38,7 +38,7 @@ import org.joml.Vector3f;
 
 public class TomeAltarInteractHandler extends BlazingEventHandler<PlayerInteractEvent> {
     @Override
-    public boolean fitCriteria(PlayerInteractEvent event) {
+    public boolean fitCriteria(PlayerInteractEvent event, boolean cancelled) {
         Player player = event.getPlayer();
         Block block = event.getClickedBlock();
 

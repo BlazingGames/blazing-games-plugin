@@ -27,7 +27,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class StandardBlockDropHandler extends BlazingEventHandler<BlazingBlockDropEvent> {
     @Override
-    public boolean fitCriteria(BlazingBlockDropEvent event) {
+    public boolean fitCriteria(BlazingBlockDropEvent event, boolean cancelled) {
         return true;
     }
 

@@ -18,23 +18,23 @@ package de.blazemcworld.blazinggames.events.handlers.portable_crafting_table;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.items.CustomItems;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MenuType;
 
 public class PortableCraftingTableInteractHandler extends BlazingEventHandler<PlayerInteractEvent> {
     @Override
-    public boolean fitCriteria(PlayerInteractEvent event) {
+    public boolean fitCriteria(PlayerInteractEvent event, boolean cancelled) {
         ItemStack eventItem = event.getItem();
         return CustomItems.PORTABLE_CRAFTING_TABLE.matchItem(eventItem);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void execute(PlayerInteractEvent event) {
-        // TODO: use a non-deprecated method
 
         Player player = event.getPlayer();
-        player.openWorkbench(null, true);
+        player.openInventory(MenuType.CRAFTING.builder().title(Component.translatable("container.crafting")).checkReachable(false).build(player));
     }
 }

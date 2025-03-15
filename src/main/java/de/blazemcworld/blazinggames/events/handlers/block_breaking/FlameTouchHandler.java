@@ -29,7 +29,7 @@ import java.util.List;
 
 public class FlameTouchHandler extends BlazingEventHandler<BlazingBlockDropEvent> {
     @Override
-    public boolean fitCriteria(BlazingBlockDropEvent event) {
+    public boolean fitCriteria(BlazingBlockDropEvent event, boolean cancelled) {
         return EnchantmentHelper.hasActiveEnchantmentWrapper(event.getTool(), CustomEnchantments.FLAME_TOUCH);
     }
 

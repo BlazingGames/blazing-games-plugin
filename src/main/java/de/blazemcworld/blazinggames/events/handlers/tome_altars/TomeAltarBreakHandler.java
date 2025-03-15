@@ -36,7 +36,7 @@ import java.util.List;
 
 public class TomeAltarBreakHandler extends BlazingEventHandler<PlayerInteractEvent> {
     @Override
-    public boolean fitCriteria(PlayerInteractEvent event) {
+    public boolean fitCriteria(PlayerInteractEvent event, boolean cancelled) {
         Block block = event.getClickedBlock();
 
         if (event.getAction() == Action.LEFT_CLICK_BLOCK && block != null && block.getType() == Material.BARRIER) {

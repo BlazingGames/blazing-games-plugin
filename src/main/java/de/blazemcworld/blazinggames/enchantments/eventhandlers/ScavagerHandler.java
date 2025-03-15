@@ -30,7 +30,7 @@ import java.util.List;
 
 public class ScavagerHandler extends BlazingEventHandler<EntityDeathEvent> {
     @Override
-    public boolean fitCriteria(EntityDeathEvent event) {
+    public boolean fitCriteria(EntityDeathEvent event, boolean cancelled) {
         LivingEntity victim = event.getEntity();
 
         Player killer = victim.getKiller();

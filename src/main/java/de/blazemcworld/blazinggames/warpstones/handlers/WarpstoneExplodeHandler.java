@@ -24,7 +24,7 @@ import org.bukkit.event.block.BlockExplodeEvent;
 
 public class WarpstoneExplodeHandler extends BlazingEventHandler<BlockExplodeEvent> {
     @Override
-    public boolean fitCriteria(BlockExplodeEvent event) {
+    public boolean fitCriteria(BlockExplodeEvent event, boolean cancelled) {
         return true;
     }
 

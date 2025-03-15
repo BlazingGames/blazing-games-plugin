@@ -19,7 +19,7 @@ package de.blazemcworld.blazinggames.events.base;
 import org.bukkit.event.Event;
 
 public abstract class BlazingEventHandler<T extends Event> {
-    public abstract boolean fitCriteria(T event);
+    public abstract boolean fitCriteria(T event, boolean cancelled);
 
     public abstract void execute(T event);
 }

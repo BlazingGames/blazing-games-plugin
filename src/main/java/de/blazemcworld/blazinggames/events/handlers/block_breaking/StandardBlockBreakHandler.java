@@ -22,7 +22,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 public class StandardBlockBreakHandler extends BlazingEventHandler<BlockBreakEvent> {
     @Override
-    public boolean fitCriteria(BlockBreakEvent event) {
+    public boolean fitCriteria(BlockBreakEvent event, boolean cancelled) {
         return true;
     }
 

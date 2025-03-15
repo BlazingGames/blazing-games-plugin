@@ -33,7 +33,7 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
 public class GrindstoneSlotHandler extends BlazingEventHandler<InventoryClickEvent> {
     @Override
-    public boolean fitCriteria(InventoryClickEvent event) {
+    public boolean fitCriteria(InventoryClickEvent event, boolean cancelled) {
         Inventory inventory = event.getClickedInventory();
         if (inventory == null) return false;
 

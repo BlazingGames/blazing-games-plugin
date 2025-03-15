@@ -32,7 +32,7 @@ import java.util.UUID;
 
 public class DiscordLoginHandler extends BlazingEventHandler<PlayerLoginEvent> {
     @Override
-    public boolean fitCriteria(PlayerLoginEvent event) {
+    public boolean fitCriteria(PlayerLoginEvent event, boolean cancelled) {
         return DiscordApp.isWhitelistManaged() && (event.getResult() == PlayerLoginEvent.Result.KICK_WHITELIST || event.getResult() == PlayerLoginEvent.Result.ALLOWED);
     }
 

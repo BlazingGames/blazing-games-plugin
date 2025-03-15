@@ -26,7 +26,7 @@ import java.util.Random;
 
 public class FuseTomeHandler extends BlazingEventHandler<LootGenerateEvent> {
     @Override
-    public boolean fitCriteria(LootGenerateEvent event) {
+    public boolean fitCriteria(LootGenerateEvent event, boolean cancelled) {
         NamespacedKey key = event.getLootTable().getKey();
         return key.equals(LootTables.STRONGHOLD_CORRIDOR.getKey())
                 || key.equals(LootTables.STRONGHOLD_CROSSING.getKey())

@@ -24,7 +24,7 @@ import org.bukkit.Material;
 
 public class WarpstoneDestroyHandler extends BlazingEventHandler<BlockDestroyEvent> {
     @Override
-    public boolean fitCriteria(BlockDestroyEvent event) {
+    public boolean fitCriteria(BlockDestroyEvent event, boolean cancelled) {
         if (!Material.BARRIER.equals(event.getBlock().getType())) {
             return false;
         }

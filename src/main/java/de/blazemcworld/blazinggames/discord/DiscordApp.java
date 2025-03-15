@@ -111,6 +111,10 @@ public class DiscordApp extends ListenerAdapter {
         return app.whitelist;
     }
 
+    public static boolean isEnabled() {
+        return app != null;
+    }
+
     private static DiscordApp app = null;
     private final JDA jda;
     private final StandardGuildMessageChannel channel;

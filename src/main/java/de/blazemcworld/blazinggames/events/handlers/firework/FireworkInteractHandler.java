@@ -30,7 +30,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 
 public class FireworkInteractHandler extends BlazingEventHandler<PlayerInteractEvent> {
     @Override
-    public boolean fitCriteria(PlayerInteractEvent event) {
+    public boolean fitCriteria(PlayerInteractEvent event, boolean cancelled) {
         ItemStack eventItem = event.getItem();
 
         if (event.getAction().isRightClick() && eventItem != null) {

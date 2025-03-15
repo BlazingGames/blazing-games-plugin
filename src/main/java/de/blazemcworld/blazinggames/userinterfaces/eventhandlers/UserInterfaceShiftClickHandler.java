@@ -23,7 +23,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class UserInterfaceShiftClickHandler extends BlazingEventHandler<InventoryClickEvent> {
     @Override
-    public boolean fitCriteria(InventoryClickEvent event) {
+    public boolean fitCriteria(InventoryClickEvent event, boolean cancelled) {
         return event.getInventory().getHolder() instanceof UserInterface && event.getAction() == InventoryAction.COLLECT_TO_CURSOR;
     }
 

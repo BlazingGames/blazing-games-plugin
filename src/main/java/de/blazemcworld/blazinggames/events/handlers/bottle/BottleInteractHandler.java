@@ -31,13 +31,13 @@ import java.util.HashMap;
 
 public class BottleInteractHandler extends BlazingEventHandler<PlayerInteractEvent> {
     @Override
-    public boolean fitCriteria(PlayerInteractEvent event) {
+    public boolean fitCriteria(PlayerInteractEvent event, boolean cancelled) {
         Player player = event.getPlayer();
         ItemStack eventItem = event.getItem();
         EquipmentSlot hand = event.getHand();
         if (player.isSneaking() && eventItem != null && hand != null && eventItem.getType() == Material.GLASS_BOTTLE) {
             Block target = event.getPlayer().getTargetBlockExact(5, FluidCollisionMode.ALWAYS);
-            if (target != null && target.getType() == Material.WATER) return false;
+            if (target != null && (target.getType() == Material.WATER || target.getType() == Material.CAULDRON || target.getType() == Material.WATER_CAULDRON)) return false;
             return player.getLevel() > 0;
         }
         return false;

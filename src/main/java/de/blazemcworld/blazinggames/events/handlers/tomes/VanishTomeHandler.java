@@ -26,7 +26,7 @@ import java.util.Random;
 
 public class VanishTomeHandler extends BlazingEventHandler<LootGenerateEvent> {
     @Override
-    public boolean fitCriteria(LootGenerateEvent event) {
+    public boolean fitCriteria(LootGenerateEvent event, boolean cancelled) {
         NamespacedKey key = event.getLootTable().getKey();
         return key.equals(LootTables.PILLAGER_OUTPOST.getKey())
                 || key.equals(LootTables.WOODLAND_MANSION.getKey());

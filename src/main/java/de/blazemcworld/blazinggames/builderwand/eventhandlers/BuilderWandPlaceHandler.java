@@ -32,7 +32,7 @@ import org.bukkit.util.Vector;
 
 public class BuilderWandPlaceHandler extends BlazingEventHandler<PlayerInteractEvent> {
     @Override
-    public boolean fitCriteria(PlayerInteractEvent event) {
+    public boolean fitCriteria(PlayerInteractEvent event, boolean cancelled) {
         Player player = event.getPlayer();
         ItemStack eventItem = event.getItem();
         EquipmentSlot hand = event.getHand();

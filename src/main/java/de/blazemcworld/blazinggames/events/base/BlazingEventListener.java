@@ -16,6 +16,7 @@
 
 package de.blazemcworld.blazinggames.events.base;
 
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 
@@ -29,7 +30,9 @@ public abstract class BlazingEventListener<T extends Event> implements Listener 
 
     public void executeEvent(T event) {
         for (BlazingEventHandler<T> handler : handlers) {
-            if (handler.fitCriteria(event)) handler.execute(event);
+            if (handler.fitCriteria(event, event instanceof Cancellable cancellable && cancellable.isCancelled())) {
+                handler.execute(event);
+            }
         }
     }
 }

@@ -17,8 +17,8 @@ package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.computing.eventhandlers.ComputerBreakHandler;
 import de.blazemcworld.blazinggames.enchantments.eventhandlers.ExtraDamageHandler;
+import de.blazemcworld.blazinggames.enchantments.eventhandlers.ReflectiveDefensesHandler;
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
-import de.blazemcworld.blazinggames.events.handlers.player.PlayerBlockHandler;
 import de.blazemcworld.blazinggames.events.handlers.slabs.CustomSlabBreakHandler;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -30,7 +30,7 @@ public class EntityDamagedByEventListener extends BlazingEventListener<EntityDam
         this.handlers.addAll(List.of(
                 new ComputerBreakHandler(),
                 new ExtraDamageHandler(),
-                new PlayerBlockHandler(),
+                new ReflectiveDefensesHandler(),
                 new CustomSlabBreakHandler()
         ));
     }

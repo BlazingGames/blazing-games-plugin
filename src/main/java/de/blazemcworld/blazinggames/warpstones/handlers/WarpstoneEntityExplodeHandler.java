@@ -24,7 +24,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 
 public class WarpstoneEntityExplodeHandler extends BlazingEventHandler<EntityExplodeEvent> {
     @Override
-    public boolean fitCriteria(EntityExplodeEvent event) {
+    public boolean fitCriteria(EntityExplodeEvent event, boolean cancelled) {
         return true;
     }
 

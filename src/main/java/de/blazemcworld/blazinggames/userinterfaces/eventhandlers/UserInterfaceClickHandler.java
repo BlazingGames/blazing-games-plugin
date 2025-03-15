@@ -23,7 +23,7 @@ import org.bukkit.inventory.Inventory;
 
 public class UserInterfaceClickHandler extends BlazingEventHandler<InventoryClickEvent> {
     @Override
-    public boolean fitCriteria(InventoryClickEvent event) {
+    public boolean fitCriteria(InventoryClickEvent event, boolean cancelled) {
         Inventory inventory = event.getClickedInventory();
         if (inventory == null) return false;
 

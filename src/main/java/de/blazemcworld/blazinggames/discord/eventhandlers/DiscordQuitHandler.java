@@ -23,8 +23,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class DiscordQuitHandler extends BlazingEventHandler<PlayerQuitEvent> {
     @Override
-    public boolean fitCriteria(PlayerQuitEvent event) {
-        return true;
+    public boolean fitCriteria(PlayerQuitEvent event, boolean cancelled) {
+        return DiscordApp.isEnabled();
     }
 
     @Override
