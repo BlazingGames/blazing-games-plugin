@@ -16,12 +16,11 @@
 package de.blazemcworld.blazinggames.enchantments.sys;
 
 import de.blazemcworld.blazinggames.enchantments.*;
-import org.bukkit.NamespacedKey;
+import java.util.List;
 
-import javax.annotation.Nullable;
-import java.util.Set;
+public class CustomEnchantments implements EnchantmentWrapperProvider {
+    public static final CustomEnchantments instance = new CustomEnchantments();
 
-public class CustomEnchantments {
     public static final CustomEnchantment COLLECTABLE = new CollectableEnchantment();
     public static final CustomEnchantment PATTERN = new PatternEnchantment();
     public static final CustomEnchantment TREE_FELLER = new TreeFellerEnchantment();
@@ -36,8 +35,10 @@ public class CustomEnchantments {
     public static final CustomEnchantment UNSHINY = new UnshinyEnchantment();
     public static final CustomEnchantment SCAVENGER = new ScavengerEnchantment();
 
-    public static Set<CustomEnchantment> list() {
-        return Set.of(
+    private CustomEnchantments() {}
+
+    public List<CustomEnchantment> list() {
+        return List.of(
                 COLLECTABLE,
                 PATTERN,
                 TREE_FELLER,
@@ -52,14 +53,5 @@ public class CustomEnchantments {
                 UNSHINY,
                 SCAVENGER
         );
-    }
-
-    public static @Nullable CustomEnchantment getByKey(NamespacedKey key) {
-        for (CustomEnchantment curr : list()) {
-            if (curr.getKey().equals(key)) {
-                return curr;
-            }
-        }
-        return null;
     }
 }

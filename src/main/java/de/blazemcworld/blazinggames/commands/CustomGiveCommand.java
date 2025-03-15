@@ -17,7 +17,7 @@ package de.blazemcworld.blazinggames.commands;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.items.CustomItem;
-import de.blazemcworld.blazinggames.items.CustomItems;
+import de.blazemcworld.blazinggames.items.ItemProviders;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -49,7 +49,7 @@ public class CustomGiveCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        CustomItem<?> itemType = CustomItems.getByKey(BlazingGames.get().key(strings[0]));
+        CustomItem<?> itemType = ItemProviders.instance.getByKey(BlazingGames.get().key(strings[0]));
         int count = 1;
 
         if(itemType == null)
@@ -102,7 +102,7 @@ public class CustomGiveCommand implements CommandExecutor, TabCompleter {
         List<String> tabs = new ArrayList<>();
 
         if(strings.length == 1) {
-            CustomItems.getAllItems().forEach(itemType -> tabs.add(itemType.getKey().getKey()));
+            ItemProviders.instance.list().forEach(itemType -> tabs.add(itemType.getKey().getKey()));
         }
 
         return tabs;

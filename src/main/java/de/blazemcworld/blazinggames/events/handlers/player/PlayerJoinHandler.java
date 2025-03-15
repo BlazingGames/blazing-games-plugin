@@ -17,7 +17,7 @@
 package de.blazemcworld.blazinggames.events.handlers.player;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
-import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
+import de.blazemcworld.blazinggames.items.recipes.RecipeProviders;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -33,7 +33,7 @@ public class PlayerJoinHandler extends BlazingEventHandler<PlayerJoinEvent> {
 
     @Override
     public void execute(PlayerJoinEvent event) {
-        event.getPlayer().discoverRecipes(CustomRecipes.getAllRecipes().keySet());
+        event.getPlayer().discoverRecipes(RecipeProviders.instance.getRecipes().keySet());
 
         PlayerConfig config = PlayerConfig.forPlayer(event.getPlayer());
         config.updatePlayer();

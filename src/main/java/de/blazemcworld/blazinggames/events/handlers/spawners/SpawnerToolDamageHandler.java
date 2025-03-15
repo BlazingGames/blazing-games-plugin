@@ -17,7 +17,7 @@
 package de.blazemcworld.blazinggames.events.handlers.spawners;
 
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
-import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrappers;
+import de.blazemcworld.blazinggames.enchantments.sys.VanillaEnchantmentWrappers;
 import de.blazemcworld.blazinggames.events.BlazingBlockDisappearEvent;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.utils.ItemUtils;
@@ -31,7 +31,7 @@ public class SpawnerToolDamageHandler extends BlazingEventHandler<BlazingBlockDi
         ItemStack tool = event.getPlayer().getInventory().getItemInMainHand();
 
         return event.getBlock().getType() == Material.SPAWNER && ItemUtils.getUncoloredType(tool) == Material.WOODEN_PICKAXE
-                && EnchantmentHelper.getActiveEnchantmentWrapperLevel(tool, EnchantmentWrappers.SILK_TOUCH) > 1;
+                && EnchantmentHelper.getActiveEnchantmentWrapperLevel(tool, VanillaEnchantmentWrappers.SILK_TOUCH) > 1;
     }
 
     @Override

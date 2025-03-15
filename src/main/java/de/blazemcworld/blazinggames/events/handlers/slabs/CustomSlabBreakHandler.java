@@ -20,7 +20,7 @@ import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.items.ContextlessItem;
 import de.blazemcworld.blazinggames.items.CustomItem;
-import de.blazemcworld.blazinggames.items.CustomItems;
+import de.blazemcworld.blazinggames.items.ItemProviders;
 import de.blazemcworld.blazinggames.utils.InventoryUtils;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -70,7 +70,7 @@ public class CustomSlabBreakHandler extends BlazingEventHandler<EntityDamageByEn
             }
         });
 
-        CustomItem<?> slab = CustomItems.getByKey(BlazingGames.get().key(slabType + "_slab"));
+        CustomItem<?> slab = ItemProviders.instance.getByKey(BlazingGames.get().key(slabType + "_slab"));
 
         if (slab instanceof ContextlessItem contextlessSlab) {
             if (p.getGameMode() != GameMode.CREATIVE) {

@@ -19,6 +19,7 @@ import de.blazemcworld.blazinggames.discord.eventhandlers.DiscordJoinHandler;
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.player.PlayerJoinHandler;
 import de.blazemcworld.blazinggames.packs.eventhandlers.SendPackHandler;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 

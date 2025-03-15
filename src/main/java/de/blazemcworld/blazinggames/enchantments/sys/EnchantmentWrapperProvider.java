@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package de.blazemcworld.blazinggames.items;
+package de.blazemcworld.blazinggames.enchantments.sys;
 
-import de.blazemcworld.blazinggames.packs.PackBuildHook;
 import de.blazemcworld.blazinggames.utils.providers.ValueProvider;
 
-public interface ItemProvider extends ValueProvider<CustomItem<?>>, PackBuildHook {
-}
+public interface EnchantmentWrapperProvider extends ValueProvider<EnchantmentWrapper> {}

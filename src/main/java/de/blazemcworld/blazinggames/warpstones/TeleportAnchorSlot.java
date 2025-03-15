@@ -17,8 +17,8 @@
 package de.blazemcworld.blazinggames.warpstones;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.userinterfaces.IndexedUserInterfaceSlot;
 import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
-import de.blazemcworld.blazinggames.userinterfaces.UserInterfaceSlot;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
 import net.kyori.adventure.key.Key;
@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TeleportAnchorSlot implements UserInterfaceSlot {
+public class TeleportAnchorSlot extends IndexedUserInterfaceSlot {
     private static final TextColor titleColor = TextColor.color(0x70E5BC);
     private static final TextColor infoColor = TextColor.color(0xC9BEE0);
     private static final TextColor errorColor = TextColor.color(0xEF4747);
@@ -51,10 +51,8 @@ public class TeleportAnchorSlot implements UserInterfaceSlot {
     private static final TextColor yColor = TextColor.color(0x1EFC16);
     private static final TextColor zColor = TextColor.color(0x16FCED);
 
-    private final int index;
-
     public TeleportAnchorSlot(int index) {
-        this.index = index;
+        super(index);
     }
 
     @Override
@@ -63,7 +61,7 @@ public class TeleportAnchorSlot implements UserInterfaceSlot {
             return;
         }
 
-        Map.Entry<Location, WarpstoneOverrideDetails> warpstone = tpi.getWarpstone(index);
+        Map.Entry<Location, WarpstoneOverrideDetails> warpstone = tpi.getWarpstone(getIndex(inventory));
         if (warpstone == null) {
             inventory.setItem(slot, ItemStack.empty());
             return;
@@ -112,7 +110,7 @@ public class TeleportAnchorSlot implements UserInterfaceSlot {
             return false;
         }
 
-        Map.Entry<Location, WarpstoneOverrideDetails> warpstone = tpi.getWarpstone(index);
+        Map.Entry<Location, WarpstoneOverrideDetails> warpstone = tpi.getWarpstone(getIndex(inventory));
         if (warpstone == null) {
             return false;
         }

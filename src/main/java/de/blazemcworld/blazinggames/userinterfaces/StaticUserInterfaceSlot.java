@@ -23,7 +23,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class StaticUserInterfaceSlot implements UserInterfaceSlot {
-    public static StaticUserInterfaceSlot blank = new StaticUserInterfaceSlot(BlazingGames.get().key("blank"));
+    public static NamespacedKey blankModel = BlazingGames.get().key("blank");
+    public static StaticUserInterfaceSlot blank = new StaticUserInterfaceSlot(blankModel);
 
     private final NamespacedKey model;
 
@@ -33,13 +34,16 @@ public class StaticUserInterfaceSlot implements UserInterfaceSlot {
 
     @Override
     public void onUpdate(UserInterface inventory, int slot) {
+        inventory.setItem(slot, getGuiItem(model));
+    }
+
+    public static ItemStack getGuiItem(NamespacedKey model) {
         ItemStack stack = new ItemStack(Material.STRUCTURE_BLOCK);
         ItemMeta meta = stack.getItemMeta();
         meta.setItemModel(model);
         meta.getPersistentDataContainer().set(UserInterface.guiKey, NamespacedKeyDataType.instance, model);
         meta.setHideTooltip(true);
         stack.setItemMeta(meta);
-
-        inventory.setItem(slot, stack);
+        return stack;
     }
 }

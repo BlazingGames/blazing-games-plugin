@@ -16,13 +16,15 @@
 package de.blazemcworld.blazinggames.enchantments.sys;
 
 import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarRecipe;
+import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class OverridableVanillaEnchantmentWrapper extends VanillaEnchantmentWrapper {
     public static class VanillaEnchantmentOverrides {
@@ -46,19 +48,34 @@ public class OverridableVanillaEnchantmentWrapper extends VanillaEnchantmentWrap
 
     private final VanillaEnchantmentOverrides overrides;
 
-    public OverridableVanillaEnchantmentWrapper(Enchantment enchantment, Supplier<ItemStack> icon, List<Warning> warnings, VanillaEnchantmentOverrides overrides, AltarRecipe... recipes) {
-        super(enchantment, icon, warnings, recipes);
+    public OverridableVanillaEnchantmentWrapper(Enchantment enchantment, NamespacedKey model, List<Warning> warnings, VanillaEnchantmentOverrides overrides, AltarRecipe... recipes) {
+        super(enchantment, model, warnings, recipes);
         this.overrides = overrides;
     }
 
-    public OverridableVanillaEnchantmentWrapper(Enchantment enchantment, Supplier<ItemStack> icon, VanillaEnchantmentOverrides overrides, AltarRecipe... recipes) {
-        super(enchantment, icon, recipes);
+    public OverridableVanillaEnchantmentWrapper(Enchantment enchantment, NamespacedKey model, VanillaEnchantmentOverrides overrides, AltarRecipe... recipes) {
+        super(enchantment, model, recipes);
+        this.overrides = overrides;
+    }
+
+    public OverridableVanillaEnchantmentWrapper(Enchantment enchantment, Material model, List<Warning> warnings, VanillaEnchantmentOverrides overrides, AltarRecipe... recipes) {
+        super(enchantment, model, warnings, recipes);
+        this.overrides = overrides;
+    }
+
+    public OverridableVanillaEnchantmentWrapper(Enchantment enchantment, Material model, VanillaEnchantmentOverrides overrides, AltarRecipe... recipes) {
+        super(enchantment, model, recipes);
         this.overrides = overrides;
     }
 
     @Override
     public boolean canGoOnItem(ItemStack tool) {
         if(overrides.target != null) {
+            if(!CustomItem.isCustomItem(tool)) {
+                if(tool.getType() == Material.BOOK || tool.getType() == Material.ENCHANTED_BOOK) {
+                    return true;
+                }
+            }
             return overrides.target.matchItem(tool);
         }
 

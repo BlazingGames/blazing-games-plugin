@@ -18,7 +18,7 @@ package de.blazemcworld.blazinggames.events.handlers.spawners;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
-import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrappers;
+import de.blazemcworld.blazinggames.enchantments.sys.VanillaEnchantmentWrappers;
 import de.blazemcworld.blazinggames.events.BlazingBlockDropEvent;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.utils.Drops;
@@ -34,7 +34,7 @@ public class SpawnerDropHandler extends BlazingEventHandler<BlazingBlockDropEven
     @Override
     public boolean fitCriteria(BlazingBlockDropEvent event, boolean cancelled) {
         return event.getBlock().getType() == Material.SPAWNER && ItemUtils.getUncoloredType(event.getTool()) == Material.WOODEN_PICKAXE
-                && EnchantmentHelper.getActiveEnchantmentWrapperLevel(event.getTool(), EnchantmentWrappers.SILK_TOUCH) > 1;
+                && EnchantmentHelper.getActiveEnchantmentWrapperLevel(event.getTool(), VanillaEnchantmentWrappers.SILK_TOUCH) > 1;
     }
 
     @Override

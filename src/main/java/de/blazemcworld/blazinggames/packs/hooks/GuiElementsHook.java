@@ -31,7 +31,11 @@ public class GuiElementsHook implements PackBuildHook {
     private static List<NamespacedKey> getGuiTextures() {
         BlazingGames bg = BlazingGames.get();
         return List.of(
-                bg.key("blank")
+                bg.key("blank"),
+                bg.key("right_arrow"),
+                bg.key("left_arrow"),
+                bg.key("up_arrow"),
+                bg.key("down_arrow")
         );
     }
 
@@ -41,7 +45,11 @@ public class GuiElementsHook implements PackBuildHook {
                 bg.key("blank"),
                 bg.key("tool_slot"),
                 bg.key("material_slot"),
-                bg.key("lapis_lazuli_slot")
+                bg.key("lapis_lazuli_slot"),
+                bg.key("right_arrow"),
+                bg.key("left_arrow"),
+                bg.key("up_arrow"),
+                bg.key("down_arrow")
         );
     }
 
@@ -50,7 +58,11 @@ public class GuiElementsHook implements PackBuildHook {
         return List.of(
                 bg.key("tool_slot"),
                 bg.key("material_slot"),
-                bg.key("lapis_lazuli_slot")
+                bg.key("lapis_lazuli_slot"),
+                bg.key("right_arrow"),
+                bg.key("left_arrow"),
+                bg.key("up_arrow"),
+                bg.key("down_arrow")
         );
     }
 
