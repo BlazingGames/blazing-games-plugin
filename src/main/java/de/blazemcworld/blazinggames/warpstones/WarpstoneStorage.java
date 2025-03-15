@@ -16,6 +16,8 @@
 package de.blazemcworld.blazinggames.warpstones;
 
 import com.google.common.reflect.TypeToken;
+
+import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.data.DataStorage;
 import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
 import de.blazemcworld.blazinggames.data.name.ArbitraryNameProvider;
@@ -23,19 +25,22 @@ import de.blazemcworld.blazinggames.data.name.UUIDNameProvider;
 import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
 import de.blazemcworld.blazinggames.items.CustomItems;
 import de.blazemcworld.blazinggames.utils.TextLocation;
+
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class WarpstoneStorage {
+    private static final NamespacedKey metadataKey = BlazingGames.get().key("tagged_as_warpstone");
     private WarpstoneStorage() {}
     
     private static final DataStorage<WarpstoneDetails, String> warpstoneStorage = DataStorage.forClass(
@@ -71,7 +76,8 @@ public class WarpstoneStorage {
 
         location.getWorld().spawn(location.toCenterLocation(), ItemDisplay.class, entity -> {
             entity.setItemStack(CustomItems.WARPSTONE.create());
-        });        
+            entity.getPersistentDataContainer().set(metadataKey, PersistentDataType.BOOLEAN, true);
+        });
     }
 
     public static boolean permissionCheck(Location warpstone, Player player) {
@@ -98,12 +104,8 @@ public class WarpstoneStorage {
                 entityLocation.getBlockY() == checkLocation.getBlockY() &&
                 entityLocation.getBlockZ() == checkLocation.getBlockZ()
             ) {
-                if (e instanceof ItemDisplay display) {
-                    ItemStack stack = display.getItemStack();
-                    if (stack == null || stack.isEmpty()) continue;
-                    if (CustomItems.WARPSTONE.matchItem(stack)) {
-                        display.remove();
-                    }
+                if (e.getPersistentDataContainer().has(metadataKey, PersistentDataType.BOOLEAN)) {
+                    e.remove();
                 }
             }
         }
