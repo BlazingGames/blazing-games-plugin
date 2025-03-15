@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.teleportanchor;
+package de.blazemcworld.blazinggames.warpstones;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import io.netty.channel.Channel;

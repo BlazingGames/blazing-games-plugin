@@ -20,28 +20,34 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class TextUtils {
     public static String componentToString(Component component) {
+        if (component == null) return null;
         return LegacyComponentSerializer.legacySection().serialize(component);
     }
 
     public static String componentToAmpersandString(Component component) {
+        if (component == null) return null;
         return LegacyComponentSerializer.legacyAmpersand().serialize(component);
     }
 
     public static Component stringToComponent(String string) {
+        if (string == null) return null;
         return Component.text(string);
     }
 
     public static Component ampersandStringToComponent(String string) {
+        if (string == null) return null;
         return LegacyComponentSerializer.legacyAmpersand().deserialize(string);
     }
 
     public static Component colorCodeParser(Component message) {
+        if (message == null) return null;
         String text = componentToString(message)
                 .replaceAll("&([a-fk-or0-9])", "§$1");
         return Component.text(text);
     }
 
     public static String stripColorCodes(String message) {
+        if (message == null) return null;
         return message.replaceAll("&[0-9a-fk-or]", "");
     }
 }

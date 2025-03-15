@@ -24,7 +24,8 @@ import de.blazemcworld.blazinggames.events.handlers.chiseled_bookshelves.Chisele
 import de.blazemcworld.blazinggames.events.handlers.containers.ContainerDropHandler;
 import de.blazemcworld.blazinggames.events.handlers.spawners.SpawnerDropHandler;
 import de.blazemcworld.blazinggames.events.handlers.spawners.SpawnerToolDamageHandler;
-import de.blazemcworld.blazinggames.teleportanchor.eventhandlers.LodestoneDisappearHandler;
+import de.blazemcworld.blazinggames.warpstones.handlers.WarpstoneDisappearHandler;
+
 import org.bukkit.event.EventHandler;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class BlazingBlockDisappearEventListener extends BlazingEventListener<Bla
     public BlazingBlockDisappearEventListener() {
         this.handlers.addAll(List.of(
                 new SpawnerToolDamageHandler(),
-                new LodestoneDisappearHandler(),
+                new WarpstoneDisappearHandler(),
                 new ComputerDisappearHandler()
         ));
     }
