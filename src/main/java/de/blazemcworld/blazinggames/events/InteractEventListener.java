@@ -30,6 +30,9 @@ import de.blazemcworld.blazinggames.events.handlers.spawners.SpawnerInteractionH
 import de.blazemcworld.blazinggames.events.handlers.tome_altars.TomeAltarBreakHandler;
 import de.blazemcworld.blazinggames.events.handlers.tome_altars.TomeAltarInteractHandler;
 import de.blazemcworld.blazinggames.events.handlers.vaults.VaultInteractHandler;
+import de.blazemcworld.blazinggames.warpstones.handlers.TeleportAnchorInteractionHandler;
+import de.blazemcworld.blazinggames.warpstones.handlers.WarpstoneInteractionHandler;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -51,7 +54,9 @@ public class InteractEventListener extends BlazingEventListener<PlayerInteractEv
                 new TomeAltarBreakHandler(),
                 new TomeAltarInteractHandler(),
                 new VaultInteractHandler(),
-                new CustomSlabPlaceBlockHandler()
+                new CustomSlabPlaceBlockHandler(),
+                new TeleportAnchorInteractionHandler(),
+                new WarpstoneInteractionHandler()
         ));
     }
 

@@ -14,22 +14,29 @@
  * limitations under the License.
  */
 
-package de.blazemcworld.blazinggames.teleportanchor.eventhandlers;
+package de.blazemcworld.blazinggames.warpstones.handlers;
 
-import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
-import de.blazemcworld.blazinggames.teleportanchor.LodestoneStorage;
-import org.bukkit.Material;
+import de.blazemcworld.blazinggames.warpstones.WarpstoneStorage;
 
-public class LodestoneDestroyHandler extends BlazingEventHandler<BlockDestroyEvent> {
+import org.bukkit.Material;
+import org.bukkit.event.entity.EntityExplodeEvent;
+
+public class WarpstoneEntityExplodeHandler extends BlazingEventHandler<EntityExplodeEvent> {
     @Override
-    public boolean fitCriteria(BlockDestroyEvent event, boolean cancelled) {
-        return event.getBlock().getType() == Material.LODESTONE;
+    public boolean fitCriteria(EntityExplodeEvent event, boolean cancelled) {
+        return true;
     }
 
     @Override
-    public void execute(BlockDestroyEvent event) {
-        LodestoneStorage.destroyLodestone(event.getBlock().getLocation());
-        LodestoneStorage.refreshAllInventories();
+    public void execute(EntityExplodeEvent event) {
+        event.blockList().stream().filter(block -> {
+            if (!block.getType().equals(Material.BARRIER)) {
+                return false;
+            }
+            return WarpstoneStorage.isWarpstone(block.getLocation());
+        }).forEach(block -> {
+            WarpstoneStorage.breakWarpstone(block.getLocation());
+        });
     }
 }

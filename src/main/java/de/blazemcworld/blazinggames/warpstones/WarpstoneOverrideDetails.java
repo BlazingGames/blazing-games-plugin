@@ -13,21 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.events;
+package de.blazemcworld.blazinggames.warpstones;
 
-import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
-import de.blazemcworld.blazinggames.warpstones.handlers.WarpstoneExplodeHandler;
+import net.kyori.adventure.key.Key;
 
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.BlockExplodeEvent;
-
-public class BlockExplodeEventListener extends BlazingEventListener<BlockExplodeEvent> {
-    public BlockExplodeEventListener() {
-        this.handlers.add(new WarpstoneExplodeHandler());
-    }
-
-    @EventHandler
-    public void event(BlockExplodeEvent event) {
-        executeEvent(event);
-    }
+public class WarpstoneOverrideDetails {
+    public String name = null;
+    public Key icon = null;
 }

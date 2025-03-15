@@ -29,7 +29,7 @@ public class NetherStarChunk extends ContextlessItem {
 
     @Override
     public List<Component> lore(ItemStack stack) {
-        return List.of(Component.text("Used to enchant mending").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+        return List.of(Component.text("Used for some special recipes.").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
     }
 
     @Override
