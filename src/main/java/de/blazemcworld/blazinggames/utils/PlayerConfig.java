@@ -18,6 +18,11 @@ package de.blazemcworld.blazinggames.utils;
 import java.util.Properties;
 import java.util.UUID;
 
+import de.blazemcworld.blazinggames.discord.DiscordApp;
+import de.blazemcworld.blazinggames.discord.DiscordUser;
+import de.blazemcworld.blazinggames.discord.WhitelistManagement;
+import de.blazemcworld.blazinggames.discord.WhitelistedPlayer;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import de.blazemcworld.blazinggames.data.DataStorage;
@@ -29,42 +34,80 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 
+import javax.naming.NameNotFoundException;
+
 public class PlayerConfig {
     private static final DataStorage<Properties, UUID> dataStorage = DataStorage.forClass(
         PlayerConfig.class, null,
         new PropertiesStorageProvider(), new UUIDNameProvider(), new GZipCompressionProvider()
     );
 
-    public static PlayerConfig forPlayer(UUID uuid) {
-        if (dataStorage.getData(uuid) == null) dataStorage.storeData(uuid, new Properties());
-        return new PlayerConfig(dataStorage.getData(uuid), uuid);
+    public static PlayerConfig forPlayer(UUID uuid) throws NameNotFoundException {
+        return forPlayer(PlayerInfo.fromUUID(uuid));
+    }
+
+    public static PlayerConfig forPlayer(Player player) {
+        return forPlayer(PlayerInfo.fromOnlinePlayer(player));
+    }
+
+    public static PlayerConfig forPlayer(PlayerInfo info) {
+        if (dataStorage.getData(info.getUUID()) == null) dataStorage.storeData(info.getUUID(), new Properties());
+        return new PlayerConfig(dataStorage.getData(info.getUUID()), info);
     }
 
     private final Properties props;
-    private final UUID uuid;
-    private PlayerConfig(Properties props, UUID uuid) {
+    private final PlayerInfo playerInfo;
+    private PlayerConfig(Properties props, PlayerInfo playerInfo) {
         this.props = props;
-        this.uuid = uuid;
+        this.playerInfo = playerInfo;
     }
 
     private void write() {
-        dataStorage.storeData(uuid, props);
+        dataStorage.storeData(playerInfo.getUUID(), props);
     }
 
+    public void updatePlayer() {
+        Player player = Bukkit.getPlayer(playerInfo.getUUID());
 
-
-    public void updatePlayer(Player player) {
-        Component name = buildNameComponent(player.getName(), player.isOp());
-        player.displayName(name);
-        player.playerListName(name);
+        if(player != null) {
+            Component name = buildNameComponent();
+            player.displayName(name);
+            player.playerListName(name);
+        }
     }
 
-    public Component buildNameComponent(String playerName, boolean isOp) {
+    public Component buildNameComponent() {
+        String playerName = playerInfo.getUsername();
+
+        String nameHoverString = "Real Name: " + playerName;
+
+        if(DiscordApp.isWhitelistManaged()) {
+            WhitelistManagement whitelist = DiscordApp.getWhitelistManagement();
+
+            WhitelistedPlayer whitelistedPlayer = whitelist.getWhitelistedPlayer(playerInfo.getUUID());
+
+            if(whitelistedPlayer == null) {
+                nameHoverString += "\nDiscord User not found";
+            }
+            else {
+                DiscordUser user = whitelist.getDiscordUser(whitelistedPlayer.discordUser);
+                if(user == null) {
+                    nameHoverString += "\nDiscord User not found";
+                }
+                else {
+                    nameHoverString += "\nDiscord Display Name: " + user.displayName;
+                    nameHoverString += "\nDiscord Username: " + user.username;
+                }
+            }
+        }
+
+        HoverEvent<Component> nameHover = Component.text(nameHoverString).asHoverEvent();
+
         Component username;
         if (getDisplayName() != null && !getDisplayName().equals(playerName)) {
-            username = Component.text(getDisplayName()).hoverEvent(HoverEvent.showText(Component.text("Real name: " + playerName)));
+            username = Component.text(getDisplayName()).hoverEvent(nameHover);
         } else {
-            username = Component.text(playerName).hoverEvent(HoverEvent.showText(Component.text("Real name: " + playerName)));
+            username = Component.text(playerName).hoverEvent(nameHover);
         }
 
         if (getNameColor() != null) {
@@ -76,23 +119,25 @@ public class PlayerConfig {
                 .color(NamedTextColor.GRAY).hoverEvent(HoverEvent.showText(Component.text("Pronouns"))));
         }
 
-        if (isOp) {
-            username = username.appendSpace().append(Component.text("\u266E").color(NamedTextColor.RED)
+        if (playerInfo.isOperator()) {
+            username = username.appendSpace().append(Component.text("♮").color(NamedTextColor.RED)
                 .hoverEvent(HoverEvent.showText(Component.text("Server Operator"))));
         }
 
         return username;
     }
 
-    public Component buildNameComponentShort(String playerName, boolean isOp) {
-        return Component.text(getDisplayName() != null ? getDisplayName() : playerName)
+    public Component buildNameComponentShort() {
+        return Component.text(getDisplayName() != null ? getDisplayName() : playerInfo.getUsername())
             .color(getNameColor() != null ? getNameColor() : NamedTextColor.WHITE)
-            .hoverEvent(HoverEvent.showText(Component.text("Real name: " + playerName)
+            .hoverEvent(HoverEvent.showText(Component.text("Real name: " + playerInfo.getUsername())
             .appendNewline().append(Component.text("Pronouns: " + (getPronouns() != null ? getPronouns() : "None specified")))
-            .appendNewline().append(Component.text("Server Operator: " + (isOp ? "Yes" : "No")))));
+            .appendNewline().append(Component.text("Server Operator: " + (playerInfo.isOperator() ? "Yes" : "No")))));
     }
 
-    public String buildNameString(String playerName, boolean isOp) {
+    public String buildNameString() {
+        String playerName = playerInfo.getUsername();
+
         StringBuilder username = new StringBuilder();
         if (getDisplayName() != null && !getDisplayName().equals(playerName)) {
             username.append(getDisplayName()).append(" [aka ").append(playerName).append("]");
@@ -102,15 +147,15 @@ public class PlayerConfig {
         if (getPronouns() != null) {
             username.append(" (").append(getPronouns()).append(")");
         }
-        if (isOp) {
-            username.append(" \u266E");
+        if (playerInfo.isOperator()) {
+            username.append(" ♮");
         }
 
         return username.toString();
     }
 
-    public String buildNameStringShort(String playerName) {
-        return getDisplayName() != null ? getDisplayName() : playerName;
+    public String buildNameStringShort() {
+        return getDisplayName() != null ? getDisplayName() : playerInfo.getUsername();
     }
 
 

@@ -17,6 +17,9 @@ permissions:
   blazinggames.setaltar:
     description: "Allows using the /setalatar command"
     default: op
+  blazinggames.discordwhitelist:
+    description: "Allows using the /discordwhitelist command"
+    default: op
 
 libraries: ##  see build.gradle
   - io.azam.ulidj:ulidj:1.0.4
@@ -54,3 +57,11 @@ commands:
     description: "Set altar with specific level at current location"
     usage: /setaltar <level>
     permission: blazinggames.setmultiblock
+  discordwhitelist:
+    description: "Modifies the discord whitelist at the admin level."
+    usage: /discordwhitelist <list|enforce> OR /discordwhitelist remove <player>
+    permission: blazinggames.discordwhitelist
+  unlink:
+    description: "Unlinks your account from your discord account. This also removes you from the whitelist."
+    usage: /unlink
+

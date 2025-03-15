@@ -90,9 +90,9 @@ public record DiscordNotification(
         builder.setColor(Color.ORANGE);
 
         if (player != null) {
-            PlayerConfig config = PlayerConfig.forPlayer(player.getUniqueId());
+            PlayerConfig config = PlayerConfig.forPlayer(player);
             builder.setAuthor(
-                    config.buildNameString(player.getName(), player.isOp()), null,
+                    config.buildNameString(), null,
                     "http://cravatar.eu/helmhead/" + player.getUniqueId() + "/128.png"
             );
         }

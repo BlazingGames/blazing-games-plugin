@@ -18,7 +18,7 @@ package de.blazemcworld.blazinggames.utils;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
-import de.blazemcworld.blazinggames.events.BreakBlockEventListener;
+import de.blazemcworld.blazinggames.events.BlockBreakEventListener;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -81,7 +81,7 @@ public class InventoryUtils {
                 }
             }
         } else {
-            BreakBlockEventListener.awardBlock(location, drops.getExperienceDropped(), player);
+            BlockBreakEventListener.awardBlock(location, drops.getExperienceDropped(), player);
 
             for (ItemStack drop : drops) {
                 drop(player, location, drop);
