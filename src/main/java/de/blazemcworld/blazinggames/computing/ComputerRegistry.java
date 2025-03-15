@@ -18,8 +18,7 @@ package de.blazemcworld.blazinggames.computing;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
 import de.blazemcworld.blazinggames.computing.types.IComputerType;
-import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
-import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
+import de.blazemcworld.blazinggames.utils.InventoryUtils;
 import de.blazemcworld.blazinggames.utils.NameGenerator;
 import dev.ivycollective.datastorage.DataStorage;
 import dev.ivycollective.datastorage.name.ULIDNameProvider;
@@ -135,11 +134,8 @@ public class ComputerRegistry {
     public static void dropComputer(final BootedComputer computer, final Player player) {
         ComputerMetadata metadata = computer.getMetadata();
         ItemStack computerItem = addAttributes(metadata.type.getType().getDisplayItem(computer), metadata.type, computer.getId());
-        if (player != null && EnchantmentHelper.hasCustomEnchantment(player.getInventory().getItemInMainHand(), CustomEnchantments.COLLECTABLE)) {
-            player.getInventory().addItem(new ItemStack[]{computerItem});
-        } else {
-            metadata.location.getWorld().dropItemNaturally(metadata.location, computerItem);
-        }
+
+        InventoryUtils.collectableDrop(player, metadata.location, computerItem);
     }
 
     /**

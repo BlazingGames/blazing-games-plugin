@@ -28,18 +28,21 @@ import de.blazemcworld.blazinggames.utils.ItemStackTypeAdapter;
 import de.blazemcworld.blazinggames.utils.TextLocation;
 import dev.ivycollective.datastorage.DataStorageConfig;
 import dev.ivycollective.datastorage.compression.GZipCompressionProvider;
-import de.blazemcworld.blazinggames.discord.*;
+import de.blazemcworld.blazinggames.discord.AppConfig;
+import de.blazemcworld.blazinggames.discord.DiscordApp;
+import de.blazemcworld.blazinggames.discord.DiscordNotification;
 import de.blazemcworld.blazinggames.events.*;
+import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
-import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
-import de.blazemcworld.blazinggames.teleportanchor.LodestoneInteractionEventListener;
+import de.blazemcworld.blazinggames.utils.KeyTypeAdapter;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.WeakKeyException;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
@@ -52,13 +55,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.crypto.SecretKey;
 import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import javax.crypto.SecretKey;
 
 public class BlazingGames extends JavaPlugin {
     public boolean API_AVAILABLE = false;
@@ -68,6 +70,8 @@ public class BlazingGames extends JavaPlugin {
         .excludeFieldsWithModifiers(Modifier.PRIVATE, Modifier.PROTECTED, Modifier.TRANSIENT, Modifier.STATIC)
         .registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter())
         .registerTypeAdapter(Location.class, new TextLocation.LocationTypeAdapter())
+        .registerTypeAdapter(Key.class, new KeyTypeAdapter())
+        .registerTypeAdapter(NamespacedKey.class, new KeyTypeAdapter())
         .create();
 
     // DataStorage
@@ -223,7 +227,9 @@ public class BlazingGames extends JavaPlugin {
         pluginManager.registerEvents(new ClickInventorySlotEventListener(), this);
         pluginManager.registerEvents(new ChatEventListener(), this);
         pluginManager.registerEvents(new ClickEntityEventListener(), this);
-        pluginManager.registerEvents(new BreakBlockEventListener(), this);
+        pluginManager.registerEvents(new BlockBreakEventListener(), this);
+        pluginManager.registerEvents(new BlazingBlockDropEventListener(), this);
+        pluginManager.registerEvents(new BlazingBlockDisappearEventListener(), this);
         pluginManager.registerEvents(new EntityDeathEventListener(), this);
         pluginManager.registerEvents(new AdvancementEventListener(), this);
         pluginManager.registerEvents(new JoinEventListener(), this);
@@ -232,7 +238,6 @@ public class BlazingGames extends JavaPlugin {
         pluginManager.registerEvents(new EntityDamagedByEventListener(), this);
         pluginManager.registerEvents(new BlockPlaceEventListener(), this);
         pluginManager.registerEvents(new SpawnerSpawnEventListener(), this);
-        pluginManager.registerEvents(new LodestoneInteractionEventListener(), this);
         pluginManager.registerEvents(new BlockDestroyEventListener(), this);
         pluginManager.registerEvents(new BlockExplodeEventListener(), this);
         pluginManager.registerEvents(new EntityExplodeEventListener(), this);

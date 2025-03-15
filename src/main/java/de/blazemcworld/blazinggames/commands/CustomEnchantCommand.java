@@ -15,14 +15,6 @@
  */
 package de.blazemcworld.blazinggames.commands;
 
-import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantment;
-import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
-import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
-import io.papermc.paper.command.brigadier.Commands;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -32,6 +24,15 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+
+import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
+import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrapper;
+import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrappers;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 public class CustomEnchantCommand {
     public static LiteralCommandNode<CommandSourceStack> command() {
@@ -56,14 +57,14 @@ public class CustomEnchantCommand {
             return;
         }
 
-        CustomEnchantment enchantment = CustomEnchantments.getByKey(BlazingGames.get().key(enchantmentStr));
+        EnchantmentWrapper enchantment = EnchantmentWrappers.instance.getByKey(BlazingGames.get().key(enchantmentStr));
 
         if (enchantment == null) {
             sender.sendMessage(Component.text("Unknown custom enchantment: " + enchantmentStr + "!").color(NamedTextColor.RED));
             return;
         }
 
-        ItemStack tool = EnchantmentHelper.setCustomEnchantment(player.getInventory().getItemInMainHand(), enchantment, level);
+        ItemStack tool = EnchantmentHelper.enchantTool(player.getInventory().getItemInMainHand(), enchantment, level);
         player.getInventory().setItemInMainHand(tool);
     }
 }

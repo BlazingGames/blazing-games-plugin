@@ -25,17 +25,24 @@ import de.blazemcworld.blazinggames.items.predicates.MaterialItemPredicate;
 import de.blazemcworld.blazinggames.utils.Pair;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public class PatternEnchantment extends CustomEnchantment {
-    public static List<Pair<Integer, Integer>> dimensions = List.of(
+    private static final List<Pair<Integer, Integer>> dimensions = List.of(
             new Pair<>(1,2),
             new Pair<>(2,2),
             new Pair<>(3,3)
     );
+
+    public static Pair<Integer, Integer> getDimensions(int level) {
+        if(level < 1) return new Pair<>(1, 1);
+        if(level >= dimensions.size()) {
+            return dimensions.getLast();
+        }
+        return dimensions.get(level - 1);
+    }
 
     @Override
     public @NotNull NamespacedKey getKey() {
@@ -43,8 +50,8 @@ public class PatternEnchantment extends CustomEnchantment {
     }
 
     @Override
-    public ItemStack getPreIcon() {
-        return new ItemStack(Material.IRON_PICKAXE);
+    public NamespacedKey getModel() {
+        return Material.IRON_PICKAXE.getKey();
     }
 
     @Override

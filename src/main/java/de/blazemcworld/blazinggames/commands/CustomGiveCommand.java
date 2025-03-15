@@ -17,9 +17,9 @@ package de.blazemcworld.blazinggames.commands;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.items.CustomItem;
-import de.blazemcworld.blazinggames.items.CustomItems;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import de.blazemcworld.blazinggames.items.ItemProviders;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
@@ -77,7 +77,7 @@ public class CustomGiveCommand {
             return;
         }
         
-        CustomItem<?> itemType = CustomItems.getByKey(BlazingGames.get().key(id));
+        CustomItem<?> itemType = ItemProviders.instance.getByKey(BlazingGames.get().key(id));
 
         if(itemType == null) {
             sender.sendMessage(Component.text("Unknown custom item: " + id + "!").color(NamedTextColor.RED));
