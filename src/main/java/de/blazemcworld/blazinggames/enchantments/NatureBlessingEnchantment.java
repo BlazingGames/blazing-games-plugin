@@ -23,7 +23,6 @@ import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import de.blazemcworld.blazinggames.items.predicates.MaterialItemPredicate;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class NatureBlessingEnchantment extends CustomSingleLeveledEnchantment {
@@ -33,8 +32,8 @@ public class NatureBlessingEnchantment extends CustomSingleLeveledEnchantment {
     }
 
     @Override
-    public ItemStack getPreIcon() {
-        return new ItemStack(Material.WHEAT);
+    public NamespacedKey getModel() {
+        return Material.WHEAT.getKey();
     }
 
     @Override

@@ -17,6 +17,7 @@ package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.grindstones.PrepareGrindstoneHandler;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.PrepareGrindstoneEvent;
 

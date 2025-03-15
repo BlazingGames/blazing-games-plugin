@@ -23,7 +23,6 @@ import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import de.blazemcworld.blazinggames.items.predicates.MaterialItemPredicate;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class CollectableEnchantment extends CustomSingleLeveledEnchantment {
@@ -33,8 +32,8 @@ public class CollectableEnchantment extends CustomSingleLeveledEnchantment {
     }
 
     @Override
-    public ItemStack getPreIcon() {
-        return new ItemStack(Material.HOPPER_MINECART);
+    public NamespacedKey getModel() {
+        return Material.HOPPER_MINECART.getKey();
     }
 
     @Override

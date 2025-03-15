@@ -25,7 +25,6 @@ import de.blazemcworld.blazinggames.items.predicates.MaterialItemPredicate;
 import de.blazemcworld.blazinggames.utils.Pair;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -51,8 +50,8 @@ public class PatternEnchantment extends CustomEnchantment {
     }
 
     @Override
-    public ItemStack getPreIcon() {
-        return new ItemStack(Material.IRON_PICKAXE);
+    public NamespacedKey getModel() {
+        return Material.IRON_PICKAXE.getKey();
     }
 
     @Override

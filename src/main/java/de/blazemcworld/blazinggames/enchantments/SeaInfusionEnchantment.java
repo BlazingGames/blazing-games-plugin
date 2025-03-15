@@ -26,7 +26,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -65,8 +64,8 @@ public class SeaInfusionEnchantment extends CustomEnchantment {
     }
 
     @Override
-    public ItemStack getPreIcon() {
-        return new ItemStack(Material.TUBE_CORAL_BLOCK);
+    public NamespacedKey getModel() {
+        return Material.TUBE_CORAL_BLOCK.getKey();
     }
 
     @Override

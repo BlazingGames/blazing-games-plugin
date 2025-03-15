@@ -24,7 +24,6 @@ import de.blazemcworld.blazinggames.items.predicates.ItemPredicates;
 import de.blazemcworld.blazinggames.items.predicates.MaterialItemPredicate;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class UnshinyEnchantment extends CustomTreasureSingleLeveledEnchantment {
@@ -34,8 +33,8 @@ public class UnshinyEnchantment extends CustomTreasureSingleLeveledEnchantment {
     }
 
     @Override
-    public ItemStack getPreIcon() {
-        return new ItemStack(Material.INK_SAC);
+    public NamespacedKey getModel() {
+        return Material.INK_SAC.getKey();
     }
 
     @Override

@@ -16,9 +16,10 @@
 
 package de.blazemcworld.blazinggames.events.handlers.grindstones;
 
-import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantment;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
+import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrapper;
+import de.blazemcworld.blazinggames.enchantments.sys.VanillaEnchantmentWrapper;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.events.handlers.anvils.PrepareAnvilHandler;
 import de.blazemcworld.blazinggames.items.CustomItem;
@@ -27,10 +28,10 @@ import de.blazemcworld.blazinggames.items.predicates.BreakableItemPredicate;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicates;
 import de.blazemcworld.blazinggames.utils.Pair;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.PrepareGrindstoneEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+
+import java.util.function.Predicate;
 
 public class PrepareGrindstoneHandler extends BlazingEventHandler<PrepareGrindstoneEvent> {
     @Override
@@ -51,45 +52,43 @@ public class PrepareGrindstoneHandler extends BlazingEventHandler<PrepareGrindst
     private ItemStack scrub(ItemStack tool, ItemStack sponge) {
         ItemStack result = tool.clone();
 
-        if (!EnchantmentHelper.canEnchantItem(tool)) return null;
+        if(!EnchantmentHelper.canEnchantItem(tool)) return null;
 
-        if (!CustomItem.isCustomItem(result) && result.getType() == Material.ENCHANTED_BOOK) {
+        if(!CustomItem.isCustomItem(result) && result.getType() == Material.ENCHANTED_BOOK) {
             int total = EnchantmentHelper.getEnchantmentWrappers(result).size();
 
-            if (total <= 1) {
+            if(total <= 1) {
                 return null;
             }
         }
 
-        if (!CustomItem.isCustomItem(sponge) && sponge.getType() == Material.SPONGE) {
-            Pair<Enchantment, Integer> entry = EnchantmentHelper.getEnchantmentEntryByIndex(tool, sponge.getAmount());
+        Predicate<EnchantmentWrapper> filter = null;
 
-            if (entry != null) {
-                if (result.getItemMeta() instanceof EnchantmentStorageMeta meta) {
-                    meta.removeStoredEnchant(entry.left);
-                    result.setItemMeta(meta);
-                } else {
-                    result.removeEnchantment(entry.left);
-                }
+        if(!CustomItem.isCustomItem(sponge)) {
+            if(sponge.getType() == Material.SPONGE) {
+                filter = (wrapper) -> wrapper instanceof VanillaEnchantmentWrapper;
             }
-        }
-        if (!CustomItem.isCustomItem(sponge) && sponge.getType() == Material.WET_SPONGE) {
-            Pair<CustomEnchantment, Integer> entry = EnchantmentHelper.getCustomEnchantmentEntryByIndex(tool, sponge.getAmount());
-
-            if (entry != null) {
-                result = EnchantmentHelper.removeCustomEnchantment(result, entry.left);
+            else if(sponge.getType() == Material.WET_SPONGE) {
+                filter = (wrapper) -> wrapper instanceof CustomEnchantment;
             }
         }
 
-        BlazingGames.get().log(result);
-
-        if (result.equals(tool)) {
+        if(filter == null) {
             return null;
         }
 
-        result = ItemChangeProviders.update(result);
+        Pair<EnchantmentWrapper, Integer> entry = EnchantmentHelper.getEnchantmentWrapperEntryByIndex(tool, sponge.getAmount(),
+                filter.and(EnchantmentWrapper::canBeRemoved));
 
-        return result;
+        if(entry != null) {
+            result = entry.left.remove(result);
+        }
+
+        if(result.equals(tool)) {
+            return null;
+        }
+
+        return ItemChangeProviders.update(result);
     }
 
     public ItemStack grindstoneItem(ItemStack up, ItemStack down) {

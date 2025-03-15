@@ -24,8 +24,7 @@ import de.blazemcworld.blazinggames.data.name.ULIDNameProvider;
 import de.blazemcworld.blazinggames.data.storage.BinaryStorageProvider;
 import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
 import de.blazemcworld.blazinggames.data.storage.RawTextStorageProvider;
-import de.blazemcworld.blazinggames.enchantments.sys.CustomEnchantments;
-import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
+import de.blazemcworld.blazinggames.utils.InventoryUtils;
 import de.blazemcworld.blazinggames.utils.NameGenerator;
 import de.blazemcworld.blazinggames.utils.Pair;
 
@@ -136,11 +135,8 @@ public class ComputerRegistry {
     public static void dropComputer(final BootedComputer computer, final Player player) {
         ComputerMetadata metadata = computer.getMetadata();
         ItemStack computerItem = addAttributes(metadata.type.getType().getDisplayItem(computer), metadata.type, computer.getId());
-        if (player != null && EnchantmentHelper.hasCustomEnchantment(player.getInventory().getItemInMainHand(), CustomEnchantments.COLLECTABLE)) {
-            player.getInventory().addItem(new ItemStack[]{computerItem});
-        } else {
-            metadata.location.getWorld().dropItemNaturally(metadata.location, computerItem);
-        }
+
+        InventoryUtils.collectableDrop(player, metadata.location, computerItem);
     }
 
     /**

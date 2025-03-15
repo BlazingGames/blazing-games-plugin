@@ -50,7 +50,7 @@ public abstract class CustomItem<T extends ItemContext> implements RecipeProvide
         }
 
         try {
-            return CustomItems.getByKey(stack.getItemMeta().getPersistentDataContainer().get(key, NamespacedKeyDataType.instance));
+            return ItemProviders.instance.getByKey(stack.getItemMeta().getPersistentDataContainer().get(key, NamespacedKeyDataType.instance));
         }
         catch(Exception err) {
             BlazingGames.get().log(err);

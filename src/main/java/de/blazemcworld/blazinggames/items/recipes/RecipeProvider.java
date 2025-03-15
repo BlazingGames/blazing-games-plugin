@@ -15,12 +15,23 @@
  */
 package de.blazemcworld.blazinggames.items.recipes;
 
+import com.google.common.collect.ImmutableList;
+import de.blazemcworld.blazinggames.utils.providers.ValueProvider;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Recipe;
 
+import java.util.List;
 import java.util.Map;
 
-public interface RecipeProvider {
+public interface RecipeProvider extends ValueProvider<RecipeWrapper> {
+    default List<? extends RecipeWrapper> list() {
+        ImmutableList.Builder<RecipeWrapper> list = new ImmutableList.Builder<>();
+        for(Map.Entry<NamespacedKey, Recipe> recipe : getRecipes().entrySet()) {
+            list.add(new RecipeWrapper(recipe.getKey(), recipe.getValue()));
+        }
+        return list.build();
+    }
+
     default Map<NamespacedKey, Recipe> getRecipes() {
         return Map.of();
     }

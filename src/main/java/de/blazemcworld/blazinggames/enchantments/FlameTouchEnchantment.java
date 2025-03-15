@@ -24,7 +24,6 @@ import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import de.blazemcworld.blazinggames.items.predicates.MaterialItemPredicate;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class FlameTouchEnchantment extends CustomSingleLeveledEnchantment {
@@ -34,8 +33,8 @@ public class FlameTouchEnchantment extends CustomSingleLeveledEnchantment {
     }
 
     @Override
-    public ItemStack getPreIcon() {
-        return new ItemStack(Material.BLAZE_POWDER);
+    public NamespacedKey getModel() {
+        return Material.BLAZE_POWDER.getKey();
     }
 
     @Override

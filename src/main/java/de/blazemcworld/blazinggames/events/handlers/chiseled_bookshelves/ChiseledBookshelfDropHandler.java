@@ -17,7 +17,7 @@
 package de.blazemcworld.blazinggames.events.handlers.chiseled_bookshelves;
 
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentHelper;
-import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrappers;
+import de.blazemcworld.blazinggames.enchantments.sys.VanillaEnchantmentWrappers;
 import de.blazemcworld.blazinggames.events.BlazingBlockDropEvent;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import org.bukkit.Material;
@@ -27,7 +27,7 @@ public class ChiseledBookshelfDropHandler extends BlazingEventHandler<BlazingBlo
     @Override
     public boolean fitCriteria(BlazingBlockDropEvent event, boolean cancelled) {
         return event.getBlock().getType() == Material.CHISELED_BOOKSHELF &&
-                !EnchantmentHelper.hasActiveEnchantmentWrapper(event.getTool(), EnchantmentWrappers.SILK_TOUCH);
+                !EnchantmentHelper.hasActiveEnchantmentWrapper(event.getTool(), VanillaEnchantmentWrappers.SILK_TOUCH);
     }
 
     @Override

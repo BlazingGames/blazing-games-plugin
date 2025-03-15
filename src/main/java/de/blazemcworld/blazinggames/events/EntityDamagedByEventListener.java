@@ -20,6 +20,7 @@ import de.blazemcworld.blazinggames.enchantments.eventhandlers.ExtraDamageHandle
 import de.blazemcworld.blazinggames.enchantments.eventhandlers.ReflectiveDefensesHandler;
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.slabs.CustomSlabBreakHandler;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
