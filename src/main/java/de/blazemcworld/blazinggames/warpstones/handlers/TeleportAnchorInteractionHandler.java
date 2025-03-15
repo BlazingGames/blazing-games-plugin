@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.teleportanchor;
+package de.blazemcworld.blazinggames.warpstones.handlers;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.items.CustomItems;
+import de.blazemcworld.blazinggames.warpstones.PacketHandler;
+import de.blazemcworld.blazinggames.warpstones.TeleportAnchorInterface;
+import de.blazemcworld.blazinggames.warpstones.WarpstoneStorage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.core.BlockPos;
@@ -30,38 +34,54 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class LodestoneInteractionEventListener implements Listener {
-    @EventHandler
-    public void onInteract(PlayerInteractEvent event) {
+public class TeleportAnchorInteractionHandler extends BlazingEventHandler<PlayerInteractEvent> {
+    @Override
+    public boolean fitCriteria(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            ItemStack item = event.getItem();
-            if (CustomItems.TELEPORT_ANCHOR.matchItem(item)) {
-                event.setCancelled(true);
-                if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.LODESTONE) {
-                    Location signLocation = new Location(event.getPlayer().getWorld(), event.getClickedBlock().getLocation().getX(), event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ());
-                    List<Component> signLines = new ArrayList<>();
-                    signLines.add(Component.text("Lodestone name").color(NamedTextColor.AQUA));
-                    signLines.add(Component.text("vvvvvvvvvvvvvvv"));
-                    signLines.add(Component.text(""));
-                    signLines.add(Component.text("^^^^^^^^^^^^^^^"));
-                    sendSignPacket(event.getPlayer(), signLocation, signLines);
-                }
-                else {
-                    event.getPlayer().openInventory(new TeleportAnchorInterface(BlazingGames.get(), event.getPlayer()).getInventory());
-                }
+            if (CustomItems.TELEPORT_ANCHOR.matchItem(event.getItem())) {
+                return true;
             }
+        }
+        return false;
+    }
+
+    @Override
+    public void execute(PlayerInteractEvent event) {
+        event.setCancelled(true);
+        if (
+            event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock() != null &&
+            WarpstoneStorage.isWarpstone(event.getClickedBlock().getLocation())
+        ) {
+            if (!WarpstoneStorage.permissionCheck(event.getClickedBlock().getLocation(), event.getPlayer())) {
+                event.getPlayer().sendActionBar(Component.text("This warpstone is locked by its owner!", NamedTextColor.RED));
+                return;
+            }
+
+            if (WarpstoneStorage.getSavedWarpstones(event.getPlayer()).size() >= 45) {
+                event.getPlayer().sendActionBar(Component.text("Warpstone limit reached!", NamedTextColor.RED));
+                return;
+            }
+
+            String defaultName = WarpstoneStorage.getDetails(event.getClickedBlock().getLocation()).defaultName;
+            Location signLocation = new Location(event.getPlayer().getWorld(), event.getClickedBlock().getLocation().getX(), event.getClickedBlock().getLocation().getY(), event.getClickedBlock().getLocation().getZ());
+            List<Component> signLines = new ArrayList<>();
+            signLines.add(Component.text("Warpstone name"));
+            signLines.add(Component.text("vvvvvvvvvvvvvvv"));
+            signLines.add(Component.text(defaultName));
+            signLines.add(Component.text("^^^^^^^^^^^^^^^"));
+            sendSignPacket(event.getPlayer(), signLocation, signLines);
+        } else {
+            event.getPlayer().openInventory(new TeleportAnchorInterface(BlazingGames.get(), event.getPlayer()).getInventory());
         }
     }
 
+    @SuppressWarnings("deprecation")
     public void sendSignPacket(Player player, Location location, List<Component> lines) {
         Bukkit.getScheduler().runTaskLater(BlazingGames.get(), () -> {
             PacketHandler.addPacketInjector(player);
@@ -83,10 +103,10 @@ public class LodestoneInteractionEventListener implements Listener {
 
                 BlockPos blockPos = new BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ());
 
-                ClientboundBlockUpdatePacket sent3 = new ClientboundBlockUpdatePacket(blockPos, Blocks.LODESTONE.defaultBlockState());
+                ClientboundBlockUpdatePacket sent3 = new ClientboundBlockUpdatePacket(blockPos, Blocks.BARRIER.defaultBlockState());
                 ((CraftPlayer) player).getHandle().connection.send(sent3);
 
-                LodestoneStorage.saveLodestoneToPlayer(player.getUniqueId(), location, packet.getLines()[2]);
+                WarpstoneStorage.saveWarpstone(player, location, packet.getLines()[2]);
                 player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
                 return true;
             });

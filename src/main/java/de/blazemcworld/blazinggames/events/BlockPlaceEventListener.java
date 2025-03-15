@@ -21,6 +21,8 @@ import de.blazemcworld.blazinggames.events.handlers.slabs.CustomSlabPlaceHandler
 import de.blazemcworld.blazinggames.events.handlers.spawners.SpawnerPlaceHandler;
 import de.blazemcworld.blazinggames.events.handlers.tome_altars.TomeAltarPlaceHandler;
 import de.blazemcworld.blazinggames.items.eventhandlers.CustomItemPlaceHandler;
+import de.blazemcworld.blazinggames.warpstones.handlers.WarpstonePlaceHandler;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockPlaceEvent;
 
@@ -33,7 +35,8 @@ public class BlockPlaceEventListener extends BlazingEventListener<BlockPlaceEven
                 new SpawnerPlaceHandler(),
                 new TomeAltarPlaceHandler(),
                 new CustomSlabPlaceHandler(),
-                new ComputerPlaceHandler()
+                new ComputerPlaceHandler(),
+                new WarpstonePlaceHandler()
         ));
     }
 

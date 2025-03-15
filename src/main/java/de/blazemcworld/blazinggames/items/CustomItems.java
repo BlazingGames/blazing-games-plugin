@@ -29,7 +29,7 @@ import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentTome;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrappers;
 import de.blazemcworld.blazinggames.multiblocks.Blueprint;
 import de.blazemcworld.blazinggames.packs.HookContext;
-
+import de.blazemcworld.blazinggames.warpstones.WarpstoneItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
@@ -53,6 +53,7 @@ public class CustomItems implements ItemProvider {
     public static final SkeletonKey SKELETON_KEY = new SkeletonKey();
     public static final ToGoBoxItem TO_GO_BOX = new ToGoBoxItem();
     public static final NetherStarChunk NETHER_STAR_CHUNK = new NetherStarChunk();
+    public static final WarpstoneItem WARPSTONE = new WarpstoneItem();
 
     public static final BuilderWand WOODEN_BUILDER_WAND = new BuilderWand(
             BlazingGames.get().key("wooden_builder_wand"),
@@ -101,6 +102,7 @@ public class CustomItems implements ItemProvider {
                 SKELETON_KEY,
                 TO_GO_BOX,
                 NETHER_STAR_CHUNK,
+                WARPSTONE,
                 WOODEN_BUILDER_WAND,
                 STORM_BUILDER_WAND,
                 BLAZING_BUILDER_WAND,

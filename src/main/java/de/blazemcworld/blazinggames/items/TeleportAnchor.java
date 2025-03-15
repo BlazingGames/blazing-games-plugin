@@ -47,7 +47,7 @@ public class TeleportAnchor extends ContextlessItem {
 
     @Override
     public List<Component> lore(ItemStack stack) {
-        return List.of(Component.text("Click to show discovered lodestones.").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+        return List.of(Component.text("Click to show discovered warpstones.").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
     }
 
     public Map<NamespacedKey, Recipe> getRecipes() {
