@@ -17,7 +17,7 @@ package de.blazemcworld.blazinggames.items;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -37,7 +37,7 @@ public class TeleportAnchor extends ContextlessItem {
 
     @Override
     protected @NotNull Component itemName() {
-        return Component.text("Teleport Anchor");
+        return Component.text("Teleport Anchor", TextColor.color(0x8E6AFC)).decoration(TextDecoration.ITALIC, false);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class TeleportAnchor extends ContextlessItem {
 
     @Override
     public List<Component> lore(ItemStack stack) {
-        return List.of(Component.text("Click to show discovered warpstones.").color(NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+        return List.of(Component.text("Click to show discovered warpstones.").color(TextColor.color(0xCCCCCC)).decoration(TextDecoration.ITALIC, false));
     }
 
     public Map<NamespacedKey, Recipe> getRecipes() {
