@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -170,5 +172,44 @@ public class WhitelistManagement {
 
     public void invalidateLinkCode(String code) {
         linkCodes.invalidate(code.toUpperCase());
+    }
+
+    // modified version of https://regex101.com/library/xA4cW8
+    public static final Pattern minecraftMentionPattern = Pattern.compile("@(?<name>[a-zA-Z0-9_]{3,16})");
+    public String formatMentionsMinecraftToDiscord(String input) {
+        // matches: @Username
+        // replace with: <@snowflake>, if known user
+
+        Matcher matcher = minecraftMentionPattern.matcher(input);
+        while (matcher.find()) {
+            WhitelistedPlayer player = DiscordApp.getWhitelistManagement().getWhitelistedPlayer(matcher.group("name"));
+            if (player != null) {
+                DiscordUser user = DiscordApp.getWhitelistManagement().getDiscordUser(player.discordUser);
+                if (user == null) continue;
+                input = input.replace(matcher.group(), "<@" + user.snowflake + ">");
+            }
+        }
+
+        return input;
+    }
+
+    // borrowed from https://www.sapphirejs.dev/docs/Guide/utilities/Discord_Utilities/UsefulRegexes/#userormember-mention-regex
+    public static final Pattern discordMentionPattern = Pattern.compile("<@!?(?<id>\\d{17,20})>");
+    public String formatMentionsDiscordToMinecraft(String input) {
+        // matches: <@snowflake>
+        // replace with: @Username
+
+        Matcher matcher = discordMentionPattern.matcher(input);
+        while (matcher.find()) {
+            String snowflake = matcher.group("id");
+            DiscordUser user = DiscordApp.getWhitelistManagement().getDiscordUser(Long.parseLong(snowflake));
+            if (user != null && user.favoriteAccount != null) {
+                WhitelistedPlayer player = DiscordApp.getWhitelistManagement().getWhitelistedPlayer(user.favoriteAccount);
+                if (player == null) continue;
+                input = input.replace(matcher.group(), "@" + player.lastKnownName);
+            }
+        }
+
+        return input;
     }
 }

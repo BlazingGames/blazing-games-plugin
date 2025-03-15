@@ -84,7 +84,7 @@ public class DiscordWhitelistCommand implements CommandExecutor, TabCompleter {
                         PlayerConfig config = PlayerConfig.forPlayer(info);
 
                         Component displayName = Component.text(" - ").color(NamedTextColor.GRAY)
-                                .append(config.buildNameComponent());
+                                .append(config.toDisplayTag(false).buildNameComponent());
 
                         if(user.favoriteAccount.equals(whitelistedPlayer.uuid)) {
                             displayName = displayName.appendSpace().append(

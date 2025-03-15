@@ -21,16 +21,18 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.discord.commands.*;
 import de.blazemcworld.blazinggames.discord.eventhandlers.DiscordChatHandler;
+import de.blazemcworld.blazinggames.utils.DisplayTag;
+import de.blazemcworld.blazinggames.utils.EmojiRegistry;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import de.blazemcworld.blazinggames.utils.PlayerInfo;
-import de.blazemcworld.blazinggames.utils.TextUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
+import net.dv8tion.jda.api.entities.messages.MessagePoll;
 import net.dv8tion.jda.api.entities.sticker.Sticker;
-import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -87,9 +89,9 @@ public class DiscordApp extends ListenerAdapter {
         app = null;
     }
 
-    public static void messageHook(Player player, Component message) {
+    public static void messageHook(Player player, String message, DisplayTag displayTag) {
         if (app == null) return;
-        app.sendDiscordMessage(player, TextUtils.stripColorCodes(TextUtils.componentToString(message)));
+        app.sendDiscordMessage(player, message, displayTag);
     }
 
     /**
@@ -210,11 +212,10 @@ public class DiscordApp extends ListenerAdapter {
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         if (!event.isFromGuild()) return;
         if (event.getAuthor().isBot()) return;
+        if (event.getMessage().getType().isSystem()) return;
+        if (event.isFromThread()) return;
         if (event.getChannel().getId().equals(this.channel.getId())) {
-            sendMinecraftMessage(Objects.requireNonNull(event.getMember()),
-                    event.getMessage().getContentRaw(),
-                    event.getMessage().getAttachments().toArray(new Message.Attachment[0]),
-                    event.getMessage().getStickers().toArray(new StickerItem[0]));
+            sendMinecraftMessage(Objects.requireNonNull(event.getMember()), event.getMessage());
         } else if (event.getChannel().getId().equals(this.consoleChannel.getId())) {
             lastMessageId = 0;
             String command = event.getMessage().getContentRaw();
@@ -242,24 +243,15 @@ public class DiscordApp extends ListenerAdapter {
         }
     }
 
-    private void sendDiscordMessage(Player player, String content) {
-        PlayerConfig config = PlayerConfig.forPlayer(player);
-        String out;
-        if (DiscordChatHandler.meFormat(content) != null) {
-            out = config.buildNameStringShort() + " " + DiscordChatHandler.meFormat(content);
-        } else if (DiscordChatHandler.greentextFormat(content) != null) {
-            StringBuilder builder = new StringBuilder();
-            String[] parts = DiscordChatHandler.greentextFormat(content);
-            for (String part : parts) {
-                builder.append("\\> ").append(part).append("\n");
-            }
-            out = builder.toString().trim();
-        } else {
-            out = content;
+    private void sendDiscordMessage(Player player, String content, DisplayTag displayTag) {
+        String out = EmojiRegistry.discordParseEmoji(content);
+
+        if (isWhitelistManaged()) {
+            out = getWhitelistManagement().formatMentionsMinecraftToDiscord(out);
         }
 
         WebhookMessage message = new WebhookMessageBuilder()
-                .setUsername(config.buildNameString())
+                .setUsername(displayTag.buildNameString())
                 .setAvatarUrl("https://cravatar.eu/helmavatar/" + player.getUniqueId() + "/128.png")
                 .setContent(out)
                 .build();
@@ -321,14 +313,18 @@ public class DiscordApp extends ListenerAdapter {
     }
 
     // https://stackoverflow.com/a/4247219
+    private final Random random = new Random();
     private Component prettyName(String text) {
-        Random random = new Random(text.hashCode()); // use hashCode for consistency
         final float hue = random.nextFloat();
         // Saturation between 0.1 and 0.3
         final float saturation = (random.nextInt(2000) + 1000) / 10000f;
         final float luminance = 0.9f;
         final Color color = Color.getHSBColor(hue, saturation, luminance);
         return Component.text(text).color(TextColor.color(color.getRGB()));
+    }
+
+    private Component messageExtensionComponent(String title, Component contents) {
+        return Component.newline().append(Component.text("↳ " + title + ": ").color(NamedTextColor.WHITE)).append(contents);
     }
 
     private <T> Component formatArrayIntoComponent(
@@ -346,7 +342,7 @@ public class DiscordApp extends ListenerAdapter {
                         textComponent.append(Component.text(", ").color(NamedTextColor.WHITE))
                                 .append(textComponent2)
                 );
-        return Component.newline().append(Component.text("↳ " + title + ": ").color(NamedTextColor.WHITE)).append(attachmentList);
+        return messageExtensionComponent(title, attachmentList);
     }
 
     private static Component createAttachmentDataString(Message.Attachment attachment) {
@@ -403,31 +399,47 @@ public class DiscordApp extends ListenerAdapter {
         }
 
         PlayerConfig config = PlayerConfig.forPlayer(info);
-        return config.buildNameComponent();
+        return config.toDisplayTag(true).buildNameComponent();
     }
 
-    private void sendMinecraftMessage(Member member, String content, Message.Attachment[] attachmentsRaw, Sticker[] stickersRaw) {
+    private void sendMinecraftMessage(Member member, Message message) {
+        String content = message.getContentRaw();
+
+        Message.Attachment[] attachmentsRaw = message.getAttachments().toArray(Message.Attachment[]::new);
         Component attachments = (attachmentsRaw.length > 0) ? formatArrayIntoComponent(
                 "Attachments", attachmentsRaw, attachment -> prettyName(attachment.getFileName()),
                 DiscordApp::createAttachmentDataString, // fun fact: if that method is not static, intellij complains for some reason
                 Message.Attachment::getUrl
         ) : Component.empty();
 
+        Sticker[] stickersRaw = message.getStickers().toArray(Sticker[]::new);
         Component stickers = (stickersRaw.length > 0) ? formatArrayIntoComponent(
                 "Stickers", stickersRaw, sticker -> prettyName(sticker.getName()),
                 sticker -> Component.text("Open Discord to view this sticker"),
                 sticker -> ""
         ) : Component.empty();
 
+        Message referencedMessage = message.getReferencedMessage();
+        Component reply = (referencedMessage != null) ? messageExtensionComponent("Replying to", referencedMessage.getContentRaw().isBlank() ? Component.text("(unknown contents)") : DiscordChatHandler.parseGoodChat(referencedMessage.getContentRaw()))
+            : (message.getType().equals(MessageType.INLINE_REPLY) ? messageExtensionComponent("Replying to", Component.text("(inaccessible message)")) : Component.empty());
+
+        MessagePoll poll = message.getPoll();
         Component messageSegment;
+        Component extra = Component.empty();
         if (!content.isBlank()) {
+            if (isWhitelistManaged()) {
+                content = getWhitelistManagement().formatMentionsDiscordToMinecraft(content);
+            }
             messageSegment = Component.text(": ")
                     .color(NamedTextColor.WHITE)
-                    .append(TextUtils.colorCodeParser(TextUtils.stringToComponent(content).color(NamedTextColor.WHITE)));
+                    .append(DiscordChatHandler.parseGoodChat(content));
         } else if (attachmentsRaw.length > 0) {
             messageSegment = Component.text(" sent attachments").color(NamedTextColor.WHITE);
         } else if (stickersRaw.length > 0) {
             messageSegment = Component.text(" sent stickers").color(NamedTextColor.WHITE);
+        } else if (poll != null) {
+            messageSegment = Component.text(" sent a poll").color(NamedTextColor.WHITE);
+            extra = messageExtensionComponent("Poll Name", Component.text(poll.getQuestion().getText()));
         } else {
             messageSegment = Component.text(" sent something").color(NamedTextColor.WHITE);
         }
@@ -440,6 +452,8 @@ public class DiscordApp extends ListenerAdapter {
                 .append(messageSegment)
                 .append(attachments)
                 .append(stickers)
+                .append(reply)
+                .append(extra)
                 .build());
     }
 

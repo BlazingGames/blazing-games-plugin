@@ -13,21 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.packs;
+package de.blazemcworld.blazinggames.utils;
 
-import de.blazemcworld.blazinggames.items.ItemProviders;
-import de.blazemcworld.blazinggames.packs.hooks.*;
+import java.util.HashMap;
+import java.util.UUID;
 
-public enum HookList {
-    CUSTOM_ITEMS(ItemProviders.instance),
-    GUI_ELEMENTS(new GuiElementsHook()),
-    EMOJIS(new EmojisHook()),
+public class FrontManager {
+    private FrontManager() {}
+    private static final HashMap<UUID, String> frontMap = new HashMap<>();
 
-    ;
+    public static void updateFront(UUID uuid, String front) {
+        frontMap.put(uuid, front);
+    }
 
-    public final PackBuildHook hook;
+    public static String getFront(UUID uuid) {
+        return frontMap.get(uuid);
+    }
 
-    HookList(PackBuildHook hook) {
-        this.hook = hook;
+    public static void clearFront(UUID uuid) {
+        frontMap.remove(uuid);
+    }
+
+    public static boolean hasFront(UUID uuid) {
+        return frontMap.containsKey(uuid);
     }
 }
