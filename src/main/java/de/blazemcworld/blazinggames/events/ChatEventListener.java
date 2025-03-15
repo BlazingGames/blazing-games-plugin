@@ -15,75 +15,18 @@
  */
 package de.blazemcworld.blazinggames.events;
 
-import de.blazemcworld.blazinggames.discord.DiscordApp;
-import de.blazemcworld.blazinggames.utils.DisplayTag;
-import de.blazemcworld.blazinggames.utils.EmojiRegistry;
-import de.blazemcworld.blazinggames.utils.MemberData;
-import de.blazemcworld.blazinggames.utils.PlayerConfig;
-import de.blazemcworld.blazinggames.utils.PluralConfig;
-import de.blazemcworld.blazinggames.utils.TextUtils;
-import io.papermc.paper.chat.ChatRenderer;
+import de.blazemcworld.blazinggames.discord.eventhandlers.DiscordChatHandler;
+import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.jetbrains.annotations.NotNull;
 
-public class ChatEventListener implements Listener {
-
-    @EventHandler(
-        priority = EventPriority.LOWEST // this event doesn't work well with others, so it runs first
-    )
-    public void onChat(AsyncChatEvent event) {
-        String message = PlainTextComponentSerializer.plainText().serialize(event.message());
-        PlayerConfig config = PlayerConfig.forPlayer(event.getPlayer());
-        if (config.isPlural()) {
-            PluralConfig cfg = config.getPluralConfig();
-            MemberData member = cfg.detectProxiedMember(message);
-            if (member != null) {
-                String proxyMessage = message.substring(member.proxyStart.length(), message.length() - member.proxyEnd.length());
-                DisplayTag displayTag = cfg.toDisplayTag(member.name, config);
-                event.renderer(new GenericRenderer(displayTag));
-                event.message(parseGoodChat(proxyMessage));
-                DiscordApp.messageHook(event.getPlayer(), proxyMessage, displayTag);
-                return;
-            }
-        }
-
-        DisplayTag displayTag = config.toDisplayTag(true);
-        event.renderer(new GenericRenderer(displayTag));
-        event.message(parseGoodChat(message));
-        DiscordApp.messageHook(event.getPlayer(), message, displayTag);
+public class ChatEventListener extends BlazingEventListener<AsyncChatEvent> {
+    public ChatEventListener() {
+        this.handlers.add(new DiscordChatHandler());
     }
 
-    public static class GenericRenderer implements ChatRenderer {
-        public final DisplayTag tag;
-
-        public GenericRenderer(DisplayTag tag) {
-            this.tag = tag;
-        }
-
-        @Override
-        public @NotNull Component render(@NotNull Player source, @NotNull Component sourceDisplayName, @NotNull Component messageComponent, @NotNull Audience viewer) {
-            return Component.text().append(tag.buildNameComponent()).append(Component.text(": ").color(NamedTextColor.WHITE))
-                .append(messageComponent).build();
-        }
-    }
-
-    public static Component parseGoodChat(String message) {
-        return EmojiRegistry.parseEmoji(TextUtils.parseMinimessage(message));
-    }
-
-    public static String meFormat(String existingContent) {
-        if (existingContent.startsWith("* ")) {
-            return existingContent.substring(1).trim();
-        }
-        return null;
+    @EventHandler
+    public void event(AsyncChatEvent event) {
+        executeEvent(event);
     }
 }

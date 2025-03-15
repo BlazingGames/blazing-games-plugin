@@ -20,7 +20,7 @@ import club.minnced.discord.webhook.send.WebhookMessage;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.discord.commands.*;
-import de.blazemcworld.blazinggames.events.ChatEventListener;
+import de.blazemcworld.blazinggames.discord.eventhandlers.DiscordChatHandler;
 import de.blazemcworld.blazinggames.utils.DisplayTag;
 import de.blazemcworld.blazinggames.utils.EmojiRegistry;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
@@ -48,21 +48,20 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import javax.annotation.Nonnull;
+import java.awt.*;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.awt.Color;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
+import java.util.List;
 import java.util.*;
-import java.util.function.Function;
-
-import javax.annotation.Nonnull;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 
 public class DiscordApp extends ListenerAdapter {
     private final List<ICommand> commands = List.of(
@@ -112,6 +111,10 @@ public class DiscordApp extends ListenerAdapter {
     public static WhitelistManagement getWhitelistManagement() {
         if (app == null) return null;
         return app.whitelist;
+    }
+
+    public static boolean isEnabled() {
+        return app != null;
     }
 
     private static DiscordApp app = null;
@@ -417,7 +420,7 @@ public class DiscordApp extends ListenerAdapter {
         ) : Component.empty();
 
         Message referencedMessage = message.getReferencedMessage();
-        Component reply = (referencedMessage != null) ? messageExtensionComponent("Replying to", referencedMessage.getContentRaw().isBlank() ? Component.text("(unknown contents)") : ChatEventListener.parseGoodChat(referencedMessage.getContentRaw()))
+        Component reply = (referencedMessage != null) ? messageExtensionComponent("Replying to", referencedMessage.getContentRaw().isBlank() ? Component.text("(unknown contents)") : DiscordChatHandler.parseGoodChat(referencedMessage.getContentRaw()))
             : (message.getType().equals(MessageType.INLINE_REPLY) ? messageExtensionComponent("Replying to", Component.text("(inaccessible message)")) : Component.empty());
 
         MessagePoll poll = message.getPoll();
@@ -429,7 +432,7 @@ public class DiscordApp extends ListenerAdapter {
             }
             messageSegment = Component.text(": ")
                     .color(NamedTextColor.WHITE)
-                    .append(ChatEventListener.parseGoodChat(content));
+                    .append(DiscordChatHandler.parseGoodChat(content));
         } else if (attachmentsRaw.length > 0) {
             messageSegment = Component.text(" sent attachments").color(NamedTextColor.WHITE);
         } else if (stickersRaw.length > 0) {

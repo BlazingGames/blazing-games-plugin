@@ -15,10 +15,11 @@
  */
 package de.blazemcworld.blazinggames.packs;
 
+import de.blazemcworld.blazinggames.items.ItemProviders;
 import de.blazemcworld.blazinggames.packs.hooks.*;
 
 public enum HookList {
-    CUSTOM_ITEMS(new CustomItemsHook()),
+    CUSTOM_ITEMS(ItemProviders.instance),
     GUI_ELEMENTS(new GuiElementsHook()),
     EMOJIS(new EmojisHook()),
 
