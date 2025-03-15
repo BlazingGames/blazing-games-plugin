@@ -20,11 +20,13 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
+import de.blazemcworld.blazinggames.items.CustomItems;
+import de.blazemcworld.blazinggames.utils.InventoryUtils;
 import de.blazemcworld.blazinggames.warpstones.WarpstoneStorage;
 
 public class WarpstoneInteractionHandler extends BlazingEventHandler<PlayerInteractEvent> {
     @Override
-    public boolean fitCriteria(PlayerInteractEvent event) {
+    public boolean fitCriteria(PlayerInteractEvent event, boolean cancelled) {
         if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.BARRIER && event.getAction() == Action.LEFT_CLICK_BLOCK) {
             return WarpstoneStorage.isWarpstone(event.getClickedBlock().getLocation());
         }
@@ -36,5 +38,6 @@ public class WarpstoneInteractionHandler extends BlazingEventHandler<PlayerInter
         event.setCancelled(true);
         event.getClickedBlock().setType(Material.AIR);
         WarpstoneStorage.breakWarpstone(event.getClickedBlock().getLocation());
+        InventoryUtils.collectableDrop(event.getPlayer(), event.getClickedBlock().getLocation(), CustomItems.WARPSTONE.create());
     }
 }

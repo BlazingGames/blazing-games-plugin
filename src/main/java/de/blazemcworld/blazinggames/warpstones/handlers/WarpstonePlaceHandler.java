@@ -24,7 +24,7 @@ import de.blazemcworld.blazinggames.warpstones.WarpstoneStorage;
 
 public class WarpstonePlaceHandler extends BlazingEventHandler<BlockPlaceEvent> {
     @Override
-    public boolean fitCriteria(BlockPlaceEvent event) {
+    public boolean fitCriteria(BlockPlaceEvent event, boolean cancelled) {
         return CustomItems.WARPSTONE.matchItem(event.getItemInHand());
     }
 

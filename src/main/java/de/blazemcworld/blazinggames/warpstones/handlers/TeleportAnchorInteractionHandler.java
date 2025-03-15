@@ -42,7 +42,7 @@ import java.util.List;
 
 public class TeleportAnchorInteractionHandler extends BlazingEventHandler<PlayerInteractEvent> {
     @Override
-    public boolean fitCriteria(PlayerInteractEvent event) {
+    public boolean fitCriteria(PlayerInteractEvent event, boolean cancelled) {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (CustomItems.TELEPORT_ANCHOR.matchItem(event.getItem())) {
                 return true;

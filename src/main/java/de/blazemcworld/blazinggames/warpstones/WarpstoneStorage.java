@@ -29,6 +29,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -97,7 +98,13 @@ public class WarpstoneStorage {
                 entityLocation.getBlockY() == checkLocation.getBlockY() &&
                 entityLocation.getBlockZ() == checkLocation.getBlockZ()
             ) {
-                e.remove();
+                if (e instanceof ItemDisplay display) {
+                    ItemStack stack = display.getItemStack();
+                    if (stack == null || stack.isEmpty()) continue;
+                    if (CustomItems.WARPSTONE.matchItem(stack)) {
+                        display.remove();
+                    }
+                }
             }
         }
     }
