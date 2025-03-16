@@ -17,13 +17,12 @@ package de.blazemcworld.blazinggames.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
-import com.mojang.brigadier.Command;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelper;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
@@ -37,42 +36,34 @@ import java.util.UUID;
 public class PlaytimeCommand {
     public static LiteralCommandNode<CommandSourceStack> command() {
         return Commands.literal("playtime")
-            .executes(ctx -> {
-                CommandSender sender = ctx.getSource().getSender();
-                if (ctx.getSource().getExecutor() == null || !(ctx.getSource().getExecutor() instanceof Player player)) {
-                    sender.sendRichMessage("<red>The executor is not a player!");
-                    return Command.SINGLE_SUCCESS;
-                }
-                
-                String playtime = getPlaytime(player.getName(), player.getUniqueId());
+            // no arguments, current player
+            .executes(CommandHelper.getDefault().requirePlayer((ctx, p) -> handle(ctx, p.getPlayerProfile())))
 
-                if (playtime == null) {
-                    sender.sendRichMessage("<red>what.");
-                } else {
-                    sender.sendRichMessage("<yellow>" + playtime);
-                }
-
-                return Command.SINGLE_SUCCESS;
-            })
+            // all players selected as argument
             .then(Commands.argument("player", ArgumentTypes.playerProfiles())
-                .executes(ctx -> {
+                .executes(CommandHelper.getDefault().wrap(ctx -> {
                     PlayerProfileListResolver resolver = ctx.getArgument("player", PlayerProfileListResolver.class);
                     Collection<PlayerProfile> profiles = resolver.resolve(ctx.getSource());
-                    CommandSender sender = ctx.getSource().getSender();
-
-                    for (PlayerProfile profile : profiles) {
-                        String playtime = getPlaytime(profile.getName(), profile.getId());
-    
-                        if (playtime == null) {
-                            sender.sendRichMessage("<red>Couldn't find any playtime for " + profile.getName());
-                        } else {
-                            sender.sendRichMessage("<yellow>" + playtime);
-                        }
-                    }
-
-                    return Command.SINGLE_SUCCESS;
-                }))
+                    handle(ctx, profiles.toArray(PlayerProfile[]::new));
+                })))
             .build();
+    }
+
+    public static void handle(CommandContext<CommandSourceStack> ctx, PlayerProfile... profiles) {
+        if (profiles.length == 0) {
+            ctx.getSource().getSender().sendRichMessage("<red>No players provided!");
+            return;
+        }
+
+        for (PlayerProfile profile : profiles) {
+            String playtime = getPlaytime(profile.getName(), profile.getId());
+
+            if (playtime == null) {
+                ctx.getSource().getSender().sendRichMessage("<red>Couldn't find any playtime for " + profile.getName());
+            } else {
+                ctx.getSource().getSender().sendRichMessage("<yellow>" + playtime);
+            }
+        }
     }
 
     public static String getPlaytime(String username, UUID uuid) {

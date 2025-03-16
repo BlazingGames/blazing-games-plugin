@@ -16,6 +16,7 @@
 package de.blazemcworld.blazinggames.commands;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelper;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -24,11 +25,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -40,43 +39,29 @@ public class CustomGiveCommand {
         return Commands.literal("customgive")
             .requires(ctx -> ctx.getSender().hasPermission("blazinggames.customgive"))
             .then(Commands.argument("item", StringArgumentType.word())
-                .executes(ctx -> {
-                    give(
-                        ctx.getSource().getSender(), ctx.getSource().getExecutor(),
-                        StringArgumentType.getString(ctx, "item"),
-                        1, ""
-                    );
-                    return Command.SINGLE_SUCCESS;
-                })
+                .executes(CommandHelper.getDefault().requirePlayer((ctx, player) -> give(
+                    ctx.getSource().getSender(), player,
+                    StringArgumentType.getString(ctx, "item"),
+                    1, ""
+                )))
                 .then(Commands.argument("count", IntegerArgumentType.integer(1, 64))
-                    .executes(ctx -> {
-                        give(
-                            ctx.getSource().getSender(), ctx.getSource().getExecutor(),
+                    .executes(CommandHelper.getDefault().requirePlayer((ctx, player) -> give(
+                        ctx.getSource().getSender(), player,
+                        StringArgumentType.getString(ctx, "item"),
+                        IntegerArgumentType.getInteger(ctx, "count"),
+                        ""
+                    )))
+                    .then(Commands.argument("context", StringArgumentType.greedyString())
+                        .executes(CommandHelper.getDefault().requirePlayer((ctx, player) -> give(
+                            ctx.getSource().getSender(), player,
                             StringArgumentType.getString(ctx, "item"),
                             IntegerArgumentType.getInteger(ctx, "count"),
-                            ""
-                        );
-                        return Command.SINGLE_SUCCESS;
-                    })
-                    .then(Commands.argument("context", StringArgumentType.greedyString())
-                        .executes(ctx -> {
-                            give(
-                                ctx.getSource().getSender(), ctx.getSource().getExecutor(),
-                                StringArgumentType.getString(ctx, "item"),
-                                IntegerArgumentType.getInteger(ctx, "count"),
-                                StringArgumentType.getString(ctx, "context")
-                            );
-                            return Command.SINGLE_SUCCESS;
-                        })
+                            StringArgumentType.getString(ctx, "context")
+                        )))
         ))).build();
     }
 
-    public static void give(CommandSender sender, Entity executor, String id, int count, String rawContext) {
-        if (executor == null || !(executor instanceof Player player)) {
-            sender.sendRichMessage("<red>The executor is not a player!");
-            return;
-        }
-        
+    public static void give(CommandSender sender, Player player, String id, int count, String rawContext) {
         CustomItem<?> itemType = ItemProviders.instance.getByKey(BlazingGames.get().key(id));
 
         if(itemType == null) {

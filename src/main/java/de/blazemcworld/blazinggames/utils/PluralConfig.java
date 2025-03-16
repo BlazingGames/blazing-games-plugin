@@ -144,7 +144,7 @@ public class PluralConfig {
         modifyMember(name, m -> m.pronouns = pronouns);
     }
 
-    public void setColor(String name, TextColor color) {
+    public void setNameColor(String name, TextColor color) {
         modifyMember(name, m -> m.color = (color == null) ? null : color.value());
     }
 

@@ -17,10 +17,12 @@ package de.blazemcworld.blazinggames.commands.plural;
 
 import org.bukkit.entity.Player;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelper;
+import de.blazemcworld.blazinggames.commands.middleware.RequireSystemMiddleware;
 import de.blazemcworld.blazinggames.utils.FrontManager;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -30,83 +32,66 @@ import net.kyori.adventure.text.format.TextColor;
 
 public class SystemCommand {
     public static final TextColor color = TextColor.color(0xEDC4DF);
-    public static final String resetHint = " Run this command with \"unset\" to reset it.";
+    public static final CommandHelper configHelper = CommandHelper.builder()
+        .middleware(new RequireSystemMiddleware(color))
+        .ignoreExecutor(true)
+        .build();
 
     public static LiteralCommandNode<CommandSourceStack> command() {
         return Commands.literal("system")
-            .then(Commands.literal("enable").executes(ctx -> {
-                if (!(ctx.getSource().getSender() instanceof Player player)) {
-                    ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
-                    return Command.SINGLE_SUCCESS;
-                }
+            .then(Commands.literal("enable").executes(CommandHelper.getDefaultIgnoreExecutor().requirePlayer((ctx, player) -> handleToggle(player, true))))
+            .then(Commands.literal("disable").executes(CommandHelper.getDefaultIgnoreExecutor().requirePlayer((ctx, player) -> handleToggle(player, false))))
 
-                PlayerConfig config = PlayerConfig.forPlayer(player);
-                if (!config.isPlural()) {
-                    config.setPlural(true);
-                    player.sendMessage(Component.text("Marked this account as a plural system.", color));
-                } else {
-                    player.sendMessage(Component.text("This account is already marked as a plural system.", color));
-                }
-                return Command.SINGLE_SUCCESS;
-            }))
+            .then(Commands.literal("name")
+                .executes(configHelper.requirePlayer((ctx, player) -> handleConfig(ctx, player, true, false)))
+                .then(Commands.argument("value", StringArgumentType.greedyString()).executes(configHelper.requirePlayer((ctx, player) -> handleConfig(ctx, player, false, false)))))
+            .then(Commands.literal("tag")
+                .executes(configHelper.requirePlayer((ctx, player) -> handleConfig(ctx, player, true, true)))
+                .then(Commands.argument("value", StringArgumentType.greedyString()).executes(configHelper.requirePlayer((ctx, player) -> handleConfig(ctx, player, false, true)))))
+            .build();
+    }
 
+    public static void handleToggle(Player player, boolean enable) {
+        PlayerConfig config = PlayerConfig.forPlayer(player);
+        if (config.isPlural() != enable) {
+            if (enable) {
+                config.setPlural(true);
+                player.sendMessage(Component.text("Marked this account as a plural system.", color));
+            } else {
+                config.setPlural(false);
+                FrontManager.clearFront(player.getUniqueId());
+                player.sendMessage(Component.text("Unmarked this account as a plural system.", color));
+            }
+        } else {
+            player.sendMessage(Component.text("This account is already " + (enable ? "marked" : "not marked") + " as a plural system.", color));
+        }
+    }
 
+    public static void handleConfig(CommandContext<CommandSourceStack> ctx, Player player, boolean clear, boolean isTag) {
+        String value = clear ? null : StringArgumentType.getString(ctx, "value");
+        PlayerConfig config = PlayerConfig.forPlayer(player);
 
-            .then(Commands.literal("disable").executes(ctx -> {
-                if (!(ctx.getSource().getSender() instanceof Player player)) {
-                    ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
-                    return Command.SINGLE_SUCCESS;
-                }
+        if (value == null) {
+            if (isTag) {
+                config.setSystemTag(null);
+                player.sendMessage(Component.text("Cleared this system tag successfully.", color));
+            } else {
+                config.setSystemName(null);
+                player.sendMessage(Component.text("Cleared this system name successfully.", color));
+            }
+        } else {
+            if (value.length() < 2 || value.length() > 40) {
+                player.sendMessage(Component.text((isTag ? "System tags " : "System names ") + "must be between 2 and 40 characters.", color));
+                return;
+            }
 
-                PlayerConfig config = PlayerConfig.forPlayer(player);
-                if (config.isPlural()) {
-                    config.setPlural(false);
-                    FrontManager.clearFront(player.getUniqueId());
-                    player.sendMessage(Component.text("Unmarked this account as a plural system.", color));
-                } else {
-                    player.sendMessage(Component.text("This account is already not marked as a plural system.", color));
-                }
-                return Command.SINGLE_SUCCESS;
-            }))
-
-
-
-            .then(Commands.literal("name").then(Commands.argument("name", StringArgumentType.greedyString()).executes(ctx -> {
-                if (!(ctx.getSource().getSender() instanceof Player player)) {
-                    ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
-                    return Command.SINGLE_SUCCESS;
-                }
-
-                String argument = StringArgumentType.getString(ctx, "name");
-                PlayerConfig config = PlayerConfig.forPlayer(player);
-                if (!argument.equals("unset")) {
-                    config.setSystemName(argument);
-                    player.sendMessage(Component.text("Set this system name to \"" + argument + "\"." + resetHint, color));
-                } else {
-                    config.setSystemName(null);
-                    player.sendMessage(Component.text("Cleared this system name.", color));
-                }
-                return Command.SINGLE_SUCCESS;
-            })))
-
-
-
-            .then(Commands.literal("tag").then(Commands.argument("tag", StringArgumentType.greedyString()).executes(ctx -> {
-                if (!(ctx.getSource().getSender() instanceof Player player)) {
-                    ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
-                    return Command.SINGLE_SUCCESS;
-                }
-
-                String argument = StringArgumentType.getString(ctx, "tag");
-                PlayerConfig config = PlayerConfig.forPlayer(player);
-                if (!argument.equals("unset")) {
-                    config.setSystemTag(argument);
-                    player.sendMessage(Component.text("Set this system tag to \"" + argument + "\"." + resetHint, color));
-                } else {
-                    config.setSystemTag(null);
-                    player.sendMessage(Component.text("Cleared this system tag.", color));
-                }
-                return Command.SINGLE_SUCCESS;
-            }))).build();
+            if (isTag) {
+                config.setSystemTag(value);
+                player.sendMessage(Component.text("Set this system tag to \"" + value + "\".", color));
+            } else {
+                config.setSystemName(value);
+                player.sendMessage(Component.text("Set this system name to \"" + value + "\".", color));
+            }
+        }
     }
 }

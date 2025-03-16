@@ -17,11 +17,15 @@ package de.blazemcworld.blazinggames.commands.plural;
 
 import org.bukkit.entity.Player;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
-import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelper;
+import de.blazemcworld.blazinggames.commands.finalizers.ShowNameplatesFinalizer;
+import de.blazemcworld.blazinggames.commands.middleware.EmptyMessageMiddleware;
+import de.blazemcworld.blazinggames.commands.middleware.RequireMemberMiddleware;
+import de.blazemcworld.blazinggames.commands.middleware.RequireSystemMiddleware;
 import de.blazemcworld.blazinggames.utils.DisplayTag;
 import de.blazemcworld.blazinggames.utils.FrontManager;
 import de.blazemcworld.blazinggames.utils.MemberData;
@@ -35,6 +39,22 @@ import net.kyori.adventure.text.format.TextColor;
 
 public class MemberCommand {
     public static final TextColor color = TextColor.color(0xEDC4DF);
+    public static final CommandHelper helper = CommandHelper.builder()
+        .middleware(new RequireSystemMiddleware(color))
+        .ignoreExecutor(true)
+        .build();
+    public static final CommandHelper configHelper = CommandHelper.builder()
+        .middleware(new RequireSystemMiddleware(color))
+        .middleware(new RequireMemberMiddleware("name", color))
+        .ignoreExecutor(true)
+        .build();
+    public static final CommandHelper displayHelper = CommandHelper.builder()
+        .middleware(new RequireSystemMiddleware(color))
+        .middleware(new EmptyMessageMiddleware())
+        .middleware(new RequireMemberMiddleware("name", color))
+        .finalizer(new ShowNameplatesFinalizer("name", color))
+        .ignoreExecutor(true)
+        .build();
 
     public static String basicChecks(Player player, String name) {
         player.sendMessage(Component.empty());
@@ -56,47 +76,26 @@ public class MemberCommand {
     }
 
     public static LiteralCommandNode<CommandSourceStack> command() {
-        return Commands.literal("member").then(Commands.literal("list").executes(ctx -> {
-            if (!(ctx.getSource().getSender() instanceof Player player)) {
-                ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
-                return Command.SINGLE_SUCCESS;
-            }
-
-            PlayerConfig config = PlayerConfig.forPlayer(player);
-            if (!config.isPlural()) {
-                player.sendMessage(Component.text("Enable plurality with \"/system enable\" first.", color));
-                return Command.SINGLE_SUCCESS;
-            }
-
-            PluralConfig pluralConfig = config.getPluralConfig();
+        return Commands.literal("member").then(Commands.literal("list").executes(helper.requirePlayer((ctx, player) -> {
+            PluralConfig pluralConfig = PlayerConfig.forPlayer(player).getPluralConfig();
             if (pluralConfig.getMembers().isEmpty()) {
                 player.sendMessage(Component.text("No members found.", color));
-                return Command.SINGLE_SUCCESS;
+            } else {
+                player.sendMessage(Component.text("Members:", color));
+                for (MemberData member : pluralConfig.getMembers()) {
+                    player.sendMessage(Component.text("- " + member.name, color));
+                }
             }
-
-            player.sendMessage(Component.text("Members:", color));
-            for (MemberData member : pluralConfig.getMembers()) {
-                player.sendMessage(Component.text("- " + member.name, color));
-            }
-
-            return Command.SINGLE_SUCCESS;
-        }))
-        
-        
-        
+        })))
         .then(Commands.argument("name", StringArgumentType.string())
 
 
 
-            .then(Commands.literal("create").executes(ctx -> {
+            .then(Commands.literal("create").executes(helper.requirePlayer((ctx, player) -> {
                 String name = StringArgumentType.getString(ctx, "name");
-                if (!(ctx.getSource().getSender() instanceof Player player)) {
-                    ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
-                    return Command.SINGLE_SUCCESS;
+                if (name.length() < 3 || name.length() > 40) {
+                    player.sendMessage(Component.text("Name must be between 3 and 40 characters.", color));
                 }
-
-                String res = basicChecks(player, name);
-                if (res != null) { player.sendMessage(Component.text(res, color)); return Command.SINGLE_SUCCESS; }
 
                 PluralConfig cfg = PlayerConfig.forPlayer(player).getPluralConfig();
                 if (cfg.getMember(name) != null) {
@@ -105,54 +104,32 @@ public class MemberCommand {
                     cfg.addMember(name);
                     player.sendMessage(Component.text("Created a member with this name successfully.", color));
                 }
-                return Command.SINGLE_SUCCESS;
-            }))
+            })))
 
 
 
-            .then(Commands.literal("delete").executes(ctx -> {
+            .then(Commands.literal("delete").executes(configHelper.requirePlayer((ctx, player) -> {
                 String name = StringArgumentType.getString(ctx, "name");
-                if (!(ctx.getSource().getSender() instanceof Player player)) {
-                    ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
-                    return Command.SINGLE_SUCCESS;
+                PlayerConfig.forPlayer(player).getPluralConfig().removeMember(name);
+                if (name.equals(FrontManager.getFront(player.getUniqueId()))) {
+                    FrontManager.clearFront(player.getUniqueId());
                 }
-
-                String res = basicChecks(player, name);
-                if (res != null) { player.sendMessage(Component.text(res, color)); return Command.SINGLE_SUCCESS; }
-
-                PluralConfig cfg = PlayerConfig.forPlayer(player).getPluralConfig();
-                if (cfg.getMember(name) == null) {
-                    player.sendMessage(Component.text("Can't find any member with this name.", color));
-                } else {
-                    cfg.removeMember(name);
-                    if (name.equals(FrontManager.getFront(player.getUniqueId()))) {
-                        FrontManager.clearFront(player.getUniqueId());
-                    }
-                    player.sendMessage(Component.text("Deleted the member with this name successfully.", color));
-                }
-                return Command.SINGLE_SUCCESS;
-            }))
+                player.sendMessage(Component.text("Deleted the member with this name successfully.", color));
+            })))
 
 
 
-            .then(Commands.literal("rename").then(Commands.argument("newName", StringArgumentType.string()).executes(ctx -> {
+            .then(Commands.literal("rename").then(Commands.argument("newName", StringArgumentType.string()).executes(configHelper.requirePlayer((ctx, player) -> {
                 String name = StringArgumentType.getString(ctx, "name");
                 String newName = StringArgumentType.getString(ctx, "newName");
-                if (!(ctx.getSource().getSender() instanceof Player player)) {
-                    ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
-                    return Command.SINGLE_SUCCESS;
-                }
 
-                String res1 = basicChecks(player, name);
-                if (res1 != null) { player.sendMessage(Component.text(res1, color)); return Command.SINGLE_SUCCESS; }
-                String res2 = basicChecks(player, name);
-                if (res2 != null) { player.sendMessage(Component.text(res2, color)); return Command.SINGLE_SUCCESS; }
+                if (newName.length() < 3 || newName.length() > 40) {
+                    player.sendMessage(Component.text("New name must be between 3 and 40 characters.", color));
+                }
 
                 PlayerConfig config = PlayerConfig.forPlayer(player);
                 PluralConfig cfg = config.getPluralConfig();
-                if (cfg.getMember(name) == null) {
-                    player.sendMessage(Component.text("Can't find any member with this name.", color));
-                } else if (cfg.getMember(newName) != null) {
+                if (cfg.getMember(newName) != null) {
                     player.sendMessage(Component.text("A member with this name already exists.", color));
                 } else {
                     cfg.rename(name, newName);
@@ -162,174 +139,47 @@ public class MemberCommand {
                     config.updatePlayer();
                     player.sendMessage(Component.text("Renamed that member successfully.", color));
                 }
-                return Command.SINGLE_SUCCESS;
-            })))
+            }))))
 
 
 
-            .then(Commands.literal("proxy").then(Commands.argument("tag", StringArgumentType.greedyString()).executes(ctx -> {
+            .then(Commands.literal("proxy").then(Commands.argument("tag", StringArgumentType.greedyString()).executes(configHelper.requirePlayer((ctx, player) -> {
                 String name = StringArgumentType.getString(ctx, "name");
                 String proxyTag = StringArgumentType.getString(ctx, "tag");
-                if (!(ctx.getSource().getSender() instanceof Player player)) {
-                    ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
-                    return Command.SINGLE_SUCCESS;
-                }
-
-                String res = basicChecks(player, name);
-                if (res != null) { player.sendMessage(Component.text(res, color)); return Command.SINGLE_SUCCESS; }
 
                 Pair<String, String> pair = PluralConfig.proxyParse(proxyTag);
                 if (pair == null) {
                     player.sendMessage(Component.text("Invalid proxy tags. Make sure the string contains \"" + PluralConfig.proxySplit + "\" somewhere.", color));
-                    return Command.SINGLE_SUCCESS;
+                    return;
                 }
 
-                PluralConfig cfg = PlayerConfig.forPlayer(player).getPluralConfig();
-                if (cfg.getMember(name) == null) {
-                    player.sendMessage(Component.text("Can't find any member with this name.", color));
-                } else {
-                    cfg.setProxy(name, pair.left, pair.right);
-                    player.sendMessage(Component.text("Changed that member's proxy tags successfully.", color));
-                }
-                return Command.SINGLE_SUCCESS;
-            })))
+                PlayerConfig.forPlayer(player).getPluralConfig().setProxy(name, pair.left, pair.right);
+                player.sendMessage(Component.text("Changed that member's proxy tags successfully.", color));
+            }))))
 
 
             
             .then(Commands.literal("display")
+                .executes(displayHelper.requirePlayer((ctx, player) -> {})) // let middleware/finalizers handle this
+
+
+                // display name
+                .then(Commands.literal("name")
+                    .executes(helper.requirePlayer((ctx, player) -> handleDisplay(ctx, player, PropertyType.DISPLAY_NAME, true)))
+                    .then(Commands.argument("value", StringArgumentType.greedyString())
+                        .executes(helper.requirePlayer((ctx, player) -> handleDisplay(ctx, player, PropertyType.DISPLAY_NAME, false)))))
+
+            // pronouns
+            .then(Commands.literal("pronouns")
+                .executes(helper.requirePlayer((ctx, player) -> handleDisplay(ctx, player, PropertyType.PRONOUNS, true)))
+                .then(Commands.argument("value", StringArgumentType.greedyString())
+                    .executes(helper.requirePlayer((ctx, player) -> handleDisplay(ctx, player, PropertyType.PRONOUNS, false)))))
             
-            
-            
-                .executes(ctx -> {
-                    String name = StringArgumentType.getString(ctx, "name");
-                    if (!(ctx.getSource().getSender() instanceof Player player)) {
-                        ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
-                        return Command.SINGLE_SUCCESS;
-                    }
-
-                    String res = basicChecks(player, name);
-                    if (res != null) { player.sendMessage(Component.text(res, color)); return Command.SINGLE_SUCCESS; }
-
-                    PlayerConfig config = PlayerConfig.forPlayer(player);
-                    PluralConfig cfg = config.getPluralConfig();
-                    if (cfg.getMember(name) == null) {
-                        player.sendMessage(Component.text("Can't find any member with this name.", color));
-                        return Command.SINGLE_SUCCESS;
-                    }
-
-                    renderNameplates(player, cfg, name);
-                    return Command.SINGLE_SUCCESS;
-                })
-
-
-
-                .then(Commands.literal("name").then(Commands.argument("display", StringArgumentType.greedyString()).executes(ctx -> {
-                    String name = StringArgumentType.getString(ctx, "name");
-                    String displayName = StringArgumentType.getString(ctx, "display");
-                    if (!(ctx.getSource().getSender() instanceof Player player)) {
-                        ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
-                        return Command.SINGLE_SUCCESS;
-                    }
-
-                    String res = basicChecks(player, name);
-                    if (res != null) { player.sendMessage(Component.text(res, color)); return Command.SINGLE_SUCCESS; }
-
-                    if ("unset".equals(displayName)) {
-                        displayName = null;
-                    }
-
-                    if (displayName != null && (displayName.length() < 2 || displayName.length() > 40)) {
-                        player.sendMessage(Component.text("Display name must be between 2 and 40 characters long.", color));
-                        return Command.SINGLE_SUCCESS;
-                    }
-
-                    PlayerConfig config = PlayerConfig.forPlayer(player);
-                    PluralConfig cfg = config.getPluralConfig();
-                    if (cfg.getMember(name) == null) {
-                        player.sendMessage(Component.text("Can't find any member with this name.", color));
-                    } else {
-                        cfg.setDisplayName(name, displayName);
-                        config.updatePlayer();
-                        player.sendMessage(Component.text((displayName == null ? "Cleared" : "Changed") + " that member's display name successfully.", color));
-                        renderNameplates(player, cfg, name);
-                    }
-                    return Command.SINGLE_SUCCESS;
-                })))
-
-
-
-                .then(Commands.literal("pronouns").then(Commands.argument("pronouns", StringArgumentType.greedyString()).executes(ctx -> {
-                    String name = StringArgumentType.getString(ctx, "name");
-                    String pronouns = StringArgumentType.getString(ctx, "pronouns");
-                    if (!(ctx.getSource().getSender() instanceof Player player)) {
-                        ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
-                        return Command.SINGLE_SUCCESS;
-                    }
-
-                    String res = basicChecks(player, name);
-                    if (res != null) { player.sendMessage(Component.text(res, color)); return Command.SINGLE_SUCCESS; }
-
-                    if ("unset".equals(pronouns)) {
-                        pronouns = null;
-                    }
-
-                    if (pronouns != null && (pronouns.length() < 2 || pronouns.length() > 30)) {
-                        player.sendMessage(Component.text("Pronouns must be between 2 and 30 characters long.", color));
-                        return Command.SINGLE_SUCCESS;
-                    }
-
-                    PlayerConfig config = PlayerConfig.forPlayer(player);
-                    PluralConfig cfg = config.getPluralConfig();
-                    if (cfg.getMember(name) == null) {
-                        player.sendMessage(Component.text("Can't find any member with this name.", color));
-                    } else {
-                        cfg.setPronouns(name, pronouns);
-                        config.updatePlayer();
-                        player.sendMessage(Component.text((pronouns == null ? "Cleared" : "Changed") + " that member's pronouns successfully.", color));
-                        renderNameplates(player, cfg, name);
-                    }
-                    return Command.SINGLE_SUCCESS;
-                })))
-
-
-
-                .then(Commands.literal("color").then(Commands.argument("color", StringArgumentType.word()).executes(ctx -> {
-                    String name = StringArgumentType.getString(ctx, "name");
-                    String rawColor = StringArgumentType.getString(ctx, "color");
-                    if (!(ctx.getSource().getSender() instanceof Player player)) {
-                        ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
-                        return Command.SINGLE_SUCCESS;
-                    }
-
-                    String res = basicChecks(player, name);
-                    if (res != null) { player.sendMessage(Component.text(res, color)); return Command.SINGLE_SUCCESS; }
-
-                    Integer colorCode;
-                    try {
-                        if ("unset".equals(rawColor)) {
-                            colorCode = null;
-                        } else {
-                            if (rawColor.length() != 6) throw new NumberFormatException("Bad length");
-                            colorCode = Integer.parseInt(rawColor, 16);
-                        }
-                    } catch (NumberFormatException e) {
-                        BlazingGames.get().debugLog(e);
-                        player.sendMessage(Component.text("This is not a valid hex color code.", color));
-                        return Command.SINGLE_SUCCESS;
-                    }
-
-                    PlayerConfig config = PlayerConfig.forPlayer(player);
-                    PluralConfig cfg = config.getPluralConfig();
-                    if (cfg.getMember(name) == null) {
-                        player.sendMessage(Component.text("Can't find any member with this name.", color));
-                    } else {
-                        cfg.setColor(name, colorCode == null ? null : TextColor.color(colorCode));
-                        config.updatePlayer();
-                        player.sendMessage(Component.text((colorCode == null ? "Cleared" : "Changed") + " that member's color successfully.", color));
-                        renderNameplates(player, cfg, name);
-                    }
-                    return Command.SINGLE_SUCCESS;
-                })))
+            // color
+            .then(Commands.literal("color")
+                .executes(helper.requirePlayer((ctx, player) -> handleDisplay(ctx, player, PropertyType.COLOR, true)))
+                .then(Commands.argument("value", StringArgumentType.greedyString())
+                    .executes(helper.requirePlayer((ctx, player) -> handleDisplay(ctx, player, PropertyType.COLOR, false)))))
         )).build();
     }
 
@@ -337,5 +187,85 @@ public class MemberCommand {
         DisplayTag tag = config.toDisplayTag(name, PlayerConfig.forPlayer(player));
         if (tag == null) return;
         tag.sendPreviews(player, color);
+    }
+
+    // copied from DisplayCommand because they're really similar
+
+    public static void handleDisplay(CommandContext<CommandSourceStack> ctx, Player player, PropertyType type, boolean clear) {
+        String member = StringArgumentType.getString(ctx, "name");
+        String value;
+        if (clear) {
+            value = null;
+        } else {
+            value = StringArgumentType.getString(ctx, "value");
+        }
+
+        String result = setProperty(PlayerConfig.forPlayer(player).getPluralConfig(), member, type, value);
+        if (result != null) {
+            ctx.getSource().getSender().sendMessage(Component.text("Failed to change " + type.pretty + ": " + result, color));
+            return;
+        }
+
+        String keyword = clear ? "Cleared " : "Set ";
+        ctx.getSource().getSender().sendMessage(Component.text(keyword + type.pretty + " successfully.", color));
+    }
+
+    public static enum PropertyType {
+        DISPLAY_NAME("display name"),
+        PRONOUNS("pronouns"),
+        COLOR("name color"),
+
+        ;
+
+        public final String pretty;
+        PropertyType(String pretty) {
+            this.pretty = pretty;
+        }
+    }
+
+    public static String setProperty(PluralConfig config, String member, PropertyType type, String value) {
+        if (value == null) {
+            switch (type) {
+                case DISPLAY_NAME:
+                    config.setDisplayName(member, null);
+                    return null;
+                case PRONOUNS:
+                    config.setPronouns(member, null);
+                    return null;
+                case COLOR:
+                    config.setNameColor(member, null);
+                    return null;
+            }
+            return null;
+        }
+
+        switch (type) {
+            case DISPLAY_NAME:
+                if (value.length() < 2 || value.length() > 40) {
+                    return "display names must be between 2 and 40 characters long.";
+                }
+                config.setDisplayName(member, value);
+                return null;
+            case PRONOUNS:
+                if (value.length() < 2 || value.length() > 30) {
+                    return "pronouns must be between 2 and 30 characters long.";
+                }
+                config.setPronouns(member, value);
+                return null;
+            case COLOR:
+                if (value.length() != 6) {
+                    return "colors must be a hex color without the first #. For example, \"ffffff\".";
+                }
+                int intValue;
+                try {
+                    intValue = Integer.parseInt(value, 16);
+                } catch (NumberFormatException e) {
+                    return "#" + value + " is not a valid color.";
+                }
+                config.setNameColor(member, TextColor.color(intValue));
+                return null;
+            default:
+                return "Unknown property type. This is a bug.";
+        }
     }
 }

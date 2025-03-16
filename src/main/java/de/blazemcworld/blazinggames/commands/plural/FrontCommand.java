@@ -18,10 +18,12 @@ package de.blazemcworld.blazinggames.commands.plural;
 
 import org.bukkit.entity.Player;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelper;
+import de.blazemcworld.blazinggames.commands.middleware.RequireSystemMiddleware;
 import de.blazemcworld.blazinggames.utils.FrontManager;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -31,44 +33,27 @@ import net.kyori.adventure.text.format.TextColor;
 
 public class FrontCommand {
     public static final TextColor color = TextColor.color(0xEDC4DF);
+    public static final CommandHelper helper = CommandHelper.builder()
+        .middleware(new RequireSystemMiddleware(color))
+        .ignoreExecutor(true)
+        .build();
 
     public static LiteralCommandNode<CommandSourceStack> command() {
-        return Commands.literal("front").executes(ctx -> {
-            if (!(ctx.getSource().getSender() instanceof Player player)) {
-                ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
-                return Command.SINGLE_SUCCESS;
-            }
+        return Commands.literal("front")
+            .executes(helper.requirePlayer(FrontCommand::handleClear))
+            .then(Commands.argument("member", StringArgumentType.greedyString())
+                .executes(helper.requirePlayer(FrontCommand::handleSet))).build();
+    }
 
-            PlayerConfig config = PlayerConfig.forPlayer(player);
-            if (!config.isPlural()) {
-                player.sendMessage(Component.text("This account is not a plural system.", color));
-                return Command.SINGLE_SUCCESS;
-            }
+    public static void handleSet(CommandContext<CommandSourceStack> ctx, Player player) {
+        String member = StringArgumentType.getString(ctx, "member");
+        FrontManager.updateFront(player.getUniqueId(), member);
+        PlayerConfig.forPlayer(player).updatePlayer();
+        player.sendMessage(Component.text("Set front to \"" + member + "\" successfully.", color));
+    }
 
-            FrontManager.clearFront(player.getUniqueId());
-            player.sendMessage(Component.text("Cleared front successfully.", color));
-            return Command.SINGLE_SUCCESS;
-        }).then(Commands.argument("member", StringArgumentType.greedyString()).executes(ctx -> {
-            String member = StringArgumentType.getString(ctx, "member");
-            if (!(ctx.getSource().getSender() instanceof Player player)) {
-                ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
-                return Command.SINGLE_SUCCESS;
-            }
-
-            PlayerConfig config = PlayerConfig.forPlayer(player);
-            if (!config.isPlural()) {
-                player.sendMessage(Component.text("This account is not a plural system.", color));
-                return Command.SINGLE_SUCCESS;
-            }
-
-            if (config.getPluralConfig().getMember(member) == null) {
-                player.sendMessage(Component.text("There is no member with this name.", color));
-                return Command.SINGLE_SUCCESS;
-            }
-
-            FrontManager.updateFront(player.getUniqueId(), member);
-            player.sendMessage(Component.text("Set front to \"" + member + "\" successfully.", color));
-            return Command.SINGLE_SUCCESS;
-        })).build();
+    public static void handleClear(CommandContext<CommandSourceStack> ctx, Player player) {
+        FrontManager.clearFront(player.getUniqueId());
+        player.sendMessage(Component.text("Cleared front successfully.", color));
     }
 }
