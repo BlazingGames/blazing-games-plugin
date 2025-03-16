@@ -16,51 +16,45 @@
 package de.blazemcworld.blazinggames.commands;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
+
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.NotNull;
 
-public class KillMeCommand implements CommandExecutor {
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command,
-                             @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player p)) {
-            commandSender.sendMessage(Component.text("Only players can use this command!")
-                    .color(NamedTextColor.RED));
-            return true;
-        }
-
-        if(strings.length > 0) {
-            CommandHelper.sendUsage(commandSender, command);
-            return true;
-        }
-
-        BukkitRunnable run = new BukkitRunnable() {
-            int damage = 1;
-            int damageTick = 0;
-
-            @Override
-            public void run() {
-                p.damage(damage);
-                damageTick++;
-                if(damageTick >= 10) {
-                    damageTick = 0;
-                    damage++;
+public class KillMeCommand {
+    public static LiteralCommandNode<CommandSourceStack> command() {
+        return Commands.literal("killme")
+            .executes(ctx -> {
+                if (ctx.getSource().getExecutor() == null || !(ctx.getSource().getExecutor() instanceof final Player player)) {
+                    ctx.getSource().getSender().sendRichMessage("<red>This command is only for players!");
+                    return Command.SINGLE_SUCCESS;
                 }
-                if(!p.isValid() || p.isDead()) {
-                    cancel();
-                }
-            }
-        };
 
-        run.runTaskTimer(BlazingGames.get(), 0, 10);
-
-        return true;
+                BukkitRunnable run = new BukkitRunnable() {
+                    int damage = 1;
+                    int damageTick = 0;
+        
+                    @Override
+                    public void run() {
+                        player.damage(damage);
+                        damageTick++;
+                        if (damageTick >= 10) {
+                            damageTick = 0;
+                            damage++;
+                        }
+                        if (!player.isValid() || player.isDead()) {
+                            cancel();
+                        }
+                    }
+                };
+        
+                run.runTaskTimer(BlazingGames.get(), 0, 10);
+                return Command.SINGLE_SUCCESS;
+            })
+            .build();
     }
 }

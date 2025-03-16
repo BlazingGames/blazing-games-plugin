@@ -15,16 +15,19 @@
  */
 package de.blazemcworld.blazinggames.computing.api.impl;
 
+import de.blazemcworld.blazinggames.BlazingAPI;
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.computing.api.APIDocs;
-import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
-import de.blazemcworld.blazinggames.computing.api.Endpoint;
+import dev.ivycollective.ivyhttp.http.APIDocs;
+import de.blazemcworld.blazinggames.computing.api.APIUtils;
+import dev.ivycollective.ivyhttp.http.Endpoint;
 import de.blazemcworld.blazinggames.computing.api.EndpointList;
-import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
-import de.blazemcworld.blazinggames.computing.api.RequestContext;
-import de.blazemcworld.blazinggames.computing.api.RequestMethod;
+import de.blazemcworld.blazinggames.computing.api.Permission;
+import dev.ivycollective.ivyhttp.http.EndpointResponse;
+import dev.ivycollective.ivyhttp.http.RequestContext;
+import dev.ivycollective.ivyhttp.http.RequestMethod;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -87,6 +90,7 @@ public class RootEndpoint implements Endpoint {
 
                 HashMap<String, Object> entry = new HashMap<>();
                 APIDocs[] docs = endpoint.endpoint.docs();
+                List<Permission> permissions = endpoint.permissions;
 
                 for (APIDocs doc : docs) {
                     entry.put("title", doc.title());
@@ -100,14 +104,14 @@ public class RootEndpoint implements Endpoint {
                     entry.put(
                         "responsecodes", doc.responseCodes().entrySet().stream().collect(Collectors.toMap(e -> String.valueOf(e.getKey()), Entry::getValue))
                     );
-                    entry.put("permissions", doc.permissions().stream().collect(Collectors.toMap(Enum::name, p -> p.description)));
+                    entry.put("permissions", permissions.stream().collect(Collectors.toMap(Enum::name, p -> p.description)));
                     endpoints.get(category).add(entry);
                 }
             }
         }
 
         root.put("endpointcategories", endpoints);
-        RESPONSE = EndpointResponse.ofHTML("docs.html", root);
+        RESPONSE = APIUtils.ofHTML("docs.html", root);
     }
 
     @Override

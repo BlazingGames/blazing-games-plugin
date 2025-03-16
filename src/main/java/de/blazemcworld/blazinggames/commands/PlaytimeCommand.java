@@ -15,51 +15,71 @@
  */
 package de.blazemcworld.blazinggames.commands;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.PlayerProfileListResolver;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
-public class PlaytimeCommand implements CommandExecutor {
+public class PlaytimeCommand {
+    public static LiteralCommandNode<CommandSourceStack> command() {
+        return Commands.literal("playtime")
+            .executes(ctx -> {
+                CommandSender sender = ctx.getSource().getSender();
+                if (ctx.getSource().getExecutor() == null || !(ctx.getSource().getExecutor() instanceof Player player)) {
+                    sender.sendRichMessage("<red>The executor is not a player!");
+                    return Command.SINGLE_SUCCESS;
+                }
+                
+                String playtime = getPlaytime(player.getName(), player.getUniqueId());
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command,
-                             @NotNull String s, @NotNull String[] strings) {
-        if(strings.length > 1) {
-            CommandHelper.sendUsage(commandSender, command);
-            return true;
-        }
+                if (playtime == null) {
+                    sender.sendRichMessage("<red>what.");
+                } else {
+                    sender.sendRichMessage("<yellow>" + playtime);
+                }
 
-        OfflinePlayer player;
-        if(strings.length > 0) {
-            player = Bukkit.getOfflinePlayer(strings[0]);
-        }
-        else {
-            if(commandSender instanceof Player p) {
-                player = p;
-            }
-            else {
-                commandSender.sendMessage(Component.text("Only players can use this command without providing a player!")
-                        .color(NamedTextColor.RED));
-                return true;
-            }
-        }
+                return Command.SINGLE_SUCCESS;
+            })
+            .then(Commands.argument("player", ArgumentTypes.playerProfiles())
+                .executes(ctx -> {
+                    PlayerProfileListResolver resolver = ctx.getArgument("player", PlayerProfileListResolver.class);
+                    Collection<PlayerProfile> profiles = resolver.resolve(ctx.getSource());
+                    CommandSender sender = ctx.getSource().getSender();
 
-        int playtime = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
+                    for (PlayerProfile profile : profiles) {
+                        String playtime = getPlaytime(profile.getName(), profile.getId());
+    
+                        if (playtime == null) {
+                            sender.sendRichMessage("<red>Couldn't find any playtime for " + profile.getName());
+                        } else {
+                            sender.sendRichMessage("<yellow>" + playtime);
+                        }
+                    }
+
+                    return Command.SINGLE_SUCCESS;
+                }))
+            .build();
+    }
+
+    public static String getPlaytime(String username, UUID uuid) {
+        int playtime = Bukkit.getOfflinePlayer(uuid).getStatistic(Statistic.PLAY_ONE_MINUTE);
 
         if(playtime <= 0) {
-            commandSender.sendMessage(Component.text(player.getName() + " has not been on this server ever before!")
-                                        .color(NamedTextColor.RED));
-            return true;
+            return null;
         }
 
         int seconds = playtime / 20 % 60;
@@ -85,9 +105,6 @@ public class PlaytimeCommand implements CommandExecutor {
             timeText.append(" and ").append(time.get(time.size()-1));
         }
 
-        commandSender.sendMessage(Component.text(player.getName() + " has been wasting time on this server for " + timeText + "!")
-                .color(NamedTextColor.YELLOW));
-
-        return true;
+        return username + " has been wasting time on this server for " + timeText + "!";
     }
 }

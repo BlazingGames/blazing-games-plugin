@@ -18,15 +18,14 @@ package de.blazemcworld.blazinggames.computing;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
 import de.blazemcworld.blazinggames.computing.types.IComputerType;
-import de.blazemcworld.blazinggames.data.DataStorage;
-import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
-import de.blazemcworld.blazinggames.data.name.ULIDNameProvider;
-import de.blazemcworld.blazinggames.data.storage.BinaryStorageProvider;
-import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
-import de.blazemcworld.blazinggames.data.storage.RawTextStorageProvider;
 import de.blazemcworld.blazinggames.utils.InventoryUtils;
 import de.blazemcworld.blazinggames.utils.NameGenerator;
-import de.blazemcworld.blazinggames.utils.Pair;
+import dev.ivycollective.datastorage.DataStorage;
+import dev.ivycollective.datastorage.name.ULIDNameProvider;
+import dev.ivycollective.datastorage.storage.BinaryStorageProvider;
+import dev.ivycollective.datastorage.storage.GsonStorageProvider;
+import dev.ivycollective.datastorage.storage.RawTextStorageProvider;
+import dev.ivycollective.datastorage.utils.BiResult;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -53,21 +52,21 @@ public class ComputerRegistry {
     public static final NamespacedKey NAMESPACEDKEY_COMPUTER_ID = new NamespacedKey(NAMESPACE, "_computer_id");
 
 
-    public static final DataStorage<ComputerMetadata, String> metadataStorage = DataStorage.forClass(
+    public static final DataStorage<ComputerMetadata, String> metadataStorage = BlazingGames.dataStorageConfig().makeDataStorage(
         ComputerRegistry.class, "metadata",
         new GsonStorageProvider<ComputerMetadata>(ComputerMetadata.class),
-        new ULIDNameProvider(), new GZipCompressionProvider()
+        new ULIDNameProvider()
     );
 
-    public static final DataStorage<byte[], String> stateStorage = DataStorage.forClass(
+    public static final DataStorage<byte[], String> stateStorage = BlazingGames.dataStorageConfig().makeDataStorage(
         ComputerRegistry.class, "state",
-        new BinaryStorageProvider(), new ULIDNameProvider(), new GZipCompressionProvider()
+        new BinaryStorageProvider(), new ULIDNameProvider()
     );
 
-    public static final DataStorage<String, String> codeStorage = DataStorage.forClass(
+    public static final DataStorage<String, String> codeStorage = BlazingGames.dataStorageConfig().makeDataStorage(
         ComputerRegistry.class, "code",
         new RawTextStorageProvider("js"),
-        new ULIDNameProvider(), new GZipCompressionProvider()
+        new ULIDNameProvider()
     );
 
 
@@ -146,7 +145,7 @@ public class ComputerRegistry {
         if (getComputerByLocationRounded(location) != null) {
             throw new IllegalArgumentException("Computer already exists at " + location);
         } else {
-            final Pair<ComputerMetadata, String> data = metadataStorage.storeNext((id) -> {
+            final BiResult<ComputerMetadata, String> data = metadataStorage.storeNext((id) -> {
                 return new ComputerMetadata(
                     id,
                     NameGenerator.generateName(),
@@ -160,7 +159,7 @@ public class ComputerRegistry {
                     0
                 );
             });
-            final ComputerMetadata metadata = data.left;
+            final ComputerMetadata metadata = data.obj1;
 
             Bukkit.getScheduler()
                 .runTask(

@@ -13,29 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.data.storage;
+package de.blazemcworld.blazinggames.computing.wss.client;
 
-import de.blazemcworld.blazinggames.data.StorageProvider;
+import java.util.UUID;
 
-public class RawTextStorageProvider extends StorageProvider<String> {
-    protected final String fileExtension;
-    public RawTextStorageProvider(String fileExtension) {
-        this.fileExtension = fileExtension;
+import com.google.gson.JsonObject;
+
+import dev.ivycollective.ivyhttp.wss.ClientboundPacket;
+
+public class UserListUpdatePacket extends ClientboundPacket {
+    public final UUID uuid;
+    public final boolean isJoin;
+    public UserListUpdatePacket(UUID uuid, boolean isJoin) {
+        super("usrupd");
+        this.uuid = uuid;
+        this.isJoin = isJoin;
     }
 
     @Override
-    public String fileExtension() {
-        return fileExtension;
+    public JsonObject serialize() {
+        JsonObject out = new JsonObject();
+        out.addProperty("actioner", uuid.toString());
+        out.addProperty("type", isJoin);
+        return out;
     }
-
-    @Override
-    public String read(byte[] data) {
-        return new String(data);
-    }
-
-    @Override
-    public byte[] write(String data) {
-        return data.getBytes();
-    }
-    
 }

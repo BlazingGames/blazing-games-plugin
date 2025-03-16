@@ -16,8 +16,8 @@
 
 package de.blazemcworld.blazinggames.packs.eventhandlers;
 
+import de.blazemcworld.blazinggames.BlazingAPI;
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager;
 import net.kyori.adventure.text.Component;

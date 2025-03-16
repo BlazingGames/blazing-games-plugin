@@ -23,16 +23,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import de.blazemcworld.blazinggames.data.DataStorage;
-import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
-import de.blazemcworld.blazinggames.data.name.ULIDNameProvider;
-import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
+import de.blazemcworld.blazinggames.BlazingGames;
+import dev.ivycollective.datastorage.DataStorage;
+import dev.ivycollective.datastorage.name.ULIDNameProvider;
+import dev.ivycollective.datastorage.storage.GsonStorageProvider;
 
 public class CrateManager {
     private CrateManager() {}
-    private static final DataStorage<CrateData, String> crateStorage = DataStorage.forClass(
+    private static final DataStorage<CrateData, String> crateStorage = BlazingGames.dataStorageConfig().makeDataStorage(
         CrateManager.class, null,
-        new GsonStorageProvider<>(CrateData.class), new ULIDNameProvider(), new GZipCompressionProvider()
+        new GsonStorageProvider<>(CrateData.class), new ULIDNameProvider()
     );
 
     private static boolean shouldStayOnDeath(ItemStack item) {
@@ -82,7 +82,7 @@ public class CrateManager {
             shouldStayOnDeath(inventory.getBoots()) ? inventory.getBoots() : null,
             shouldStayOnDeath(inventory.getItemInOffHand()) ? inventory.getItemInOffHand() : null,
             hotbarItems, inventoryItems
-        )).right;
+        )).obj2;
     }
 
     public static CrateData readCrate(String ulid) {

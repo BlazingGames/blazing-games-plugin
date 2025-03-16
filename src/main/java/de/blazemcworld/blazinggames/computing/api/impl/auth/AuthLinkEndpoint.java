@@ -15,16 +15,17 @@
  */
 package de.blazemcworld.blazinggames.computing.api.impl.auth;
 
-import de.blazemcworld.blazinggames.computing.api.APIDocs;
+import dev.ivycollective.ivyhttp.http.APIDocs;
 import de.blazemcworld.blazinggames.computing.api.TokenManager;
 import de.blazemcworld.blazinggames.testing.CoveredByTests;
 import de.blazemcworld.blazinggames.testing.tests.LoginFlowTest;
-import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
-import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
-import de.blazemcworld.blazinggames.computing.api.Endpoint;
-import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
-import de.blazemcworld.blazinggames.computing.api.RequestContext;
-import de.blazemcworld.blazinggames.computing.api.RequestMethod;
+import de.blazemcworld.blazinggames.BlazingAPI;
+import de.blazemcworld.blazinggames.computing.api.APIUtils;
+import dev.ivycollective.ivyhttp.http.EarlyResponse;
+import dev.ivycollective.ivyhttp.http.Endpoint;
+import dev.ivycollective.ivyhttp.http.EndpointResponse;
+import dev.ivycollective.ivyhttp.http.RequestContext;
+import dev.ivycollective.ivyhttp.http.RequestMethod;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -83,7 +84,7 @@ public class AuthLinkEndpoint implements Endpoint {
         HashMap<String, Object> data = new HashMap<>();
         data.put("error", invalidCode);
         data.put("offline", BlazingAPI.getConfig().spoofMicrosoftServer());
-        return EndpointResponse.ofHTML("codeinput.html", data);
+        return APIUtils.ofHTML("codeinput.html", data);
     }
 
     @Override

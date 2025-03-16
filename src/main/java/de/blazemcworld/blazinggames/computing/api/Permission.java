@@ -17,6 +17,8 @@ package de.blazemcworld.blazinggames.computing.api;
 
 import java.util.List;
 
+import de.blazemcworld.blazinggames.RequiredFeature;
+
 public enum Permission {
     READ_COMPUTERS("Read a list of your computers, with metadata", DangerLevel.LOW, RequiredFeature.COMPUTERS),
     WRITE_COMPUTERS("Unregister and edit metadata of your computers", DangerLevel.HIGH, RequiredFeature.COMPUTERS),

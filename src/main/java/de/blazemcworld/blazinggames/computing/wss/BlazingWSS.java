@@ -15,207 +15,119 @@
  */
 package de.blazemcworld.blazinggames.computing.wss;
 
-import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.java_websocket.WebSocket;
-import org.java_websocket.drafts.Draft;
-import org.java_websocket.exceptions.InvalidDataException;
 import org.java_websocket.handshake.ClientHandshake;
-import org.java_websocket.handshake.ServerHandshakeBuilder;
-import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
-import org.java_websocket.server.WebSocketServer;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
-import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.ComputerEditor;
-import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import de.blazemcworld.blazinggames.computing.api.LinkedUser;
 import de.blazemcworld.blazinggames.computing.api.Permission;
-import de.blazemcworld.blazinggames.utils.GZipToolkit;
-import de.blazemcworld.blazinggames.utils.GetGson;
-import de.blazemcworld.blazinggames.utils.Pair;
+import de.blazemcworld.blazinggames.computing.wss.client.UserListUpdatePacket;
+import dev.ivycollective.ivyhttp.wss.ClientboundPacket;
+import dev.ivycollective.ivyhttp.wss.MessagePayload;
+import dev.ivycollective.ivyhttp.wss.ServerboundPacket;
+import dev.ivycollective.ivyhttp.wss.SocketRejection;
+import dev.ivycollective.ivyhttp.wss.SocketServer;
+import dev.ivycollective.ivyhttp.wss.WebSocketEventHandler;
 
-public class BlazingWSS extends WebSocketServer {
-    public static final int ROOM_CLOSE_OR_LEAVE = 1000;
-    public static final int SHUTDOWN = 1001;
-    public static final int TOO_LARGE = 1009;
-    public static final int INTERNAL_ERROR = 1011;
-    public static final int BAD_GATEWAY = 1014;
-    public static final int UNAUTHORIZED = 3000;
-    public static final int FORBIDDEN = 3003;
-    public static final int KEEPALIVE_TIMEOUT = 3008;
+public class BlazingWSS implements WebSocketEventHandler {
+    public void sendToConn(WebSocket conn, ClientboundPacket packet) {
+        sendToConn(conn, new MessagePayload(packet.typeId, packet.serialize()).compress());
+    }
+
+    public void sendToConn(WebSocket conn, byte[] message) {
+        ConnectedUser user = ConnectedUser.decode(conn.getAttachment());
+        if (user.disconnectAt() > Instant.now().getEpochSecond()) {
+            conn.close(SocketServer.UNAUTHORIZED);
+        } else {
+            conn.send(message);
+        }
+    }
+
+    public void sendToRoom(SocketServer server, String room, ClientboundPacket packet) {
+        sendToRoom(server, room, new MessagePayload(packet.typeId, packet.serialize()).compress());
+    }
+
+    public void sendToRoom(SocketServer server, String room, byte[] message) {
+        sendToRoomExcept(server, room, null, message);
+    }
+
+    public void sendToRoomExcept(SocketServer server, String room, UUID except, ClientboundPacket packet) {
+        sendToRoomExcept(server, room, except, new MessagePayload(packet.typeId, packet.serialize()).compress());
+    }
     
+    public void sendToRoomExcept(SocketServer server, String room, UUID except, byte[] message) {
+        for (WebSocket conn : server.getConnections()) {
+            ConnectedUser connectedUser = ConnectedUser.decode(conn.getAttachment());
+            if (room.equals(connectedUser.room()) && !connectedUser.uuid().equals(except)) {
+                sendToConn(conn, message);
+            }
+        }
+    }
+
     public static final Permission[] REQUIRED_PERMISSIONS = {
         Permission.READ_COMPUTERS,
         Permission.COMPUTER_CODE_READ,
         Permission.COMPUTER_CODE_MODIFY
     };
 
-    private final BlazingAPI.WebsiteConfig wssConfig;
-    public BlazingWSS(BlazingAPI.WebsiteConfig wssConfig) {
-        super(new InetSocketAddress(wssConfig.bindPort()));
-        this.wssConfig = wssConfig;
-        if (wssConfig.https()) this.setWebSocketFactory(new DefaultSSLWebSocketServerFactory(wssConfig.makeSSLContext()));
-    }
-
-    public static Pair<String, JsonObject> decompress(byte[] message) {
-        try {
-            String decompressed = GZipToolkit.decompress(message);
-            JsonObject object = GetGson.getAsObject(JsonParser.parseString(decompressed), new IllegalArgumentException("Invalid JSON (not an object)"));
-            
-            String type = GetGson.getString(object, "type", new IllegalArgumentException("Missing type property"));
-            JsonObject payload = GetGson.getObject(object, "payload", new IllegalArgumentException("Missing payload property"));
-            return new Pair<>(type, payload);
-        } catch (IllegalArgumentException e) {
-            BlazingGames.get().debugLog(e);
-            return null;
-        }
-    }
-
-    public static byte[] compress(String type, JsonObject object) {
-        JsonObject output = new JsonObject();
-        output.addProperty("type", type);
-        output.add("payload", output);
-        return GZipToolkit.compress(output.toString());
-    }
-
-    public void sendToConn(WebSocket conn, ClientboundPacket packet) {
-        sendToConn(conn, compress(packet.typeId, packet.serialize()));
-    }
-
-    public void sendToConn(WebSocket conn, byte[] message) {
-        ConnectedUser user = conn.getAttachment();
-        if (user.disconnectAt > Instant.now().getEpochSecond()) {
-            conn.close(UNAUTHORIZED);
-        } else {
-            conn.send(message);
-        }
-    }
-
-    public void sendToRoom(String room, ClientboundPacket packet) {
-        sendToRoom(room, compress(packet.typeId, packet.serialize()));
-    }
-
-    public void sendToRoom(String room, byte[] message) {
-        sendToRoomExcept(room, null, message);
-    }
-
-    public void sendToRoomExcept(String room, UUID except, ClientboundPacket packet) {
-        sendToRoomExcept(room, except, compress(packet.typeId, packet.serialize()));
-    }
-    
-    public void sendToRoomExcept(String room, UUID except, byte[] message) {
-        for (WebSocket conn : getConnections()) {
-            if (conn.getAttachment() instanceof ConnectedUser connectedUser && connectedUser.room == room && connectedUser.uuid != except) {
-                sendToConn(conn, message);
-            }
-        }
-    }
-
     @Override
-    public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        // Get IP
-        Object ipObj = conn.getAttachment();
-        if (ipObj == null || !(ipObj instanceof String ip)) { conn.close(BAD_GATEWAY); return; }
+    public Map<String, ServerboundPacket> getPacketHandlers() {
+        return Map.of(); // TBD
+    }
 
+    private final Pattern urlPattern = Pattern.compile("^\\/computer\\/([A-Z0-9]{26})\\/?$");
+    @Override
+    public JsonObject identify(String ip, String authorizationHeader, String path) throws SocketRejection, IOException {
+        // Get computer id
+        Matcher matcher = urlPattern.matcher(path);
+        if (!matcher.matches()) throw new SocketRejection("bad path", SocketServer.FORBIDDEN);
+        String computerId = matcher.group(1);
+        
         // Get authorization
-        if (!handshake.hasFieldValue("Authorization")) { conn.close(UNAUTHORIZED); return; }
-        String authorization = handshake.getFieldValue("Authorization");
-        String[] parts = authorization.split(" ");
-        if (parts.length != 2 || !("Bearer".equals(parts[0]))) { conn.close(UNAUTHORIZED); return; }
+        String[] parts = authorizationHeader.split(" ");
+        if (parts.length != 2 || !("Bearer".equals(parts[0]))) throw new SocketRejection("bad auth header", SocketServer.UNAUTHORIZED);
         String bearerToken = parts[1];
         LinkedUser linked = LinkedUser.getLinkedUserFromJWT(bearerToken);
-        if (linked == null) { conn.close(UNAUTHORIZED); return; }
-
-        // Get computer id
-        if (!handshake.hasFieldValue("Blazing-Computer-Id")) { conn.close(FORBIDDEN); return; }
-        String computerId = handshake.getFieldValue("Blazing-Computer-Id");
+        if (linked == null) throw new SocketRejection("unknown user", SocketServer.UNAUTHORIZED);
 
         // Verify permissions
-        if (!ComputerEditor.hasAccessToComputer(linked.uuid(), computerId)) { conn.close(FORBIDDEN); return; }
+        if (!ComputerEditor.hasAccessToComputer(linked.uuid(), computerId)) throw new SocketRejection("missing permissions", SocketServer.UNAUTHORIZED);
         for (Permission p : REQUIRED_PERMISSIONS) {
-            if (!linked.permissions().contains(p)) { conn.close(FORBIDDEN); return; }
+            if (!linked.permissions().contains(p)) throw new SocketRejection("missing permissions", SocketServer.UNAUTHORIZED);
         }
 
-        // Add attachment
-        conn.setAttachment(new ConnectedUser(linked.uuid(), linked.username(), linked.level(), linked.expiresAt(), computerId, ip));
-
-        // Send packets
-        sendToRoomExcept(computerId, linked.uuid(), new ClientboundPacket.UserListUpdatePacket(linked.uuid(), true));
+        // Create attachment
+        return new ConnectedUser(linked.uuid(), linked.username(), linked.level(), linked.expiresAt(), computerId, ip).encode();
+    }
+    @Override
+    public void connectHook(SocketServer server, WebSocket conn, ClientHandshake handshake) {
+        ConnectedUser user = ConnectedUser.decode(conn.getAttachment());
+        sendToRoomExcept(server, user.room(), user.uuid(), new UserListUpdatePacket(user.uuid(), true));
     }
 
     @Override
-    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        ConnectedUser user = conn.getAttachment();
-        sendToRoom(user.room(), new ClientboundPacket.UserListUpdatePacket(user.uuid(), false));
+    public void disconnectHook(SocketServer server, WebSocket conn, int code, String reason, boolean remote) {
+        ConnectedUser user = ConnectedUser.decode(conn.getAttachment());
+        sendToRoomExcept(server, user.room(), user.uuid(), new UserListUpdatePacket(user.uuid(), false));
     }
-
+    
     @Override
-    public void onMessage(WebSocket conn, String message) {
-        Pair<String, JsonObject> data = decompress(message.getBytes(StandardCharsets.UTF_8));
-        ConnectedUser user = conn.getAttachment();
-        String computerId = user.room;
-        
-        if (user.disconnectAt > Instant.now().getEpochSecond()) {
-            conn.close(UNAUTHORIZED);
-        } else if (data != null) {
-            String type = data.left;
-            JsonObject payload = data.right;
-            ServerboundPacket packet;
-            try {
-                packet = ServerboundPacket.Type.valueOf(type.toUpperCase()).factory.apply(payload);
-            } catch (IllegalArgumentException e) {
-                BlazingGames.get().debugLog(e);
-                return;
-            }
-            packet.process(this, conn, user, computerId);
-        }
-    }
-
-    @Override
-    public void onError(WebSocket conn, Exception ex) {
-        BlazingGames.get().debugLog(ex);
-        if (ex instanceof RuntimeException && conn != null && conn.isOpen()) {
-            conn.close(INTERNAL_ERROR);
-        }
-    }
-
-    @Override
-    public void onStart() {
-        BlazingGames.get().log("Websocket server started on port " + getPort());
-    }
-
-    @Override
-    public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft, ClientHandshake request) throws InvalidDataException {
-        ServerHandshakeBuilder builder = super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
-        builder.put("Access-Control-Allow-Origin", "*");
-        builder.put("Access-Control-Allow-Headers", "Authorization, Blazing-Computer-Id");
-
-        String realIp = conn.getRemoteSocketAddress().getAddress().getHostAddress();
-        String ip;
-        if (wssConfig.proxyEnabled()) {
-            if (!wssConfig.isAllowed(realIp)) {
-                BlazingGames.get().debugLog("IP not allowed: " + realIp);
-                throw new InvalidDataException(BAD_GATEWAY);
-            }
-
-            ip = request.getFieldValue(wssConfig.proxyIpAddressHeader());
-            if (ip == null) {
-                BlazingGames.get().debugLog("Proxy header not found: " + wssConfig.proxyIpAddressHeader());
-                throw new InvalidDataException(BAD_GATEWAY);
-            }
-        } else {
-            ip = realIp;
+    public boolean messageHook(SocketServer server, WebSocket conn, String message) {
+        ConnectedUser user = ConnectedUser.decode(conn.getAttachment());
+        if (user.disconnectAt() > Instant.now().getEpochSecond()) {
+            conn.close(SocketServer.UNAUTHORIZED);
+            return false;
         }
 
-        conn.setAttachment(ip);
-        return builder;
+        return true;
     }
-
-    public static record ConnectedUser(UUID uuid, String username, int level, long disconnectAt, String room, String ipAddr) {}
 }

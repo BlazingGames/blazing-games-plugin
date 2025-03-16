@@ -17,14 +17,15 @@ package de.blazemcworld.blazinggames;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import de.blazemcworld.blazinggames.commands.*;
-import de.blazemcworld.blazinggames.commands.plural.FrontCommand;
-import de.blazemcworld.blazinggames.commands.plural.MemberCommand;
-import de.blazemcworld.blazinggames.commands.plural.SystemCommand;
+
+import de.blazemcworld.blazinggames.commands.DiscordWhitelistCommand;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry.ComputerPrivileges;
-import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
-import de.blazemcworld.blazinggames.computing.api.RequiredFeature;
+import de.blazemcworld.blazinggames.utils.Cooldown;
+import de.blazemcworld.blazinggames.utils.ItemStackTypeAdapter;
+import de.blazemcworld.blazinggames.utils.TextLocation;
+import dev.ivycollective.datastorage.DataStorageConfig;
+import dev.ivycollective.datastorage.compression.GZipCompressionProvider;
 import de.blazemcworld.blazinggames.discord.AppConfig;
 import de.blazemcworld.blazinggames.discord.DiscordApp;
 import de.blazemcworld.blazinggames.discord.DiscordNotification;
@@ -32,27 +33,21 @@ import de.blazemcworld.blazinggames.events.*;
 import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
-import de.blazemcworld.blazinggames.utils.Cooldown;
-import de.blazemcworld.blazinggames.utils.ItemStackTypeAdapter;
 import de.blazemcworld.blazinggames.utils.KeyTypeAdapter;
-import de.blazemcworld.blazinggames.utils.TextLocation;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.WeakKeyException;
-import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Server;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
@@ -63,7 +58,6 @@ import java.io.File;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class BlazingGames extends JavaPlugin {
@@ -77,6 +71,10 @@ public class BlazingGames extends JavaPlugin {
         .registerTypeAdapter(Key.class, new KeyTypeAdapter())
         .registerTypeAdapter(NamespacedKey.class, new KeyTypeAdapter())
         .create();
+
+    // DataStorage
+    private static final File dataFolder = new File("blazinggames");
+    private DataStorageConfig dataStorageConfig;
 
     // Cooldowns
     public Cooldown interactCooldown;
@@ -101,6 +99,13 @@ public class BlazingGames extends JavaPlugin {
         // Config
         saveDefaultConfig();
         FileConfiguration config = getConfig();
+
+        // DataStorage
+        dataStorageConfig = DataStorageConfig.builder(dataFolder)
+            .defaultCompression(new GZipCompressionProvider())
+            .gson(gson)
+            .logger(getSLF4JLogger())
+            .build();
 
         // Log levels
         logErrors = config.getBoolean("logging.log-error");
@@ -178,8 +183,8 @@ public class BlazingGames extends JavaPlugin {
             String clientSecret = config.getString("authorization.microsoft.client-secret");
 
             if (key != null) {
-                var apiConfig = BlazingAPI.WebsiteConfig.auto(config, "services.blazing-api");
-                var wssConfig = BlazingAPI.WebsiteConfig.auto(config, "services.blazing-wss");
+                var apiConfig = BlazingAPI.createWebsiteConfig(config, "services.blazing-api");
+                var wssConfig = BlazingAPI.createWebsiteConfig(config, "services.blazing-wss");
 
                 ArrayList<RequiredFeature> features = new ArrayList<>();
                 if (computersEnabled) features.add(RequiredFeature.COMPUTERS);
@@ -211,25 +216,6 @@ public class BlazingGames extends JavaPlugin {
             rebuildPack();
         } else if (config.getBoolean("resource-packs.enabled") && !API_AVAILABLE) {
             getLogger().severe("The resource pack is enabled, but the API is not available!");
-        }
-
-        // Commands
-        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
-            commands.registrar().register(SystemCommand.command());
-            commands.registrar().register(FrontCommand.command());
-            commands.registrar().register(MemberCommand.command());
-        });
-
-        registerCommand("customenchant", new CustomEnchantCommand());
-        registerCommand("customgive", new CustomGiveCommand());
-        registerCommand("killme", new KillMeCommand());
-        registerCommand("playtime", new PlaytimeCommand());
-        registerCommand("display", new DisplayCommand());
-        registerCommand("setaltar", new SetAltar());
-
-        if(DiscordApp.isWhitelistManaged()) {
-            registerCommand("unlink", new UnlinkCommand());
-            registerCommand("discordwhitelist", new DiscordWhitelistCommand());
         }
 
         // Events
@@ -280,15 +266,6 @@ public class BlazingGames extends JavaPlugin {
         // Computers
         BlazingAPI.stopAll();
         API_AVAILABLE = false; // reset value
-    }
-
-    private void registerCommand(String name, CommandExecutor executor) {
-        PluginCommand command = Objects.requireNonNull(getCommand(name));
-        command.setExecutor(executor);
-
-        if(executor instanceof TabCompleter tc) {
-            command.setTabCompleter(tc);
-        }
     }
 
     public static BlazingGames get()
@@ -364,5 +341,13 @@ public class BlazingGames extends JavaPlugin {
             this.sha1 = ResourcePackManager.getFileHash(packFile);
             getLogger().info("Resource pack rebuilt");
         }
+    }
+
+    public static DataStorageConfig dataStorageConfig() {
+        BlazingGames get = get();
+        if (get.dataStorageConfig == null) {
+            throw new IllegalStateException("dataStorageConfig() called when plugin isn't ready");
+        }
+        return get.dataStorageConfig;
     }
 }
