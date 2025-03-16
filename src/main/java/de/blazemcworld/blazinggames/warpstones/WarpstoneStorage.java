@@ -157,9 +157,9 @@ public class WarpstoneStorage {
         if (details == null) return true;
 
         if (!Material.BARRIER.equals(warpstone.getBlock().getType())) return true;
-        if (!Material.AIR.equals(warpstone.getBlock().getRelative(0, 1, 0).getType())) return true;
-        if (!Material.AIR.equals(warpstone.getBlock().getRelative(0, 2, 0).getType())) return true;
-
+        if (!warpstone.getBlock().getRelative(0, 1, 0).isPassable()) return true;
+        if (!warpstone.getBlock().getRelative(0, 2, 0).isPassable()) return true;
+        
         return false;
     }
 
