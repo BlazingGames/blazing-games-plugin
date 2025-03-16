@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.utils;
+package de.blazemcworld.blazinggames.players;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import com.google.gson.reflect.TypeToken;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.utils.Pair;
 import dev.ivycollective.datastorage.DataStorage;
 import dev.ivycollective.datastorage.name.UUIDNameProvider;
 import dev.ivycollective.datastorage.storage.GsonStorageProvider;

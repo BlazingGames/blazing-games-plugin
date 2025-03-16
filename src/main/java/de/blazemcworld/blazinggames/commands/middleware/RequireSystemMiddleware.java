@@ -21,7 +21,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelperContext;
 import de.blazemcworld.blazinggames.commands.boilerplate.MiddlewareFunction;
-import de.blazemcworld.blazinggames.utils.PlayerConfig;
+import de.blazemcworld.blazinggames.players.PlayerConfig;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 

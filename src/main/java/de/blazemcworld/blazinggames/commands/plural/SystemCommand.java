@@ -23,8 +23,8 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelper;
 import de.blazemcworld.blazinggames.commands.middleware.RequireSystemMiddleware;
-import de.blazemcworld.blazinggames.utils.FrontManager;
-import de.blazemcworld.blazinggames.utils.PlayerConfig;
+import de.blazemcworld.blazinggames.players.FrontManager;
+import de.blazemcworld.blazinggames.players.PlayerConfig;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;

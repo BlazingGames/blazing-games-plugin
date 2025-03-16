@@ -25,7 +25,7 @@ import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelper;
 import de.blazemcworld.blazinggames.commands.finalizers.ShowNameplatesFinalizer;
 import de.blazemcworld.blazinggames.commands.middleware.EmptyMessageMiddleware;
 import de.blazemcworld.blazinggames.commands.middleware.NoFrontMiddleware;
-import de.blazemcworld.blazinggames.utils.PlayerConfig;
+import de.blazemcworld.blazinggames.players.PlayerConfig;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.utils;
+package de.blazemcworld.blazinggames.players;
 
 import java.util.UUID;
 
@@ -23,6 +23,7 @@ import de.blazemcworld.blazinggames.discord.DiscordApp;
 import de.blazemcworld.blazinggames.discord.DiscordUser;
 import de.blazemcworld.blazinggames.discord.WhitelistManagement;
 import de.blazemcworld.blazinggames.discord.WhitelistedPlayer;
+import de.blazemcworld.blazinggames.utils.EmojiRegistry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;

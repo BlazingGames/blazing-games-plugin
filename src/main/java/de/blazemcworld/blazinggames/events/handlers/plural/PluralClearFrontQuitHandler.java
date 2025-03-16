@@ -18,7 +18,7 @@ package de.blazemcworld.blazinggames.events.handlers.plural;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
-import de.blazemcworld.blazinggames.utils.FrontManager;
+import de.blazemcworld.blazinggames.players.FrontManager;
 
 public class PluralClearFrontQuitHandler extends BlazingEventHandler<PlayerQuitEvent> {
     @Override

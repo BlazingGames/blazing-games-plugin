@@ -1,4 +1,4 @@
-package de.blazemcworld.blazinggames.utils;
+package de.blazemcworld.blazinggames.players;
 
 public class MemberData {
     public MemberData(String name) {

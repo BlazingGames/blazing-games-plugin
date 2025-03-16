@@ -19,7 +19,7 @@ import org.bukkit.entity.Player;
 
 import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelperContext;
 import de.blazemcworld.blazinggames.commands.boilerplate.MiddlewareFunction;
-import de.blazemcworld.blazinggames.utils.FrontManager;
+import de.blazemcworld.blazinggames.players.FrontManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 

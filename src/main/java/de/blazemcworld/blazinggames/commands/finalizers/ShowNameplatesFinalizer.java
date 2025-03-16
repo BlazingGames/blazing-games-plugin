@@ -24,8 +24,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelperContext;
 import de.blazemcworld.blazinggames.commands.boilerplate.FinalizerFunction;
-import de.blazemcworld.blazinggames.utils.DisplayTag;
-import de.blazemcworld.blazinggames.utils.PlayerConfig;
+import de.blazemcworld.blazinggames.players.DisplayTag;
+import de.blazemcworld.blazinggames.players.PlayerConfig;
 import net.kyori.adventure.text.format.TextColor;
 
 public class ShowNameplatesFinalizer implements FinalizerFunction {

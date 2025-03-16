@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.blazemcworld.blazinggames.utils;
+package de.blazemcworld.blazinggames.players;
 
 import de.blazemcworld.blazinggames.discord.WhitelistedPlayer;
 import org.apache.commons.lang.NullArgumentException;
