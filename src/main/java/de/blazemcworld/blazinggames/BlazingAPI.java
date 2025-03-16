@@ -69,6 +69,8 @@ public class BlazingAPI {
             ivyHttp.addWebsite(new RestAPIWebsite(endpoints), config.apiConfig());
             ivyHttp.addWebsite(new SocketServerWebsite(new BlazingWSS()), config.wssConfig());
 
+            ivyHttp.start();
+
             return true;
         }
     }
