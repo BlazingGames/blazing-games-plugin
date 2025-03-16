@@ -197,6 +197,40 @@ public class MemberCommand {
 
 
 
+                .then(Commands.literal("name").then(Commands.argument("display", StringArgumentType.greedyString()).executes(ctx -> {
+                    String name = StringArgumentType.getString(ctx, "name");
+                    String displayName = StringArgumentType.getString(ctx, "display");
+                    if (!(ctx.getSource().getSender() instanceof Player player)) {
+                        ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
+                        return Command.SINGLE_SUCCESS;
+                    }
+
+                    String res = basicChecks(player, name);
+                    if (res != null) { player.sendMessage(Component.text(res, color)); return Command.SINGLE_SUCCESS; }
+
+                    if ("unset".equals(displayName)) {
+                        displayName = null;
+                    }
+
+                    if (displayName != null && (displayName.length() < 2 || displayName.length() > 40)) {
+                        player.sendMessage(Component.text("Display name must be between 2 and 40 characters long.", color));
+                        return Command.SINGLE_SUCCESS;
+                    }
+
+                    PlayerConfig config = PlayerConfig.forPlayer(player);
+                    PluralConfig cfg = config.getPluralConfig();
+                    if (cfg.getMember(name) == null) {
+                        player.sendMessage(Component.text("Can't find any member with this name.", color));
+                    } else {
+                        cfg.setDisplayName(name, displayName);
+                        config.updatePlayer();
+                        player.sendMessage(Component.text((displayName == null ? "Cleared" : "Changed") + " that member's display name successfully.", color));
+                    }
+                    return Command.SINGLE_SUCCESS;
+                })))
+
+
+
                 .then(Commands.literal("pronouns").then(Commands.argument("pronouns", StringArgumentType.greedyString()).executes(ctx -> {
                     String name = StringArgumentType.getString(ctx, "name");
                     String pronouns = StringArgumentType.getString(ctx, "pronouns");

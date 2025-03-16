@@ -112,7 +112,7 @@ public class PluralConfig {
             player,
             config.playerInfo().getUsername(),
             config.playerInfo().isOperator(),
-            data.name,
+            data.displayName != null ? data.displayName : data.name,
             data.pronouns,
             data.color == null ? config.getNameColor() : TextColor.color(data.color),
             true, config.getSystemName(), config.getSystemTag()
@@ -134,6 +134,10 @@ public class PluralConfig {
 
     public void rename(String oldName, String newName) {
         modifyMember(oldName, m -> m.name = newName);
+    }
+
+    public void setDisplayName(String name, String displayName) {
+        modifyMember(name, m -> m.displayName = displayName);
     }
 
     public void setPronouns(String name, String pronouns) {
