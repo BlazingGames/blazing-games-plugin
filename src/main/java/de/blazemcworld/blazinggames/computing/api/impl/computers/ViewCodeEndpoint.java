@@ -20,14 +20,15 @@ import java.util.Base64;
 import com.google.gson.JsonObject;
 
 import de.blazemcworld.blazinggames.computing.ComputerEditor;
-import de.blazemcworld.blazinggames.computing.api.APIDocs;
-import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
-import de.blazemcworld.blazinggames.computing.api.Endpoint;
-import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
+import dev.ivycollective.ivyhttp.http.APIDocs;
+import dev.ivycollective.ivyhttp.http.EarlyResponse;
+import dev.ivycollective.ivyhttp.http.Endpoint;
+import dev.ivycollective.ivyhttp.http.EndpointResponse;
+import de.blazemcworld.blazinggames.computing.api.APIUtils;
 import de.blazemcworld.blazinggames.computing.api.LinkedUser;
 import de.blazemcworld.blazinggames.computing.api.Permission;
-import de.blazemcworld.blazinggames.computing.api.RequestContext;
-import de.blazemcworld.blazinggames.computing.api.RequestMethod;
+import dev.ivycollective.ivyhttp.http.RequestContext;
+import dev.ivycollective.ivyhttp.http.RequestMethod;
 import de.blazemcworld.blazinggames.utils.GZipToolkit;
 
 public class ViewCodeEndpoint implements Endpoint {
@@ -38,8 +39,9 @@ public class ViewCodeEndpoint implements Endpoint {
 
     @Override
     public EndpointResponse GET(RequestContext context) throws EarlyResponse {
-        LinkedUser linked = context.requireAuthentication();
-        context.requirePermission(Permission.COMPUTER_CODE_READ);
+        APIUtils utils = APIUtils.of(context);
+        LinkedUser linked = utils.requireAuthentication();
+        utils.requirePermission(Permission.COMPUTER_CODE_READ);
         
         var body = context.useBodyWrapper();
         String id = context.requireClean("id", body.getString("id"));
@@ -63,7 +65,6 @@ public class ViewCodeEndpoint implements Endpoint {
                 .method(RequestMethod.GET)
                 .addGenerics()
                 .removeBodyFromGenerics()
-                .addPermission(Permission.COMPUTER_CODE_READ)
                 .addIncomingArgument(
                     "id",
                     "The ID of the computer"

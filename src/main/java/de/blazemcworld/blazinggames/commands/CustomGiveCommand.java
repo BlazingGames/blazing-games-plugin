@@ -17,94 +17,89 @@ package de.blazemcworld.blazinggames.commands;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.items.CustomItem;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import de.blazemcworld.blazinggames.items.ItemProviders;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 
-public class CustomGiveCommand implements CommandExecutor, TabCompleter {
+public class CustomGiveCommand {
+    public static LiteralCommandNode<CommandSourceStack> command() {
+        return Commands.literal("customgive")
+            .requires(ctx -> ctx.getSender().hasPermission("blazinggames.customgive"))
+            .then(Commands.argument("item", StringArgumentType.word())
+                .executes(ctx -> {
+                    give(
+                        ctx.getSource().getSender(), ctx.getSource().getExecutor(),
+                        StringArgumentType.getString(ctx, "item"),
+                        1, ""
+                    );
+                    return Command.SINGLE_SUCCESS;
+                })
+                .then(Commands.argument("count", IntegerArgumentType.integer(1, 64))
+                    .executes(ctx -> {
+                        give(
+                            ctx.getSource().getSender(), ctx.getSource().getExecutor(),
+                            StringArgumentType.getString(ctx, "item"),
+                            IntegerArgumentType.getInteger(ctx, "count"),
+                            ""
+                        );
+                        return Command.SINGLE_SUCCESS;
+                    })
+                    .then(Commands.argument("context", StringArgumentType.greedyString())
+                        .executes(ctx -> {
+                            give(
+                                ctx.getSource().getSender(), ctx.getSource().getExecutor(),
+                                StringArgumentType.getString(ctx, "item"),
+                                IntegerArgumentType.getInteger(ctx, "count"),
+                                StringArgumentType.getString(ctx, "context")
+                            );
+                            return Command.SINGLE_SUCCESS;
+                        })
+        ))).build();
+    }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command,
-                             @NotNull String s, @NotNull String[] strings) {
-        if (!(commandSender instanceof Player p)) {
-            commandSender.sendMessage(Component.text("Only players can use this command!")
-                    .color(NamedTextColor.RED));
-            return true;
+    public static void give(CommandSender sender, Entity executor, String id, int count, String rawContext) {
+        if (executor == null || !(executor instanceof Player player)) {
+            sender.sendRichMessage("<red>The executor is not a player!");
+            return;
         }
+        
+        CustomItem<?> itemType = ItemProviders.instance.getByKey(BlazingGames.get().key(id));
 
-        if(strings.length < 1) {
-            CommandHelper.sendUsage(commandSender, command);
-            return true;
-        }
-
-        CustomItem<?> itemType = ItemProviders.instance.getByKey(BlazingGames.get().key(strings[0]));
-        int count = 1;
-
-        if(itemType == null)
-        {
-            commandSender.sendMessage(Component.text("Unknown custom item: " + strings[0] + "!").color(NamedTextColor.RED));
-            return true;
-        }
-
-        if(strings.length > 1) {
-            count = Integer.parseInt(strings[1]);
-        }
-
-        String rawContext = "";
-
-        if(strings.length > 2)
-        {
-            List<String> contextStrings = new ArrayList<>(List.of(strings));
-            contextStrings.removeFirst();
-            contextStrings.removeFirst();
-
-            rawContext = String.join(" ", contextStrings);
+        if(itemType == null) {
+            sender.sendMessage(Component.text("Unknown custom item: " + id + "!").color(NamedTextColor.RED));
+            return;
         }
 
         try {
-            ItemStack item = itemType.createWithRawContext(p, rawContext);
+            ItemStack item = itemType.createWithRawContext(player, rawContext);
             item.setAmount(count);
 
-            p.getInventory().addItem(item);
-        }
-        catch(ParseException parsingException) {
-            commandSender.sendMessage(Component.text("Parsing Exception: "
+            player.getInventory().addItem(item);
+        } catch (ParseException parsingException) {
+            sender.sendMessage(Component.text("Parsing Exception: "
                             + parsingException.getMessage()
                             + " at " + parsingException.getErrorOffset())
                     .color(NamedTextColor.RED));
             BlazingGames.get().debugLog(parsingException);
-        }
-        catch(Exception exception) {
-            commandSender.sendMessage(Component.text(exception.getClass().getName() + ": "
+        } catch(Exception exception) {
+            sender.sendMessage(Component.text(exception.getClass().getName() + ": "
                             + exception.getMessage())
                     .color(NamedTextColor.RED));
             BlazingGames.get().debugLog(exception);
         }
-
-        return true;
-    }
-
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command,
-                                                @NotNull String s, @NotNull String[] strings) {
-        List<String> tabs = new ArrayList<>();
-
-        if(strings.length == 1) {
-            ItemProviders.instance.list().forEach(itemType -> tabs.add(itemType.getKey().getKey()));
-        }
-
-        return tabs;
     }
 }

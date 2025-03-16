@@ -15,11 +15,11 @@
  */
 package de.blazemcworld.blazinggames.computing.api.impl.auth;
 
-import de.blazemcworld.blazinggames.computing.api.APIDocs;
-import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
-import de.blazemcworld.blazinggames.computing.api.Endpoint;
-import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
-import de.blazemcworld.blazinggames.computing.api.RequestContext;
+import dev.ivycollective.ivyhttp.http.APIDocs;
+import dev.ivycollective.ivyhttp.http.EarlyResponse;
+import dev.ivycollective.ivyhttp.http.Endpoint;
+import dev.ivycollective.ivyhttp.http.EndpointResponse;
+import dev.ivycollective.ivyhttp.http.RequestContext;
 
 public class AuthUnlinkEndpoint implements Endpoint {
     public static final String MAGIC_UNLINK_STATE = "-ULINK--";

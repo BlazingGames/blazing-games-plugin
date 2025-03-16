@@ -22,17 +22,17 @@ import java.util.function.Consumer;
 
 import com.google.gson.reflect.TypeToken;
 
-import de.blazemcworld.blazinggames.data.DataStorage;
-import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
-import de.blazemcworld.blazinggames.data.name.UUIDNameProvider;
-import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
+import de.blazemcworld.blazinggames.BlazingGames;
+import dev.ivycollective.datastorage.DataStorage;
+import dev.ivycollective.datastorage.name.UUIDNameProvider;
+import dev.ivycollective.datastorage.storage.GsonStorageProvider;
 import net.kyori.adventure.text.format.TextColor;
 
 public class PluralConfig {
-    private static final DataStorage<List<MemberData>, UUID> dataStorage = DataStorage.forClass(
+    private static final DataStorage<List<MemberData>, UUID> dataStorage = BlazingGames.dataStorageConfig().makeDataStorage(
         PluralConfig.class, null,
         new GsonStorageProvider<>(new TypeToken<List<MemberData>>() {}.getType()),
-        new UUIDNameProvider(), new GZipCompressionProvider()
+        new UUIDNameProvider()
     );
 
     public final UUID player;

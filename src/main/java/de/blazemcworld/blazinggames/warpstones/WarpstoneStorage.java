@@ -18,13 +18,12 @@ package de.blazemcworld.blazinggames.warpstones;
 import com.google.common.reflect.TypeToken;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.data.DataStorage;
-import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
-import de.blazemcworld.blazinggames.data.name.ArbitraryNameProvider;
-import de.blazemcworld.blazinggames.data.name.UUIDNameProvider;
-import de.blazemcworld.blazinggames.data.storage.GsonStorageProvider;
 import de.blazemcworld.blazinggames.items.CustomItems;
 import de.blazemcworld.blazinggames.utils.TextLocation;
+import dev.ivycollective.datastorage.DataStorage;
+import dev.ivycollective.datastorage.name.ArbitraryNameProvider;
+import dev.ivycollective.datastorage.name.UUIDNameProvider;
+import dev.ivycollective.datastorage.storage.GsonStorageProvider;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -43,16 +42,16 @@ public class WarpstoneStorage {
     private static final NamespacedKey metadataKey = BlazingGames.get().key("tagged_as_warpstone");
     private WarpstoneStorage() {}
     
-    private static final DataStorage<WarpstoneDetails, String> warpstoneStorage = DataStorage.forClass(
+    private static final DataStorage<WarpstoneDetails, String> warpstoneStorage = BlazingGames.dataStorageConfig().makeDataStorage(
         WarpstoneStorage.class, "warpstones",
         new GsonStorageProvider<>(WarpstoneDetails.class),
-        new ArbitraryNameProvider(), new GZipCompressionProvider()
+        new ArbitraryNameProvider()
     );
 
-    private static final DataStorage<HashMap<String, WarpstoneOverrideDetails>, UUID> playerStorage = DataStorage.forClass(
+    private static final DataStorage<HashMap<String, WarpstoneOverrideDetails>, UUID> playerStorage = BlazingGames.dataStorageConfig().makeDataStorage(
         WarpstoneStorage.class, "players",
         new GsonStorageProvider<>(new TypeToken<HashMap<String, WarpstoneOverrideDetails>>() {}.getType()),
-        new UUIDNameProvider(), new GZipCompressionProvider()
+        new UUIDNameProvider()
     );
 
     public static WarpstoneDetails getDetails(Location location) {

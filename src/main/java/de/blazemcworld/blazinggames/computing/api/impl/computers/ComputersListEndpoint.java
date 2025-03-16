@@ -19,14 +19,15 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import de.blazemcworld.blazinggames.computing.ComputerEditor;
 import de.blazemcworld.blazinggames.computing.ComputerMetadata;
-import de.blazemcworld.blazinggames.computing.api.APIDocs;
-import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
-import de.blazemcworld.blazinggames.computing.api.Endpoint;
-import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
+import dev.ivycollective.ivyhttp.http.APIDocs;
+import dev.ivycollective.ivyhttp.http.EarlyResponse;
+import dev.ivycollective.ivyhttp.http.Endpoint;
+import dev.ivycollective.ivyhttp.http.EndpointResponse;
+import de.blazemcworld.blazinggames.computing.api.APIUtils;
 import de.blazemcworld.blazinggames.computing.api.LinkedUser;
 import de.blazemcworld.blazinggames.computing.api.Permission;
-import de.blazemcworld.blazinggames.computing.api.RequestContext;
-import de.blazemcworld.blazinggames.computing.api.RequestMethod;
+import dev.ivycollective.ivyhttp.http.RequestContext;
+import dev.ivycollective.ivyhttp.http.RequestMethod;
 
 public class ComputersListEndpoint implements Endpoint {
     @Override
@@ -36,8 +37,9 @@ public class ComputersListEndpoint implements Endpoint {
 
     @Override
     public EndpointResponse GET(RequestContext context) throws EarlyResponse {
-        LinkedUser linked = context.requireAuthentication();
-        context.requirePermission(Permission.READ_COMPUTERS);
+        APIUtils utils = APIUtils.of(context);
+        LinkedUser linked = utils.requireAuthentication();
+        utils.requirePermission(Permission.READ_COMPUTERS);
         JsonObject object = new JsonObject();
         JsonArray computers = new JsonArray();
 
@@ -58,7 +60,6 @@ public class ComputersListEndpoint implements Endpoint {
                 .method(RequestMethod.GET)
                 .addGenerics()
                 .removeBodyFromGenerics()
-                .addPermission(Permission.READ_COMPUTERS)
                 .addOutgoingArgument(
                     "computers",
                     "List of computers as an array containing objects with properties: id, name, address, type, upgrades, location, running, owner"

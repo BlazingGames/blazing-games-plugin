@@ -13,26 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.data.name;
+package de.blazemcworld.blazinggames;
 
-import de.blazemcworld.blazinggames.data.NameProvider;
-import io.azam.ulidj.MonotonicULID;
-
-public class ULIDNameProvider extends NameProvider<String> {
-    protected final MonotonicULID ulid = new MonotonicULID();
-
-    @Override
-    public String next() {
-        return ulid.generate();
-    }
-
-    @Override
-    public String fromValue(String value) {
-        return value;
-    }
-
-    @Override
-    public String fromString(String string) {
-        return string;
-    }
+public enum RequiredFeature {
+    COMPUTERS,
+    RESOURCE_PACK
 }

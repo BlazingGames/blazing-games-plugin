@@ -18,22 +18,23 @@ package de.blazemcworld.blazinggames.utils;
 import java.util.Properties;
 import java.util.UUID;
 
+import de.blazemcworld.blazinggames.BlazingGames;
+import dev.ivycollective.datastorage.DataStorage;
+import dev.ivycollective.datastorage.name.UUIDNameProvider;
+import dev.ivycollective.datastorage.storage.PropertiesStorageProvider;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import de.blazemcworld.blazinggames.data.DataStorage;
-import de.blazemcworld.blazinggames.data.compression.GZipCompressionProvider;
-import de.blazemcworld.blazinggames.data.name.UUIDNameProvider;
-import de.blazemcworld.blazinggames.data.storage.PropertiesStorageProvider;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 
 import javax.naming.NameNotFoundException;
 
 public class PlayerConfig {
-    private static final DataStorage<Properties, UUID> dataStorage = DataStorage.forClass(
+    private static final DataStorage<Properties, UUID> dataStorage = BlazingGames.dataStorageConfig().makeDataStorage(
         PlayerConfig.class, null,
-        new PropertiesStorageProvider(), new UUIDNameProvider(), new GZipCompressionProvider()
+        new PropertiesStorageProvider(), new UUIDNameProvider()
     );
 
     public static PlayerConfig forPlayer(UUID uuid) throws NameNotFoundException {

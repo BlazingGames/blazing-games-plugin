@@ -15,36 +15,167 @@
  */
 package de.blazemcworld.blazinggames.commands;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import de.blazemcworld.blazinggames.utils.DisplayTag;
 import de.blazemcworld.blazinggames.utils.FrontManager;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 
-public class DisplayCommand implements CommandExecutor, TabCompleter {
+public class DisplayCommand {
     public static final TextColor colorSuccess = TextColor.color(0xD1FCDF);
     public static final TextColor colorFailure = TextColor.color(0xFC9588);
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Only players can use this command!")
-                    .color(NamedTextColor.RED));
-            return false;
+    public static LiteralCommandNode<CommandSourceStack> command() {
+        return Commands.literal("display")
+            .executes(ctx -> {
+                Player player = requirePlayer(ctx);
+                if (doChecks(player)) return Command.SINGLE_SUCCESS;
+
+                // help text
+                player.sendMessage(Component.text("Usage: /display [name|pronouns|color] [value]").color(colorSuccess));
+                sendNameplates(player);
+                return Command.SINGLE_SUCCESS;
+            })
+            .then(Commands.literal("reset")
+                .executes(ctx -> {
+                    Player player = requirePlayer(ctx);
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
+
+                    // reset help text
+                    player.sendMessage(Component.text("To reset all display settings, run ").color(colorSuccess)
+                        .append(Component.text("/display reset confirm").color(colorFailure)));
+                    return Command.SINGLE_SUCCESS;
+                })
+                .then(Commands.literal("confirm").executes(ctx -> {
+                    Player player = requirePlayer(ctx);
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
+
+                    // reset confirmation
+                    PlayerConfig config = PlayerConfig.forPlayer(player);
+                    config.setDisplayName(null);
+                    config.setPronouns(null);
+                    config.setNameColor(null);
+                    player.sendMessage(Component.text("Reset all settings successfully.").color(colorSuccess));
+                    sendNameplates(player);
+                    return Command.SINGLE_SUCCESS;
+                })))
+            .then(Commands.literal("name")
+                .executes(ctx -> {
+                    Player player = requirePlayer(ctx);
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
+
+                    // clear name
+                    PlayerConfig.forPlayer(player).setDisplayName(null);
+                    player.sendMessage(Component.text("Unset display name successfully.", colorSuccess));
+                    sendNameplates(player);
+                    return Command.SINGLE_SUCCESS;
+                })
+                .then(Commands.argument("value", StringArgumentType.greedyString()).executes(ctx -> {
+                    Player player = requirePlayer(ctx);
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
+                    String value = StringArgumentType.getString(ctx, "value");
+
+                    // update display name
+                    if (value.length() < 2 || value.length() > 40) {
+                        player.sendMessage(Component.text("Display name must be between 2 and 40 characters long.").color(colorFailure));
+                        return Command.SINGLE_SUCCESS;
+                    }
+                    PlayerConfig.forPlayer(player).setDisplayName(value);
+                    player.sendMessage(Component.text("Set display name to %s successfully.".formatted(value), colorSuccess));
+                    sendNameplates(player);
+                    return Command.SINGLE_SUCCESS;
+                })))
+            .then(Commands.literal("pronouns")
+                .executes(ctx -> {
+                    Player player = requirePlayer(ctx);
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
+
+                    // clear pronouns
+                    PlayerConfig.forPlayer(player).setPronouns(null);
+                    player.sendMessage(Component.text("Unset pronouns successfully.", colorSuccess));
+                    sendNameplates(player);
+                    return Command.SINGLE_SUCCESS;
+                })
+                .then(Commands.argument("value", StringArgumentType.greedyString()).executes(ctx -> {
+                    Player player = requirePlayer(ctx);
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
+                    String value = StringArgumentType.getString(ctx, "value");
+
+                    // update pronouns
+                    if (value.length() < 2 || value.length() > 20) {
+                        player.sendMessage(Component.text("Pronouns must be between 2 and 20 characters long.").color(colorFailure));
+                        return Command.SINGLE_SUCCESS;
+                    }
+                    PlayerConfig.forPlayer(player).setPronouns(value);
+                    player.sendMessage(Component.text("Set pronouns to %s successfully.".formatted(value), colorSuccess));
+                    sendNameplates(player);
+                    return Command.SINGLE_SUCCESS;
+                })))
+            .then(Commands.literal("color")
+                .executes(ctx -> {
+                    Player player = requirePlayer(ctx);
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
+
+                    // clear color
+                    PlayerConfig.forPlayer(player).setNameColor(null);
+                    player.sendMessage(Component.text("Unset name color successfully.", colorSuccess));
+                    sendNameplates(player);
+                    return Command.SINGLE_SUCCESS;
+                })
+                .then(Commands.argument("value", StringArgumentType.word()).executes(ctx -> {
+                    Player player = requirePlayer(ctx);
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
+                    String value = StringArgumentType.getString(ctx, "value");
+
+                    // update color
+                    if (value.length() != 6) {
+                        player.sendMessage(Component.text("Colors must be a hex color without the first #. For example, \"ffffff\".").color(colorFailure));
+                        return Command.SINGLE_SUCCESS;
+                    } else {
+                        int realValue;
+                        try {
+                            realValue = Integer.parseInt(value, 16);
+                        } catch (NumberFormatException e) {
+                            player.sendMessage(Component.text("This isn't a valid color: #" + value).color(colorFailure));
+                            return Command.SINGLE_SUCCESS;
+                        }
+                        PlayerConfig.forPlayer(player).setNameColor(TextColor.color(realValue));
+                        player.sendMessage(Component.text("Set pronouns to %s successfully.".formatted(value), colorSuccess));
+                        sendNameplates(player);
+                    }
+                    return Command.SINGLE_SUCCESS;
+                })))
+            .build();
+    }
+
+    public static Player requirePlayer(CommandContext<CommandSourceStack> ctx) {
+        if (ctx.getSource().getExecutor() == null || !(ctx.getSource().getExecutor() instanceof Player player)) {
+            ctx.getSource().getSender().sendRichMessage("<red>Executor must be a player!");
+            return null;
         }
+        player.sendMessage("");
+        return player;
+    }
+
+    public static void sendNameplates(Player player) {
+        PlayerConfig config = PlayerConfig.forPlayer(player);
+        DisplayTag tag = config.toDisplayTag(false);
+        tag.sendPreviews(player, colorSuccess);
+        config.updatePlayer();
+    }
+
+    public static boolean doChecks(Player player) {
+        if (player == null) return true;
 
         if (FrontManager.hasFront(player.getUniqueId())) {
             player.sendMessage(Component.text((
@@ -54,99 +185,6 @@ public class DisplayCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        PlayerConfig config = PlayerConfig.forPlayer(player);
-        player.sendMessage("");
-
-        if (args.length < 1) {
-            // show help text
-            player.sendMessage(Component.text("Usage: " + command.getUsage()).color(colorSuccess));
-            sendNameplates(player);
-            return true;
-        }
-
-        String param = args[0];
-        String valueStr = (args.length > 1) ? Arrays.stream(args).skip(1).collect(Collectors.joining(" ")) : null;
-        String value = (valueStr == null || valueStr.isBlank()) ? null : valueStr;
-        String pretty;
-        switch (param) {
-            case "name":
-                if (value != null && (value.length() < 2 || value.length() > 40)) {
-                    player.sendMessage(Component.text("Display name must be between 2 and 40 characters long.").color(colorFailure));
-                    return true;
-                }
-                config.setDisplayName(value);
-                pretty = "display name";
-                break;
-            case "pronouns":
-                if (value != null && (value.length() < 2 || value.length() > 20)) {
-                    player.sendMessage(Component.text("Pronouns must be between 2 and 20 characters long.").color(colorFailure));
-                    return true;
-                }
-                config.setPronouns(value);
-                pretty = "pronouns";
-                break;
-            case "color":
-                if (value == null) {
-                    config.setNameColor(null);
-                    player.sendMessage(Component.text("Unset name color.").color(colorSuccess));
-                    sendNameplates(player);
-                    return true;
-                } else if (value.length() != 6) {
-                    player.sendMessage(Component.text("Colors must be a hex color without the first #. For example, \"ffffff\".").color(colorFailure));
-                    return true;
-                } else {
-                    int realValue;
-                    try {
-                        realValue = Integer.parseInt(value, 16);
-                    } catch (NumberFormatException e) {
-                        player.sendMessage(Component.text("This isn't a valid color: #" + value).color(colorFailure));
-                        return true;
-                    }
-                    config.setNameColor(TextColor.color(realValue));
-                }   
-                pretty = "name color";
-                break;
-            case "reset":
-                if ("confirm".equals(value)) {
-                    config.setDisplayName(null);
-                    config.setPronouns(null);
-                    config.setNameColor(null);
-                    player.sendMessage(Component.text("Reset all settings successfully.").color(colorSuccess));
-                    sendNameplates(player);
-                } else {
-                    player.sendMessage(Component.text("To reset all display settings, run ").color(colorSuccess)
-                        .append(Component.text("/display reset confirm").color(colorFailure)));
-                }
-                return true;
-            default:
-                player.sendMessage(Component.text("Unknown parameter: " + param).color(colorFailure));
-                return true;
-        }
-
-        if (value == null) {
-            player.sendMessage(Component.text("Unset " + pretty + " successfully.").color(colorSuccess));
-        } else {
-            player.sendMessage(Component.text("Set " + pretty + " to ").color(colorSuccess)
-                .append(Component.text(value).color(NamedTextColor.WHITE))
-                .append(Component.text(" successfully.").color(colorSuccess)));
-        }
-        sendNameplates(player);
-        return true;
-    }
-
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command,
-            @NotNull String label, @NotNull String[] args) {
-        if (args.length == 1) {
-            return List.of("name", "pronouns", "color");
-        }
-        return List.of();
-    }
-
-    private static void sendNameplates(Player player) {
-        PlayerConfig config = PlayerConfig.forPlayer(player);
-        DisplayTag tag = config.toDisplayTag(false);
-        tag.sendPreviews(player, colorSuccess);
-        config.updatePlayer();
+        return false;
     }
 }

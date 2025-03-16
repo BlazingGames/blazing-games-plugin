@@ -21,8 +21,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
+import de.blazemcworld.blazinggames.BlazingAPI;
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
