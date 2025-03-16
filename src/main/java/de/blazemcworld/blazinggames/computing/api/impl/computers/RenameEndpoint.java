@@ -18,14 +18,15 @@ package de.blazemcworld.blazinggames.computing.api.impl.computers;
 import com.google.gson.JsonObject;
 
 import de.blazemcworld.blazinggames.computing.ComputerEditor;
-import de.blazemcworld.blazinggames.computing.api.APIDocs;
-import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
-import de.blazemcworld.blazinggames.computing.api.Endpoint;
-import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
+import dev.ivycollective.ivyhttp.http.APIDocs;
+import dev.ivycollective.ivyhttp.http.EarlyResponse;
+import dev.ivycollective.ivyhttp.http.Endpoint;
+import dev.ivycollective.ivyhttp.http.EndpointResponse;
+import de.blazemcworld.blazinggames.computing.api.APIUtils;
 import de.blazemcworld.blazinggames.computing.api.LinkedUser;
 import de.blazemcworld.blazinggames.computing.api.Permission;
-import de.blazemcworld.blazinggames.computing.api.RequestContext;
-import de.blazemcworld.blazinggames.computing.api.RequestMethod;
+import dev.ivycollective.ivyhttp.http.RequestContext;
+import dev.ivycollective.ivyhttp.http.RequestMethod;
 import de.blazemcworld.blazinggames.testing.CoveredByTests;
 import de.blazemcworld.blazinggames.testing.tests.RenameEndpointTest;
 
@@ -38,10 +39,11 @@ public class RenameEndpoint implements Endpoint {
 
     @Override
     public EndpointResponse PATCH(RequestContext context) throws EarlyResponse {
+        APIUtils utils = APIUtils.of(context);
         var body = context.useBodyWrapper();
-        LinkedUser user = context.requireAuthentication();
-        context.requirePermission(Permission.READ_COMPUTERS);
-        context.requirePermission(Permission.WRITE_COMPUTERS);
+        LinkedUser user = utils.requireAuthentication();
+        utils.requirePermission(Permission.READ_COMPUTERS);
+        utils.requirePermission(Permission.WRITE_COMPUTERS);
 
         String id = context.requireClean("id", body.getString("id"));
         String name = context.requireClean("name", body.getString("name"));
@@ -63,8 +65,6 @@ public class RenameEndpoint implements Endpoint {
                 .method(RequestMethod.POST)
                 .addGenerics()
                 .removeBodyFromGenerics()
-                .addPermission(Permission.READ_COMPUTERS)
-                .addPermission(Permission.WRITE_COMPUTERS)
                 .addIncomingArgument("id", "The ID of the computer")
                 .addIncomingArgument("name", "The name of the computer")
                 .build()

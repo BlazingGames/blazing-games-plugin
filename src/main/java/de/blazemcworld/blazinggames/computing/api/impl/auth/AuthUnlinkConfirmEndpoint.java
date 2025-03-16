@@ -15,14 +15,15 @@
  */
 package de.blazemcworld.blazinggames.computing.api.impl.auth;
 
-import de.blazemcworld.blazinggames.computing.api.APIDocs;
+import dev.ivycollective.ivyhttp.http.APIDocs;
+import de.blazemcworld.blazinggames.computing.api.APIUtils;
 import de.blazemcworld.blazinggames.computing.api.TokenManager;
 import de.blazemcworld.blazinggames.testing.CoveredByTests;
 import de.blazemcworld.blazinggames.testing.tests.UnlinkFlowTest;
-import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
-import de.blazemcworld.blazinggames.computing.api.Endpoint;
-import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
-import de.blazemcworld.blazinggames.computing.api.RequestContext;
+import dev.ivycollective.ivyhttp.http.EarlyResponse;
+import dev.ivycollective.ivyhttp.http.Endpoint;
+import dev.ivycollective.ivyhttp.http.EndpointResponse;
+import dev.ivycollective.ivyhttp.http.RequestContext;
 import java.util.HashMap;
 
 @CoveredByTests(UnlinkFlowTest.class)
@@ -42,13 +43,13 @@ public class AuthUnlinkConfirmEndpoint implements Endpoint {
         String token = context.requireClean("token", context.useBodyWrapper().getString("token"));
         TokenManager.Profile profile = TokenManager.getUnlinkRequest(token);
         if (profile == null) {
-            return EndpointResponse.authError("Token is invalid or expired", "Tokens expire after 10 minutes. If you want to start over, visit /auth/link.");
+            return APIUtils.authError("Token is invalid or expired", "Tokens expire after 10 minutes. If you want to start over, visit /auth/link.");
         } else {
             HashMap<String, Object> map = new HashMap<>();
             map.put("token", token);
             map.put("username", profile.username());
             map.put("uuid", profile.uuid().toString());
-            return EndpointResponse.ofHTML("unlink.html", map);
+            return APIUtils.ofHTML("unlink.html", map);
         }
     }
 
@@ -59,7 +60,7 @@ public class AuthUnlinkConfirmEndpoint implements Endpoint {
         boolean verdict = body.getBoolean("verdict");
         TokenManager.Profile profile = TokenManager.getUnlinkRequest(token);
         if (profile == null) {
-            return EndpointResponse.authError("Token is invalid or expired", "Tokens expire after 10 minutes.");
+            return APIUtils.authError("Token is invalid or expired", "Tokens expire after 10 minutes.");
         } else {
             TokenManager.removeUnlinkRequest(token);
             if (verdict) {
@@ -73,7 +74,7 @@ public class AuthUnlinkConfirmEndpoint implements Endpoint {
             out.put("body", desc);
             out.put("username", profile.username());
             out.put("uuid", profile.uuid());
-            return EndpointResponse.ofHTML("verdict.html", out);
+            return APIUtils.ofHTML("verdict.html", out);
         }
     }
 }

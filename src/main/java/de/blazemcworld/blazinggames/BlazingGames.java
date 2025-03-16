@@ -21,8 +21,6 @@ import com.google.gson.GsonBuilder;
 import de.blazemcworld.blazinggames.commands.*;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry.ComputerPrivileges;
-import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
-import de.blazemcworld.blazinggames.computing.api.RequiredFeature;
 import de.blazemcworld.blazinggames.utils.Cooldown;
 import de.blazemcworld.blazinggames.utils.ItemStackTypeAdapter;
 import de.blazemcworld.blazinggames.utils.TextLocation;
@@ -185,8 +183,8 @@ public class BlazingGames extends JavaPlugin {
             String clientSecret = config.getString("authorization.microsoft.client-secret");
 
             if (key != null) {
-                var apiConfig = BlazingAPI.WebsiteConfig.auto(config, "services.blazing-api");
-                var wssConfig = BlazingAPI.WebsiteConfig.auto(config, "services.blazing-wss");
+                var apiConfig = BlazingAPI.createWebsiteConfig(config, "services.blazing-api");
+                var wssConfig = BlazingAPI.createWebsiteConfig(config, "services.blazing-wss");
 
                 ArrayList<RequiredFeature> features = new ArrayList<>();
                 if (computersEnabled) features.add(RequiredFeature.COMPUTERS);

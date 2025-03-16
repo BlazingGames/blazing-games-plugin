@@ -15,12 +15,14 @@
  */
 package de.blazemcworld.blazinggames.computing.api.impl.auth;
 
-import de.blazemcworld.blazinggames.computing.api.APIDocs;
-import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
-import de.blazemcworld.blazinggames.computing.api.Endpoint;
-import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
-import de.blazemcworld.blazinggames.computing.api.RequestContext;
+import dev.ivycollective.ivyhttp.http.APIDocs;
+import dev.ivycollective.ivyhttp.http.EarlyResponse;
+import dev.ivycollective.ivyhttp.http.Endpoint;
+import dev.ivycollective.ivyhttp.http.EndpointResponse;
+import dev.ivycollective.ivyhttp.http.RequestContext;
 import java.util.HashMap;
+
+import de.blazemcworld.blazinggames.computing.api.APIUtils;
 
 public class AuthErrorEndpoint implements Endpoint {
     @Override
@@ -36,7 +38,7 @@ public class AuthErrorEndpoint implements Endpoint {
         HashMap<String, Object> params = new HashMap<>();
         params.put("error", error);
         params.put("desc", desc);
-        return EndpointResponse.ofHTML("error.html", params);
+        return APIUtils.ofHTML("error.html", params);
     }
 
     @Override

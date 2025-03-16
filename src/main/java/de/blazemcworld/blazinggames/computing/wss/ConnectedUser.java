@@ -13,20 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.computing.api;
+package de.blazemcworld.blazinggames.computing.wss;
 
-public class EarlyResponse extends Throwable {
-    private final EndpointResponse response;
+import java.util.UUID;
 
-    public EarlyResponse(EndpointResponse response) {
-        this.response = response;
+import com.google.gson.JsonObject;
+
+import de.blazemcworld.blazinggames.BlazingGames;
+
+public record ConnectedUser(
+    UUID uuid,
+    String username,
+    int level,
+    long disconnectAt,
+    String room,
+    String ipAddr
+) {
+    public JsonObject encode() {
+        return BlazingGames.gson.toJsonTree(this).getAsJsonObject();
     }
 
-    public static EarlyResponse of(EndpointResponse e) {
-        return new EarlyResponse(e);
-    }
-
-    public EndpointResponse getResponse() {
-        return this.response;
+    public static ConnectedUser decode(JsonObject object) {
+        return BlazingGames.gson.fromJson(object, ConnectedUser.class);
     }
 }

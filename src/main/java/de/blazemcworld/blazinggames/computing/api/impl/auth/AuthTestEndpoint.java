@@ -16,12 +16,13 @@
 package de.blazemcworld.blazinggames.computing.api.impl.auth;
 
 import com.google.gson.JsonObject;
-import de.blazemcworld.blazinggames.computing.api.APIDocs;
-import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
-import de.blazemcworld.blazinggames.computing.api.Endpoint;
-import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
-import de.blazemcworld.blazinggames.computing.api.RequestContext;
-import de.blazemcworld.blazinggames.computing.api.RequestMethod;
+import dev.ivycollective.ivyhttp.http.APIDocs;
+import dev.ivycollective.ivyhttp.http.EarlyResponse;
+import dev.ivycollective.ivyhttp.http.Endpoint;
+import dev.ivycollective.ivyhttp.http.EndpointResponse;
+import dev.ivycollective.ivyhttp.http.RequestContext;
+import dev.ivycollective.ivyhttp.http.RequestMethod;
+import de.blazemcworld.blazinggames.computing.api.APIUtils;
 import de.blazemcworld.blazinggames.testing.CoveredByTests;
 import de.blazemcworld.blazinggames.testing.tests.LoginFlowTest;
 import de.blazemcworld.blazinggames.testing.tests.UnlinkFlowTest;
@@ -35,7 +36,7 @@ public class AuthTestEndpoint implements Endpoint {
 
     @Override
     public EndpointResponse GET(RequestContext context) throws EarlyResponse {
-        context.requireAuthentication();
+        APIUtils.of(context).requireAuthentication();
         return EndpointResponse.of200(new JsonObject()).build();
     }
 

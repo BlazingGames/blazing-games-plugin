@@ -13,19 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.computing.api.body;
+package de.blazemcworld.blazinggames.computing.wss.client;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.util.UUID;
 
-public class EmptyBodyOutput implements BodyOutput {
-    @Override
-    public void handle(OutputStream stream) throws IOException {
-        stream.write(new byte[0]);
+import com.google.gson.JsonObject;
+
+import dev.ivycollective.ivyhttp.wss.ClientboundPacket;
+
+public class UserListUpdatePacket extends ClientboundPacket {
+    public final UUID uuid;
+    public final boolean isJoin;
+    public UserListUpdatePacket(UUID uuid, boolean isJoin) {
+        super("usrupd");
+        this.uuid = uuid;
+        this.isJoin = isJoin;
     }
 
     @Override
-    public long length() {
-        return -1;
+    public JsonObject serialize() {
+        JsonObject out = new JsonObject();
+        out.addProperty("actioner", uuid.toString());
+        out.addProperty("type", isJoin);
+        return out;
     }
 }

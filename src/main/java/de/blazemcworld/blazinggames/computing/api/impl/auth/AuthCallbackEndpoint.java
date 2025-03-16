@@ -21,17 +21,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
+import de.blazemcworld.blazinggames.BlazingAPI;
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.computing.api.APIDocs;
+import dev.ivycollective.ivyhttp.http.APIDocs;
 import de.blazemcworld.blazinggames.computing.api.TokenManager;
 import de.blazemcworld.blazinggames.testing.CoveredByTests;
 import de.blazemcworld.blazinggames.testing.tests.LoginFlowTest;
 import de.blazemcworld.blazinggames.testing.tests.UnlinkFlowTest;
-import de.blazemcworld.blazinggames.computing.api.BlazingAPI;
-import de.blazemcworld.blazinggames.computing.api.EarlyResponse;
-import de.blazemcworld.blazinggames.computing.api.Endpoint;
-import de.blazemcworld.blazinggames.computing.api.EndpointResponse;
-import de.blazemcworld.blazinggames.computing.api.RequestContext;
+import de.blazemcworld.blazinggames.computing.api.APIUtils;
+import dev.ivycollective.ivyhttp.http.EarlyResponse;
+import dev.ivycollective.ivyhttp.http.Endpoint;
+import dev.ivycollective.ivyhttp.http.EndpointResponse;
+import dev.ivycollective.ivyhttp.http.RequestContext;
 import de.blazemcworld.blazinggames.utils.GetGson;
 import java.io.IOException;
 import java.util.UUID;
@@ -58,7 +59,7 @@ public class AuthCallbackEndpoint implements Endpoint {
     public EndpointResponse GET(RequestContext context) throws EarlyResponse {
         var body = context.useBodyWrapper();
         if (body.hasValue("error") && body.hasValue("error_description")) {
-            return EndpointResponse.authError(body.getString("error"), body.getString("error_description"));
+            return APIUtils.authError(body.getString("error"), body.getString("error_description"));
         } else {
             String msCode = context.requireClean("code", body.getString("code"));
             String state = context.requireCleanCustom("state", body.getString("state"), 8, 8);
@@ -66,7 +67,7 @@ public class AuthCallbackEndpoint implements Endpoint {
             boolean isUnlinkRequest = (state.equals(AuthUnlinkEndpoint.MAGIC_UNLINK_STATE));
             if (!isUnlinkRequest) {
                 if (!TokenManager.isCodeUserLoggingIn(state)) {
-                    return EndpointResponse.authError("Token (state) is invalid or expired", "The token might've expired");
+                    return APIUtils.authError("Token (state) is invalid or expired", "The token might've expired");
                 }
                 TokenManager.updateCodeAuthState(state, new TokenManager.WaitingForMicrosoft());
             }
@@ -78,10 +79,10 @@ public class AuthCallbackEndpoint implements Endpoint {
                 }
 
                 if (BlazingAPI.getConfig().spoofMicrosoftServer()) {
-                    return EndpointResponse.authError("Bad username/UUID", "Or you didn't provide any.");
+                    return APIUtils.authError("Bad username/UUID", "Or you didn't provide any.");
                 }
 
-                return EndpointResponse.authError(
+                return APIUtils.authError(
                     "An error with Microsoft authenthication occurred", "Make sure that you own Minecraft and have picked a username."
                 );
             } else {
