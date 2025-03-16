@@ -76,7 +76,7 @@ public class TeleportAnchorSlot extends IndexedUserInterfaceSlot {
         AnchorSlotStatus status = getStatus(location, tpi.getPlayer());
         boolean isOwner = tpi.getPlayer().getUniqueId().equals(details.owner);
 
-        ItemStack item = new ItemStack(Material.STONE);
+        ItemStack item = new ItemStack(Material.TINTED_GLASS);
         item.setData(DataComponentTypes.ITEM_NAME, Component.text(name).color(titleColor).decoration(TextDecoration.STRIKETHROUGH, !status.isOk()).decoration(TextDecoration.ITALIC, false));
         item.setData(DataComponentTypes.ITEM_MODEL, icon);
 
