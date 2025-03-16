@@ -22,6 +22,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.utils.DisplayTag;
 import de.blazemcworld.blazinggames.utils.FrontManager;
 import de.blazemcworld.blazinggames.utils.MemberData;
 import de.blazemcworld.blazinggames.utils.Pair;
@@ -36,6 +37,8 @@ public class MemberCommand {
     public static final TextColor color = TextColor.color(0xEDC4DF);
 
     public static String basicChecks(Player player, String name) {
+        player.sendMessage(Component.empty());
+
         if (name == null) {
             return "Name must not be null..?";
         }
@@ -194,6 +197,29 @@ public class MemberCommand {
 
             
             .then(Commands.literal("display")
+            
+            
+            
+                .executes(ctx -> {
+                    String name = StringArgumentType.getString(ctx, "name");
+                    if (!(ctx.getSource().getSender() instanceof Player player)) {
+                        ctx.getSource().getSender().sendMessage("You must be a player to use this command!");
+                        return Command.SINGLE_SUCCESS;
+                    }
+
+                    String res = basicChecks(player, name);
+                    if (res != null) { player.sendMessage(Component.text(res, color)); return Command.SINGLE_SUCCESS; }
+
+                    PlayerConfig config = PlayerConfig.forPlayer(player);
+                    PluralConfig cfg = config.getPluralConfig();
+                    if (cfg.getMember(name) == null) {
+                        player.sendMessage(Component.text("Can't find any member with this name.", color));
+                        return Command.SINGLE_SUCCESS;
+                    }
+
+                    renderNameplates(player, cfg, name);
+                    return Command.SINGLE_SUCCESS;
+                })
 
 
 
@@ -225,6 +251,7 @@ public class MemberCommand {
                         cfg.setDisplayName(name, displayName);
                         config.updatePlayer();
                         player.sendMessage(Component.text((displayName == null ? "Cleared" : "Changed") + " that member's display name successfully.", color));
+                        renderNameplates(player, cfg, name);
                     }
                     return Command.SINGLE_SUCCESS;
                 })))
@@ -259,6 +286,7 @@ public class MemberCommand {
                         cfg.setPronouns(name, pronouns);
                         config.updatePlayer();
                         player.sendMessage(Component.text((pronouns == null ? "Cleared" : "Changed") + " that member's pronouns successfully.", color));
+                        renderNameplates(player, cfg, name);
                     }
                     return Command.SINGLE_SUCCESS;
                 })))
@@ -298,9 +326,16 @@ public class MemberCommand {
                         cfg.setColor(name, colorCode == null ? null : TextColor.color(colorCode));
                         config.updatePlayer();
                         player.sendMessage(Component.text((colorCode == null ? "Cleared" : "Changed") + " that member's color successfully.", color));
+                        renderNameplates(player, cfg, name);
                     }
                     return Command.SINGLE_SUCCESS;
                 })))
         )).build();
+    }
+
+    public static void renderNameplates(Player player, PluralConfig config, String name) {
+        DisplayTag tag = config.toDisplayTag(name, PlayerConfig.forPlayer(player));
+        if (tag == null) return;
+        tag.sendPreviews(player, color);
     }
 }

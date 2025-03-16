@@ -146,15 +146,7 @@ public class DisplayCommand implements CommandExecutor, TabCompleter {
     private static void sendNameplates(Player player) {
         PlayerConfig config = PlayerConfig.forPlayer(player);
         DisplayTag tag = config.toDisplayTag(false);
-        player.sendMessage(Component.text("Preview:").color(colorSuccess));
-        player.sendMessage(Component.text("- Current nameplate: ").color(colorSuccess)
-                .append(tag.buildNameComponent()));
-        player.sendMessage(Component.text("- Current nameplate (short): ").color(colorSuccess)
-                .append(tag.buildNameComponentShort()));
-        player.sendMessage(Component.text("- Current discord name: ").color(colorSuccess)
-                .append(Component.text(tag.buildNameString()).color(NamedTextColor.WHITE)));
-        player.sendMessage(Component.text("- Current discord name (short): ").color(colorSuccess)
-                .append(Component.text(tag.buildNameStringShort()).color(NamedTextColor.WHITE)));
+        tag.sendPreviews(player, colorSuccess);
         config.updatePlayer();
     }
 }
