@@ -20,8 +20,8 @@ repositories {
         url = "https://oss.sonatype.org/content/groups/public/"
     }
     maven {
-        name = "ivy-collective-git"
-        url = "https://git.ivycollective.dev/api/packages/ivycollective/maven/"
+        name = "ivy-collective-codeberg"
+        url = "https://codeberg.org/api/packages/IvyCollective/maven/"
     }
 }
 
@@ -32,7 +32,7 @@ dependencies {
 
     // Utilities
     implementation 'io.azam.ulidj:ulidj:1.0.4'
-    implementation 'dev.ivycollective:datastorage:6'
+    implementation 'dev.ivycollective:datastorage:1'
 
     // JDA
     implementation "net.dv8tion:JDA:5.0.0-beta.23"
