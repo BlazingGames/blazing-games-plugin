@@ -23,6 +23,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelper;
+import de.blazemcworld.blazinggames.commands.middleware.RequireMemberMiddleware;
 import de.blazemcworld.blazinggames.commands.middleware.RequireSystemMiddleware;
 import de.blazemcworld.blazinggames.players.FrontManager;
 import de.blazemcworld.blazinggames.players.PlayerConfig;
@@ -33,16 +34,21 @@ import net.kyori.adventure.text.format.TextColor;
 
 public class FrontCommand {
     public static final TextColor color = TextColor.color(0xEDC4DF);
-    public static final CommandHelper helper = CommandHelper.builder()
+    public static final CommandHelper clearHelper = CommandHelper.builder()
         .middleware(new RequireSystemMiddleware(color))
+        .ignoreExecutor(true)
+        .build();
+    public static final CommandHelper setHelper = CommandHelper.builder()
+        .middleware(new RequireSystemMiddleware(color))
+        .middleware(new RequireMemberMiddleware("member", color))
         .ignoreExecutor(true)
         .build();
 
     public static LiteralCommandNode<CommandSourceStack> command() {
         return Commands.literal("front")
-            .executes(helper.requirePlayer(FrontCommand::handleClear))
+            .executes(clearHelper.requirePlayer(FrontCommand::handleClear))
             .then(Commands.argument("member", StringArgumentType.greedyString())
-                .executes(helper.requirePlayer(FrontCommand::handleSet))).build();
+                .executes(setHelper.requirePlayer(FrontCommand::handleSet))).build();
     }
 
     public static void handleSet(CommandContext<CommandSourceStack> ctx, Player player) {
@@ -54,6 +60,7 @@ public class FrontCommand {
 
     public static void handleClear(CommandContext<CommandSourceStack> ctx, Player player) {
         FrontManager.clearFront(player.getUniqueId());
+        PlayerConfig.forPlayer(player).updatePlayer();
         player.sendMessage(Component.text("Cleared front successfully.", color));
     }
 }

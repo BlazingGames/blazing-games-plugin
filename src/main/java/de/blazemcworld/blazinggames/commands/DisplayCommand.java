@@ -43,6 +43,7 @@ public class DisplayCommand {
             colorSuccess,
             colorFailure,
             (ctx, player) -> PlayerConfig.forPlayer(player),
+            new ShowNameplatesFinalizer(false, colorSuccess),
             new NoFrontMiddleware(colorFailure)
         ).executes(helper.requirePlayer((ctx, player) -> {
             player.sendMessage(Component.text("Usage: /display [name|pronouns|color] [value]").color(colorSuccess));

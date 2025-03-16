@@ -52,5 +52,7 @@ public class ShowNameplatesFinalizer implements FinalizerFunction {
 
         DisplayTag tag = this.resolver.apply(context);
         tag.sendPreviews(player, color);
+
+        PlayerConfig.forPlayer(player).updatePlayer();
     }
 }

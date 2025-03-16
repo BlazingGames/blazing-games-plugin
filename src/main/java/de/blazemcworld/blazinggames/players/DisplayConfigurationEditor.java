@@ -51,9 +51,9 @@ public interface DisplayConfigurationEditor {
                 }
                 int intValue;
                 try {
-                    intValue = Integer.parseInt(value);
+                    intValue = Integer.parseInt(value, 16);
                 } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("Invalid color value: " + value);
+                    throw new IllegalArgumentException("Not a valid hex color: #" + value);
                 }
                 setNameColor(TextColor.color(intValue));
                 break;

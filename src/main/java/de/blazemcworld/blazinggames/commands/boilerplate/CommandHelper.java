@@ -71,10 +71,12 @@ public record CommandHelper(
 
     public Command<CommandSourceStack> wrap(final CtxConsumer callback) {
         return ctx -> {
-            if (!consumeMiddleware(new CommandHelperContext(ctx, null))) {
+            CommandHelperContext commandHelperContext = new CommandHelperContext(ctx, null);
+            if (!consumeMiddleware(commandHelperContext)) {
                 return Command.SINGLE_SUCCESS;
             }
             callback.accept(ctx);
+            doFinalizers(commandHelperContext);
             return Command.SINGLE_SUCCESS;
         };
     }
@@ -100,11 +102,14 @@ public record CommandHelper(
                 return Command.SINGLE_SUCCESS;
             }
 
-            if (!consumeMiddleware(new CommandHelperContext(ctx, player))) {
+            CommandHelperContext commandHelperContext = new CommandHelperContext(ctx, player);
+
+            if (!consumeMiddleware(commandHelperContext)) {
                 return Command.SINGLE_SUCCESS;
             }
 
             callback.accept(ctx, player);
+            doFinalizers(commandHelperContext);
             return Command.SINGLE_SUCCESS;
         };
     }

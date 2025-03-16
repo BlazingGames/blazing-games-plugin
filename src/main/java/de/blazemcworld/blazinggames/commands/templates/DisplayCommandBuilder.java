@@ -38,6 +38,7 @@ public class DisplayCommandBuilder {
         final TextColor colorSuccess,
         final TextColor colorFailure,
         final DisplayCommandBuilderFunction function,
+        final ShowNameplatesFinalizer finalizer,
         final MiddlewareFunction... middleware
     ) {
         CommandHelperBuilder builder = CommandHelper.builder();
@@ -46,7 +47,7 @@ public class DisplayCommandBuilder {
         }
         final CommandHelper helper = builder
             .middleware(new EmptyMessageMiddleware())
-            .finalizer(new ShowNameplatesFinalizer(false, colorSuccess))
+            .finalizer(finalizer)
             .ignoreExecutor(true)
             .build();
 

@@ -21,6 +21,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelper;
+import de.blazemcworld.blazinggames.commands.finalizers.ShowNameplatesFinalizer;
 import de.blazemcworld.blazinggames.commands.middleware.RequireMemberMiddleware;
 import de.blazemcworld.blazinggames.commands.middleware.RequireSystemMiddleware;
 import de.blazemcworld.blazinggames.commands.templates.DisplayCommandBuilder;
@@ -104,6 +105,7 @@ public class MemberCommand {
                 PlayerConfig.forPlayer(player).getPluralConfig().removeMember(name);
                 if (name.equals(FrontManager.getFront(player.getUniqueId()))) {
                     FrontManager.clearFront(player.getUniqueId());
+                    PlayerConfig.forPlayer(player).updatePlayer();
                 }
                 player.sendMessage(Component.text("Deleted the member with this name successfully.", color));
             })))
@@ -154,7 +156,7 @@ public class MemberCommand {
             .then(DisplayCommandBuilder.tree(color, color, (ctx, player) -> {
                 String name = StringArgumentType.getString(ctx, "name");
                 return PlayerConfig.forPlayer(player).getPluralConfig().toDisplayConfigurationEditor(name);
-            }, new RequireSystemMiddleware(color), new RequireMemberMiddleware("name", color))
+            }, new ShowNameplatesFinalizer("name", color), new RequireSystemMiddleware(color), new RequireMemberMiddleware("name", color))
         )).build();
     }
 

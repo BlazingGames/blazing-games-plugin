@@ -60,6 +60,7 @@ public class SystemCommand {
             } else {
                 config.setPlural(false);
                 FrontManager.clearFront(player.getUniqueId());
+                PlayerConfig.forPlayer(player).updatePlayer();
                 player.sendMessage(Component.text("Unmarked this account as a plural system.", color));
             }
         } else {
@@ -74,9 +75,11 @@ public class SystemCommand {
         if (value == null) {
             if (isTag) {
                 config.setSystemTag(null);
+                PlayerConfig.forPlayer(player).updatePlayer();
                 player.sendMessage(Component.text("Cleared this system tag successfully.", color));
             } else {
                 config.setSystemName(null);
+                PlayerConfig.forPlayer(player).updatePlayer();
                 player.sendMessage(Component.text("Cleared this system name successfully.", color));
             }
         } else {
@@ -87,9 +90,11 @@ public class SystemCommand {
 
             if (isTag) {
                 config.setSystemTag(value);
+                PlayerConfig.forPlayer(player).updatePlayer();
                 player.sendMessage(Component.text("Set this system tag to \"" + value + "\".", color));
             } else {
                 config.setSystemName(value);
+                PlayerConfig.forPlayer(player).updatePlayer();
                 player.sendMessage(Component.text("Set this system name to \"" + value + "\".", color));
             }
         }
