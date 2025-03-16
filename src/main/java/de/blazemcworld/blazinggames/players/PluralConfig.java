@@ -120,6 +120,10 @@ public class PluralConfig {
         );
     }
 
+    public DisplayConfigurationEditor toDisplayConfigurationEditor(String member) {
+        return new PluralConfigDisplayConfigurationEditor(member);
+    }
+
 
 
 
@@ -137,19 +141,37 @@ public class PluralConfig {
         modifyMember(oldName, m -> m.name = newName);
     }
 
-    public void setDisplayName(String name, String displayName) {
+    public void setMemberDisplayName(String name, String displayName) {
         modifyMember(name, m -> m.displayName = displayName);
     }
 
-    public void setPronouns(String name, String pronouns) {
+    public void setMemberPronouns(String name, String pronouns) {
         modifyMember(name, m -> m.pronouns = pronouns);
     }
 
-    public void setNameColor(String name, TextColor color) {
+    public void setMemberNameColor(String name, TextColor color) {
         modifyMember(name, m -> m.color = (color == null) ? null : color.value());
     }
 
-    public void setProxy(String name, String proxyStart, String proxyEnd) {
+    public void setMemberProxy(String name, String proxyStart, String proxyEnd) {
         modifyMember(name, m -> { m.proxyStart = proxyStart; m.proxyEnd = proxyEnd; });
+    }
+
+
+
+    public class PluralConfigDisplayConfigurationEditor implements DisplayConfigurationEditor {
+        private final String memberName;
+        private PluralConfigDisplayConfigurationEditor(String memberName) {
+            this.memberName = memberName;
+        }
+
+        public String getDisplayName() { return getMember(memberName).displayName; }
+        public void setDisplayName(String name) { setMemberDisplayName(memberName, name); }
+
+        public String getPronouns() { return getMember(memberName).pronouns; }
+        public void setPronouns(String pronouns) { setMemberPronouns(memberName, pronouns); }
+
+        public TextColor getNameColor() { return TextColor.color(getMember(memberName).color); }
+        public void setNameColor(TextColor color) { setMemberNameColor(memberName, color); }
     }
 }

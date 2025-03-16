@@ -18,14 +18,12 @@ package de.blazemcworld.blazinggames.commands.plural;
 import org.bukkit.entity.Player;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelper;
-import de.blazemcworld.blazinggames.commands.finalizers.ShowNameplatesFinalizer;
-import de.blazemcworld.blazinggames.commands.middleware.EmptyMessageMiddleware;
 import de.blazemcworld.blazinggames.commands.middleware.RequireMemberMiddleware;
 import de.blazemcworld.blazinggames.commands.middleware.RequireSystemMiddleware;
+import de.blazemcworld.blazinggames.commands.templates.DisplayCommandBuilder;
 import de.blazemcworld.blazinggames.players.DisplayTag;
 import de.blazemcworld.blazinggames.players.FrontManager;
 import de.blazemcworld.blazinggames.players.MemberData;
@@ -46,13 +44,6 @@ public class MemberCommand {
     public static final CommandHelper configHelper = CommandHelper.builder()
         .middleware(new RequireSystemMiddleware(color))
         .middleware(new RequireMemberMiddleware("name", color))
-        .ignoreExecutor(true)
-        .build();
-    public static final CommandHelper displayHelper = CommandHelper.builder()
-        .middleware(new RequireSystemMiddleware(color))
-        .middleware(new EmptyMessageMiddleware())
-        .middleware(new RequireMemberMiddleware("name", color))
-        .finalizer(new ShowNameplatesFinalizer("name", color))
         .ignoreExecutor(true)
         .build();
 
@@ -153,33 +144,17 @@ public class MemberCommand {
                     return;
                 }
 
-                PlayerConfig.forPlayer(player).getPluralConfig().setProxy(name, pair.left, pair.right);
+                PlayerConfig.forPlayer(player).getPluralConfig().setMemberProxy(name, pair.left, pair.right);
                 player.sendMessage(Component.text("Changed that member's proxy tags successfully.", color));
             }))))
 
 
             
-            .then(Commands.literal("display")
-                .executes(displayHelper.requirePlayer((ctx, player) -> {})) // let middleware/finalizers handle this
-
-
-                // display name
-                .then(Commands.literal("name")
-                    .executes(helper.requirePlayer((ctx, player) -> handleDisplay(ctx, player, PropertyType.DISPLAY_NAME, true)))
-                    .then(Commands.argument("value", StringArgumentType.greedyString())
-                        .executes(helper.requirePlayer((ctx, player) -> handleDisplay(ctx, player, PropertyType.DISPLAY_NAME, false)))))
-
-            // pronouns
-            .then(Commands.literal("pronouns")
-                .executes(helper.requirePlayer((ctx, player) -> handleDisplay(ctx, player, PropertyType.PRONOUNS, true)))
-                .then(Commands.argument("value", StringArgumentType.greedyString())
-                    .executes(helper.requirePlayer((ctx, player) -> handleDisplay(ctx, player, PropertyType.PRONOUNS, false)))))
-            
-            // color
-            .then(Commands.literal("color")
-                .executes(helper.requirePlayer((ctx, player) -> handleDisplay(ctx, player, PropertyType.COLOR, true)))
-                .then(Commands.argument("value", StringArgumentType.greedyString())
-                    .executes(helper.requirePlayer((ctx, player) -> handleDisplay(ctx, player, PropertyType.COLOR, false)))))
+            // display commands
+            .then(DisplayCommandBuilder.tree(color, color, (ctx, player) -> {
+                String name = StringArgumentType.getString(ctx, "name");
+                return PlayerConfig.forPlayer(player).getPluralConfig().toDisplayConfigurationEditor(name);
+            }, new RequireSystemMiddleware(color), new RequireMemberMiddleware("name", color))
         )).build();
     }
 
@@ -187,85 +162,5 @@ public class MemberCommand {
         DisplayTag tag = config.toDisplayTag(name, PlayerConfig.forPlayer(player));
         if (tag == null) return;
         tag.sendPreviews(player, color);
-    }
-
-    // copied from DisplayCommand because they're really similar
-
-    public static void handleDisplay(CommandContext<CommandSourceStack> ctx, Player player, PropertyType type, boolean clear) {
-        String member = StringArgumentType.getString(ctx, "name");
-        String value;
-        if (clear) {
-            value = null;
-        } else {
-            value = StringArgumentType.getString(ctx, "value");
-        }
-
-        String result = setProperty(PlayerConfig.forPlayer(player).getPluralConfig(), member, type, value);
-        if (result != null) {
-            ctx.getSource().getSender().sendMessage(Component.text("Failed to change " + type.pretty + ": " + result, color));
-            return;
-        }
-
-        String keyword = clear ? "Cleared " : "Set ";
-        ctx.getSource().getSender().sendMessage(Component.text(keyword + type.pretty + " successfully.", color));
-    }
-
-    public static enum PropertyType {
-        DISPLAY_NAME("display name"),
-        PRONOUNS("pronouns"),
-        COLOR("name color"),
-
-        ;
-
-        public final String pretty;
-        PropertyType(String pretty) {
-            this.pretty = pretty;
-        }
-    }
-
-    public static String setProperty(PluralConfig config, String member, PropertyType type, String value) {
-        if (value == null) {
-            switch (type) {
-                case DISPLAY_NAME:
-                    config.setDisplayName(member, null);
-                    return null;
-                case PRONOUNS:
-                    config.setPronouns(member, null);
-                    return null;
-                case COLOR:
-                    config.setNameColor(member, null);
-                    return null;
-            }
-            return null;
-        }
-
-        switch (type) {
-            case DISPLAY_NAME:
-                if (value.length() < 2 || value.length() > 40) {
-                    return "display names must be between 2 and 40 characters long.";
-                }
-                config.setDisplayName(member, value);
-                return null;
-            case PRONOUNS:
-                if (value.length() < 2 || value.length() > 30) {
-                    return "pronouns must be between 2 and 30 characters long.";
-                }
-                config.setPronouns(member, value);
-                return null;
-            case COLOR:
-                if (value.length() != 6) {
-                    return "colors must be a hex color without the first #. For example, \"ffffff\".";
-                }
-                int intValue;
-                try {
-                    intValue = Integer.parseInt(value, 16);
-                } catch (NumberFormatException e) {
-                    return "#" + value + " is not a valid color.";
-                }
-                config.setNameColor(member, TextColor.color(intValue));
-                return null;
-            default:
-                return "Unknown property type. This is a bug.";
-        }
     }
 }

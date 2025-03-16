@@ -31,7 +31,7 @@ import net.kyori.adventure.text.format.TextColor;
 
 import javax.naming.NameNotFoundException;
 
-public class PlayerConfig {
+public class PlayerConfig implements DisplayConfigurationEditor {
     private static final DataStorage<Properties, UUID> dataStorage = BlazingGames.dataStorageConfig().makeDataStorage(
         PlayerConfig.class, null,
         new PropertiesStorageProvider(), new UUIDNameProvider()
