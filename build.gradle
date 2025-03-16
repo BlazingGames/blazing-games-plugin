@@ -7,7 +7,7 @@ group = 'de.blazemcworld'
 version = project.version
 
 def extraRepos = [
-    "ivy-collective-git"
+    "ivy-collective-codeberg"
 ]
 repositories {
     mavenCentral()
