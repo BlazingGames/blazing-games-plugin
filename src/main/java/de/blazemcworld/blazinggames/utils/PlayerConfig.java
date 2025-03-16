@@ -19,10 +19,6 @@ import java.util.Properties;
 import java.util.UUID;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.discord.DiscordApp;
-import de.blazemcworld.blazinggames.discord.DiscordUser;
-import de.blazemcworld.blazinggames.discord.WhitelistManagement;
-import de.blazemcworld.blazinggames.discord.WhitelistedPlayer;
 import dev.ivycollective.datastorage.DataStorage;
 import dev.ivycollective.datastorage.name.UUIDNameProvider;
 import dev.ivycollective.datastorage.storage.PropertiesStorageProvider;
@@ -31,8 +27,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 
 import javax.naming.NameNotFoundException;
@@ -71,92 +65,41 @@ public class PlayerConfig {
         Player player = Bukkit.getPlayer(playerInfo.getUUID());
 
         if(player != null) {
-            Component name = buildNameComponent();
+            Component name = toDisplayTag(true).buildNameComponent();
             player.displayName(name);
             player.playerListName(name);
         }
     }
 
-    public Component buildNameComponent() {
-        String playerName = playerInfo.getUsername();
-
-        String nameHoverString = "Real Name: " + playerName;
-
-        if(DiscordApp.isWhitelistManaged()) {
-            WhitelistManagement whitelist = DiscordApp.getWhitelistManagement();
-
-            WhitelistedPlayer whitelistedPlayer = whitelist.getWhitelistedPlayer(playerInfo.getUUID());
-
-            if(whitelistedPlayer == null) {
-                nameHoverString += "\nDiscord User not found";
-            }
-            else {
-                DiscordUser user = whitelist.getDiscordUser(whitelistedPlayer.discordUser);
-                if(user == null) {
-                    nameHoverString += "\nDiscord User not found";
-                }
-                else {
-                    nameHoverString += "\nDiscord Display Name: " + user.displayName;
-                    nameHoverString += "\nDiscord Username: " + user.username;
-                }
-            }
-        }
-
-        HoverEvent<Component> nameHover = Component.text(nameHoverString).asHoverEvent();
-
-        Component username;
-        if (getDisplayName() != null && !getDisplayName().equals(playerName)) {
-            username = Component.text(getDisplayName()).hoverEvent(nameHover);
-        } else {
-            username = Component.text(playerName).hoverEvent(nameHover);
-        }
-
-        if (getNameColor() != null) {
-            username = username.color(getNameColor());
-        }
-
-        if (getPronouns() != null) {
-            username = username.appendSpace().append(Component.text("(" + getPronouns() + ")")
-                .color(NamedTextColor.GRAY).hoverEvent(HoverEvent.showText(Component.text("Pronouns"))));
-        }
-
-        if (playerInfo.isOperator()) {
-            username = username.appendSpace().append(Component.text("♮").color(NamedTextColor.RED)
-                .hoverEvent(HoverEvent.showText(Component.text("Server Operator"))));
-        }
-
-        return username;
+    public PlayerInfo playerInfo() {
+        return playerInfo;
     }
 
-    public Component buildNameComponentShort() {
-        return Component.text(getDisplayName() != null ? getDisplayName() : playerInfo.getUsername())
-            .color(getNameColor() != null ? getNameColor() : NamedTextColor.WHITE)
-            .hoverEvent(HoverEvent.showText(Component.text("Real name: " + playerInfo.getUsername())
-            .appendNewline().append(Component.text("Pronouns: " + (getPronouns() != null ? getPronouns() : "None specified")))
-            .appendNewline().append(Component.text("Server Operator: " + (playerInfo.isOperator() ? "Yes" : "No")))));
-    }
 
-    public String buildNameString() {
-        String playerName = playerInfo.getUsername();
 
-        StringBuilder username = new StringBuilder();
-        if (getDisplayName() != null && !getDisplayName().equals(playerName)) {
-            username.append(getDisplayName()).append(" [aka ").append(playerName).append("]");
-        } else {
-            username.append(playerName);
-        }
-        if (getPronouns() != null) {
-            username.append(" (").append(getPronouns()).append(")");
-        }
-        if (playerInfo.isOperator()) {
-            username.append(" ♮");
+    public DisplayTag toDisplayTag(boolean useMember) {
+        if (!isPlural() || !useMember) {
+            return new DisplayTag(
+                playerInfo.getUUID(),
+                playerInfo.getUsername(),
+                playerInfo.isOperator(),
+                getDisplayName(),
+                getPronouns(),
+                getNameColor(),
+                false, getSystemName(), getSystemTag()
+            );
         }
 
-        return username.toString();
-    }
+        String front = FrontManager.getFront(playerInfo.getUUID());
+        PluralConfig cfg = getPluralConfig();
+        
+        if (front != null && useMember) {
+            DisplayTag tag = cfg.toDisplayTag(front, this);
+            if (tag != null) return tag;
+        }
 
-    public String buildNameStringShort() {
-        return getDisplayName() != null ? getDisplayName() : playerInfo.getUsername();
+        // this always triggers the first if statement, so it should be safe
+        return toDisplayTag(false);
     }
 
 
@@ -196,6 +139,50 @@ public class PlayerConfig {
     public void setNameColor(TextColor color) {
         if (color == null) props.remove("namecolor");
         else props.setProperty("namecolor", String.valueOf(color.value()));
+        write();
+    }
+
+
+
+    public boolean isPlural() {
+        return Boolean.parseBoolean(props.getProperty("plural", "false"));
+    }
+
+    public void setPlural(boolean plural) {
+        if (!plural) props.remove("plural");
+        props.setProperty("plural", String.valueOf(plural));
+        write();
+    }
+
+    public PluralConfig getPluralConfig() {
+        return new PluralConfig(playerInfo.getUUID());
+    }
+
+
+
+    public String getSystemName() {
+        String value = props.getProperty("system.name", null);
+        if (value == null || value.isBlank()) return null;
+        return value;
+    }
+
+    public void setSystemName(String systemName) {
+        if (systemName == null || systemName.isBlank()) props.remove("system.name");
+        else props.setProperty("system.name", systemName);
+        write();
+    }
+
+
+
+    public String getSystemTag() {
+        String value = props.getProperty("system.tag", null);
+        if (value == null || value.isBlank()) return null;
+        return value;
+    }
+
+    public void setSystemTag(String systemTag) {
+        if (systemTag == null || systemTag.isBlank()) props.remove("system.tag");
+        else props.setProperty("system.tag", systemTag);
         write();
     }
 }

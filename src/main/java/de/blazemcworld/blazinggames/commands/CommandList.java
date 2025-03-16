@@ -22,6 +22,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import de.blazemcworld.blazinggames.commands.plural.FrontCommand;
+import de.blazemcworld.blazinggames.commands.plural.MemberCommand;
+import de.blazemcworld.blazinggames.commands.plural.SystemCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 
 public enum CommandList {
@@ -36,6 +39,11 @@ public enum CommandList {
     PLAYTIME(PlaytimeCommand.command(), "See how much time you and your friends have wasted on this stupid server."),
     SET_ALTAR(SetAltarCommand.command(), "Set altar with specific level at current location."),
     UNLINK(UnlinkCommand.command(), "Unlinks your account from your discord account. This also removes you from the whitelist."),
+
+    // plural package
+    FRONT(FrontCommand.command(), "Change who is fronting. This is used for autoproxy."),
+    MEMBER(MemberCommand.command(), "Manage members within your system."),
+    SYSTEM(SystemCommand.command(), "Change settings about your system."),
 
     ;
 

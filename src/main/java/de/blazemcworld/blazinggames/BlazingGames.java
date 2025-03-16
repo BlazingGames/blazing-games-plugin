@@ -18,7 +18,7 @@ package de.blazemcworld.blazinggames;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import de.blazemcworld.blazinggames.commands.*;
+import de.blazemcworld.blazinggames.commands.DiscordWhitelistCommand;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry.ComputerPrivileges;
 import de.blazemcworld.blazinggames.utils.Cooldown;

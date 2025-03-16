@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.packs;
+package de.blazemcworld.blazinggames.events.handlers.plural;
 
-import de.blazemcworld.blazinggames.items.ItemProviders;
-import de.blazemcworld.blazinggames.packs.hooks.*;
+import org.bukkit.event.player.PlayerQuitEvent;
 
-public enum HookList {
-    CUSTOM_ITEMS(ItemProviders.instance),
-    GUI_ELEMENTS(new GuiElementsHook()),
-    EMOJIS(new EmojisHook()),
+import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
+import de.blazemcworld.blazinggames.utils.FrontManager;
 
-    ;
+public class PluralClearFrontQuitHandler extends BlazingEventHandler<PlayerQuitEvent> {
+    @Override
+    public boolean fitCriteria(PlayerQuitEvent event, boolean cancelled) {
+        return true;
+    }
 
-    public final PackBuildHook hook;
-
-    HookList(PackBuildHook hook) {
-        this.hook = hook;
+    @Override
+    public void execute(PlayerQuitEvent event) {
+        FrontManager.clearFront(event.getPlayer().getUniqueId());
     }
 }

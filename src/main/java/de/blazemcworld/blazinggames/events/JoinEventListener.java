@@ -18,6 +18,7 @@ package de.blazemcworld.blazinggames.events;
 import de.blazemcworld.blazinggames.discord.eventhandlers.DiscordJoinHandler;
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.player.PlayerJoinHandler;
+import de.blazemcworld.blazinggames.events.handlers.plural.PluralFrontReminderJoinHandler;
 import de.blazemcworld.blazinggames.packs.eventhandlers.SendPackHandler;
 
 import org.bukkit.event.EventHandler;
@@ -30,7 +31,8 @@ public class JoinEventListener extends BlazingEventListener<PlayerJoinEvent> {
         this.handlers.addAll(List.of(
                 new PlayerJoinHandler(),
                 new DiscordJoinHandler(),
-                new SendPackHandler()
+                new SendPackHandler(),
+                new PluralFrontReminderJoinHandler()
         ));
     }
 

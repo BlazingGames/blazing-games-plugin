@@ -32,8 +32,7 @@ public class PlayerQuitHandler extends BlazingEventHandler<PlayerQuitEvent> {
 
     @Override
     public void execute(PlayerQuitEvent event) {
-        Component name = PlayerConfig.forPlayer(event.getPlayer())
-                .buildNameComponent();
+        Component name = PlayerConfig.forPlayer(event.getPlayer()).toDisplayTag(false).buildNameComponent();
         event.quitMessage(Component.empty().append(name).append(Component.text(" left the game").color(color)));
     }
 }

@@ -18,6 +18,7 @@ package de.blazemcworld.blazinggames.events;
 import de.blazemcworld.blazinggames.discord.eventhandlers.DiscordQuitHandler;
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
 import de.blazemcworld.blazinggames.events.handlers.player.PlayerQuitHandler;
+import de.blazemcworld.blazinggames.events.handlers.plural.PluralClearFrontQuitHandler;
 import de.blazemcworld.blazinggames.packs.eventhandlers.RebuildPackHandler;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -29,7 +30,8 @@ public class QuitEventListener extends BlazingEventListener<PlayerQuitEvent> {
         this.handlers.addAll(List.of(
                 new DiscordQuitHandler(),
                 new PlayerQuitHandler(),
-                new RebuildPackHandler()
+                new RebuildPackHandler(),
+                new PluralClearFrontQuitHandler()
         ));
     }
 

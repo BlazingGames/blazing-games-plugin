@@ -22,6 +22,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
+import de.blazemcworld.blazinggames.utils.DisplayTag;
+import de.blazemcworld.blazinggames.utils.FrontManager;
 import de.blazemcworld.blazinggames.utils.PlayerConfig;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -37,7 +39,7 @@ public class DisplayCommand {
         return Commands.literal("display")
             .executes(ctx -> {
                 Player player = requirePlayer(ctx);
-                if (player == null) return Command.SINGLE_SUCCESS;
+                if (doChecks(player)) return Command.SINGLE_SUCCESS;
 
                 // help text
                 player.sendMessage(Component.text("Usage: /display [name|pronouns|color] [value]").color(colorSuccess));
@@ -47,7 +49,7 @@ public class DisplayCommand {
             .then(Commands.literal("reset")
                 .executes(ctx -> {
                     Player player = requirePlayer(ctx);
-                    if (player == null) return Command.SINGLE_SUCCESS;
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
 
                     // reset help text
                     player.sendMessage(Component.text("To reset all display settings, run ").color(colorSuccess)
@@ -56,7 +58,7 @@ public class DisplayCommand {
                 })
                 .then(Commands.literal("confirm").executes(ctx -> {
                     Player player = requirePlayer(ctx);
-                    if (player == null) return Command.SINGLE_SUCCESS;
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
 
                     // reset confirmation
                     PlayerConfig config = PlayerConfig.forPlayer(player);
@@ -70,7 +72,7 @@ public class DisplayCommand {
             .then(Commands.literal("name")
                 .executes(ctx -> {
                     Player player = requirePlayer(ctx);
-                    if (player == null) return Command.SINGLE_SUCCESS;
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
 
                     // clear name
                     PlayerConfig.forPlayer(player).setDisplayName(null);
@@ -80,7 +82,7 @@ public class DisplayCommand {
                 })
                 .then(Commands.argument("value", StringArgumentType.greedyString()).executes(ctx -> {
                     Player player = requirePlayer(ctx);
-                    if (player == null) return Command.SINGLE_SUCCESS;
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
                     String value = StringArgumentType.getString(ctx, "value");
 
                     // update display name
@@ -96,7 +98,7 @@ public class DisplayCommand {
             .then(Commands.literal("pronouns")
                 .executes(ctx -> {
                     Player player = requirePlayer(ctx);
-                    if (player == null) return Command.SINGLE_SUCCESS;
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
 
                     // clear pronouns
                     PlayerConfig.forPlayer(player).setPronouns(null);
@@ -106,7 +108,7 @@ public class DisplayCommand {
                 })
                 .then(Commands.argument("value", StringArgumentType.greedyString()).executes(ctx -> {
                     Player player = requirePlayer(ctx);
-                    if (player == null) return Command.SINGLE_SUCCESS;
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
                     String value = StringArgumentType.getString(ctx, "value");
 
                     // update pronouns
@@ -122,7 +124,7 @@ public class DisplayCommand {
             .then(Commands.literal("color")
                 .executes(ctx -> {
                     Player player = requirePlayer(ctx);
-                    if (player == null) return Command.SINGLE_SUCCESS;
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
 
                     // clear color
                     PlayerConfig.forPlayer(player).setNameColor(null);
@@ -132,7 +134,7 @@ public class DisplayCommand {
                 })
                 .then(Commands.argument("value", StringArgumentType.word()).executes(ctx -> {
                     Player player = requirePlayer(ctx);
-                    if (player == null) return Command.SINGLE_SUCCESS;
+                    if (doChecks(player)) return Command.SINGLE_SUCCESS;
                     String value = StringArgumentType.getString(ctx, "value");
 
                     // update color
@@ -167,15 +169,30 @@ public class DisplayCommand {
 
     public static void sendNameplates(Player player) {
         PlayerConfig config = PlayerConfig.forPlayer(player);
+        DisplayTag tag = config.toDisplayTag(false);
         player.sendMessage(Component.text("Preview:").color(colorSuccess));
         player.sendMessage(Component.text("- Current nameplate: ").color(colorSuccess)
-                .append(config.buildNameComponent()));
+                .append(tag.buildNameComponent()));
         player.sendMessage(Component.text("- Current nameplate (short): ").color(colorSuccess)
-                .append(config.buildNameComponentShort()));
+                .append(tag.buildNameComponentShort()));
         player.sendMessage(Component.text("- Current discord name: ").color(colorSuccess)
-                .append(Component.text(config.buildNameString()).color(NamedTextColor.WHITE)));
+                .append(Component.text(tag.buildNameString()).color(NamedTextColor.WHITE)));
         player.sendMessage(Component.text("- Current discord name (short): ").color(colorSuccess)
-                .append(Component.text(config.buildNameStringShort()).color(NamedTextColor.WHITE)));
+                .append(Component.text(tag.buildNameStringShort()).color(NamedTextColor.WHITE)));
         config.updatePlayer();
+    }
+
+    public static boolean doChecks(Player player) {
+        if (player == null) return true;
+
+        if (FrontManager.hasFront(player.getUniqueId())) {
+            player.sendMessage(Component.text((
+                "You currently have a front set. Either change your front's display settings with /member" +
+                " or remove your front with /front before making account modifications with /display."
+            ), colorFailure));
+            return true;
+        }
+
+        return false;
     }
 }

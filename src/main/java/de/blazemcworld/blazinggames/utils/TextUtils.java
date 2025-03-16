@@ -16,17 +16,33 @@
 package de.blazemcworld.blazinggames.utils;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 public class TextUtils {
+    public static final MiniMessage restrictedParser = MiniMessage.builder()
+        .tags(TagResolver.builder()
+            .resolver(StandardTags.color())
+            .resolver(StandardTags.decorations())
+            .resolver(StandardTags.gradient())
+            .resolver(StandardTags.shadowColor())
+            .resolver(StandardTags.pride())
+            .resolver(StandardTags.rainbow())
+            .resolver(StandardTags.keybind())
+            .resolver(StandardTags.reset())
+            .resolver(StandardTags.newline())
+        .build()).build();
+
     public static String componentToString(Component component) {
         if (component == null) return null;
-        return LegacyComponentSerializer.legacySection().serialize(component);
+        return restrictedParser.serialize(component);
     }
 
-    public static String componentToAmpersandString(Component component) {
+    public static String stripStyles(Component component) {
         if (component == null) return null;
-        return LegacyComponentSerializer.legacyAmpersand().serialize(component);
+        return PlainTextComponentSerializer.plainText().serialize(component);
     }
 
     public static Component stringToComponent(String string) {
@@ -34,20 +50,8 @@ public class TextUtils {
         return Component.text(string);
     }
 
-    public static Component ampersandStringToComponent(String string) {
-        if (string == null) return null;
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(string);
-    }
-
-    public static Component colorCodeParser(Component message) {
+    public static Component parseMinimessage(String message) {
         if (message == null) return null;
-        String text = componentToString(message)
-                .replaceAll("&([a-fk-or0-9])", "§$1");
-        return Component.text(text);
-    }
-
-    public static String stripColorCodes(String message) {
-        if (message == null) return null;
-        return message.replaceAll("&[0-9a-fk-or]", "");
+        return restrictedParser.deserialize(message);
     }
 }
