@@ -17,22 +17,27 @@
 package de.blazemcworld.blazinggames.warpstones;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
+import de.blazemcworld.blazinggames.userinterfaces.PageSlot;
+import de.blazemcworld.blazinggames.userinterfaces.PagedUserInterface;
+import de.blazemcworld.blazinggames.userinterfaces.StaticUserInterfaceSlot;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class TeleportAnchorInterface extends UserInterface {
-    private static final int rows = 6;
+public class TeleportAnchorInterface extends PagedUserInterface {
+    private static final int rows = 3; // number of rows to show warpstones. 1 is added for controls
     private final Player player;
     private final Map<Location, WarpstoneOverrideDetails> warpstones = new HashMap<>();
 
     public TeleportAnchorInterface(BlazingGames plugin, Player player) {
-        super(plugin, "Teleport Anchor", rows);
+        super(plugin, "Teleport Anchor", rows + 1);
         this.player = player;
     }
+
+    private static final PageSlot next = new PageSlot(PageSlot.Arrow.RIGHT, PageSlot.Direction.FORWARD);
+    private static final PageSlot back = new PageSlot(PageSlot.Arrow.LEFT, PageSlot.Direction.BACKWARD);
 
     public Player getPlayer() {
         return player;
@@ -55,6 +60,16 @@ public class TeleportAnchorInterface extends UserInterface {
         for(int i = 0; i < rows*9; i++) {
             addSlot(i, new TeleportAnchorSlot(i));
         }
+
+        addSlot(0, rows, StaticUserInterfaceSlot.blank);
+        addSlot(1, rows, StaticUserInterfaceSlot.blank);
+        addSlot(2, rows, StaticUserInterfaceSlot.blank);
+        addSlot(3, rows, back);
+        addSlot(4, rows, StaticUserInterfaceSlot.blank);
+        addSlot(5, rows, next);
+        addSlot(6, rows, StaticUserInterfaceSlot.blank);
+        addSlot(7, rows, StaticUserInterfaceSlot.blank);
+        addSlot(8, rows, StaticUserInterfaceSlot.blank);
     }
 
     @Override
@@ -67,5 +82,21 @@ public class TeleportAnchorInterface extends UserInterface {
     private void reloadWarpstones() {
         this.warpstones.clear();
         this.warpstones.putAll(WarpstoneStorage.getSavedWarpstones(player));
+    }
+
+    @Override
+    public int getMaxPage() {
+        int len = warpstones.size();
+
+        if (len == 0) {
+            return 0;
+        }
+
+        return (len - 1) / indicesPerPage();
+    }
+
+    @Override
+    public int indicesPerPage() {
+        return rows * 9;
     }
 }
