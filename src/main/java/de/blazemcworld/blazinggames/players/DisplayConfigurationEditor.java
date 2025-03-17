@@ -34,6 +34,10 @@ public interface DisplayConfigurationEditor {
     }
 
     default void setProperty(DisplayTagProperty type, String value) throws IllegalArgumentException {
+        if (!ServerPlayerConfig.isLengthValid(value) && type.lengthCheck) {
+            throw new IllegalArgumentException("Length must be between " + ServerPlayerConfig.minLength() + " and " + ServerPlayerConfig.maxLength() + " characters long.");
+        }
+
         switch (type) {
             case DISPLAY_NAME:
                 setDisplayName(value);

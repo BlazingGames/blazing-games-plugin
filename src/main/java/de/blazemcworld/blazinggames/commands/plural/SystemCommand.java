@@ -27,6 +27,7 @@ import de.blazemcworld.blazinggames.commands.middleware.EmptyMessageMiddleware;
 import de.blazemcworld.blazinggames.commands.middleware.RequireSystemMiddleware;
 import de.blazemcworld.blazinggames.players.FrontManager;
 import de.blazemcworld.blazinggames.players.PlayerConfig;
+import de.blazemcworld.blazinggames.players.ServerPlayerConfig;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;
@@ -87,8 +88,8 @@ public class SystemCommand {
                 player.sendMessage(Component.text("Cleared this system name successfully.", color));
             }
         } else {
-            if (value.length() < 2 || value.length() > 40) {
-                player.sendMessage(Component.text((isTag ? "System tags " : "System names ") + "must be between 2 and 40 characters.", color));
+            if (!ServerPlayerConfig.isLengthValid(value)) {
+                player.sendMessage(Component.text((isTag ? "System tags " : "System names ") + "must be between " + ServerPlayerConfig.minLength() + " and " + ServerPlayerConfig.maxLength() + " characters long.", color));
                 return;
             }
 

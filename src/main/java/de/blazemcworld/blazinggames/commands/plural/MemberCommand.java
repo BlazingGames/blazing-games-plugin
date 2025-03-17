@@ -30,6 +30,7 @@ import de.blazemcworld.blazinggames.players.FrontManager;
 import de.blazemcworld.blazinggames.players.MemberData;
 import de.blazemcworld.blazinggames.players.PlayerConfig;
 import de.blazemcworld.blazinggames.players.PluralConfig;
+import de.blazemcworld.blazinggames.players.ServerPlayerConfig;
 import de.blazemcworld.blazinggames.utils.Pair;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -47,25 +48,6 @@ public class MemberCommand {
         .middleware(new RequireMemberMiddleware("name", color))
         .ignoreExecutor(true)
         .build();
-
-    public static String basicChecks(Player player, String name) {
-        player.sendMessage(Component.empty());
-
-        if (name == null) {
-            return "Name must not be null..?";
-        }
-
-        if (name.length() < 3 || name.length() > 40) {
-            return "Name must be between 3 and 40 characters.";
-        }
-
-        PlayerConfig config = PlayerConfig.forPlayer(player);
-        if (!config.isPlural()) {
-            return "Enable plurality with \"/system enable\" first.";
-        }
-
-        return null;
-    }
 
     public static LiteralCommandNode<CommandSourceStack> command() {
         return Commands.literal("member").then(Commands.literal("list").executes(helper.requirePlayer((ctx, player) -> {
@@ -85,8 +67,8 @@ public class MemberCommand {
 
             .then(Commands.literal("create").executes(helper.requirePlayer((ctx, player) -> {
                 String name = StringArgumentType.getString(ctx, "name");
-                if (name.length() < 3 || name.length() > 40) {
-                    player.sendMessage(Component.text("Name must be between 3 and 40 characters.", color));
+                if (!ServerPlayerConfig.isLengthValid(name)) {
+                    player.sendMessage(Component.text("Member names must be between " + ServerPlayerConfig.minLength() + " and " + ServerPlayerConfig.maxLength() + " characters long.", color));
                 }
 
                 PluralConfig cfg = PlayerConfig.forPlayer(player).getPluralConfig();
@@ -116,8 +98,8 @@ public class MemberCommand {
                 String name = StringArgumentType.getString(ctx, "name");
                 String newName = StringArgumentType.getString(ctx, "newName");
 
-                if (newName.length() < 3 || newName.length() > 40) {
-                    player.sendMessage(Component.text("New name must be between 3 and 40 characters.", color));
+                if (!ServerPlayerConfig.isLengthValid(newName)) {
+                    player.sendMessage(Component.text("New name must be between " + ServerPlayerConfig.minLength() + " and " + ServerPlayerConfig.maxLength() + " characters long.", color));
                 }
 
                 PlayerConfig config = PlayerConfig.forPlayer(player);

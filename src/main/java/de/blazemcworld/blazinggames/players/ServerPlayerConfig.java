@@ -15,17 +15,26 @@
  */
 package de.blazemcworld.blazinggames.players;
 
-public enum DisplayTagProperty {
-    DISPLAY_NAME("display name", true),
-    PRONOUNS("pronouns", true),
-    NAME_COLOR("name color", false),
+public class ServerPlayerConfig {
+    public static boolean relaxed = false;
 
-    ;
+    public static int minLength() {
+        if (relaxed) return 1;
+        else return 3;
+    }
 
-    public final String pretty;
-    public final boolean lengthCheck;
-    DisplayTagProperty(String pretty, boolean lengthCheck) {
-        this.pretty = pretty;
-        this.lengthCheck = lengthCheck;
+    public static int maxLength() {
+        if (relaxed) return 240;
+        else return 80;
+    }
+
+    public static boolean isLengthValid(String checkStr) {
+        return checkStr.length() >= minLength() && checkStr.length() <= maxLength();
+    }
+
+    //
+
+    public static void reset() {
+        relaxed = false;
     }
 }
