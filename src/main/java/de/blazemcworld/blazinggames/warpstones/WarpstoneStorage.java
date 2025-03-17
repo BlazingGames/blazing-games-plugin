@@ -30,7 +30,6 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
@@ -186,19 +185,6 @@ public class WarpstoneStorage {
         
         map.put(TextLocation.serializeRounded(location), details);
         playerStorage.storeData(player.getUniqueId(), map);
-    }
-
-    public static Location findNearbyWarpstone(Block block) {
-        Block rel1 = block.getRelative(0, -1, 0);
-        if (rel1.getType().equals(Material.BARRIER)) {
-            if (WarpstoneStorage.isWarpstone(rel1.getLocation())) return rel1.getLocation();
-        }
-        Block rel2 = block.getRelative(0, -2, 0);
-        if (rel2.getType().equals(Material.BARRIER)) {
-            if (WarpstoneStorage.isWarpstone(rel2.getLocation())) return rel2.getLocation();
-        }
-
-        return null;
     }
 
     public static void reloadGuis(Location warpstone) {
