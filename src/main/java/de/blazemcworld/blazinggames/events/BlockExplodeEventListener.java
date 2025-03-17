@@ -16,6 +16,7 @@
 package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
+import de.blazemcworld.blazinggames.warpstones.handlers.TeleportAnchorObstructHandler;
 import de.blazemcworld.blazinggames.warpstones.handlers.WarpstoneExplodeHandler;
 
 import org.bukkit.event.EventHandler;
@@ -24,6 +25,7 @@ import org.bukkit.event.block.BlockExplodeEvent;
 public class BlockExplodeEventListener extends BlazingEventListener<BlockExplodeEvent> {
     public BlockExplodeEventListener() {
         this.handlers.add(new WarpstoneExplodeHandler());
+        this.handlers.add(new TeleportAnchorObstructHandler.ExplodeHandler());
     }
 
     @EventHandler

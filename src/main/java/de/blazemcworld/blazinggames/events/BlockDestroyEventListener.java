@@ -17,6 +17,7 @@ package de.blazemcworld.blazinggames.events;
 
 import com.destroystokyo.paper.event.block.BlockDestroyEvent;
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
+import de.blazemcworld.blazinggames.warpstones.handlers.TeleportAnchorObstructHandler;
 import de.blazemcworld.blazinggames.warpstones.handlers.WarpstoneDestroyHandler;
 
 import org.bukkit.event.EventHandler;
@@ -24,6 +25,7 @@ import org.bukkit.event.EventHandler;
 public class BlockDestroyEventListener extends BlazingEventListener<BlockDestroyEvent> {
     public BlockDestroyEventListener() {
         this.handlers.add(new WarpstoneDestroyHandler());
+        this.handlers.add(new TeleportAnchorObstructHandler.DestroyHandler());
     }
 
     @EventHandler

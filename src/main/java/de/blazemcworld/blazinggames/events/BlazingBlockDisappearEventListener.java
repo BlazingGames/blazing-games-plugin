@@ -16,14 +16,9 @@
 package de.blazemcworld.blazinggames.events;
 
 import de.blazemcworld.blazinggames.computing.eventhandlers.ComputerDisappearHandler;
-import de.blazemcworld.blazinggames.computing.eventhandlers.ComputerDropHandler;
 import de.blazemcworld.blazinggames.events.base.BlazingEventListener;
-import de.blazemcworld.blazinggames.events.handlers.block_breaking.FlameTouchHandler;
-import de.blazemcworld.blazinggames.events.handlers.block_breaking.StandardBlockDropHandler;
-import de.blazemcworld.blazinggames.events.handlers.chiseled_bookshelves.ChiseledBookshelfDropHandler;
-import de.blazemcworld.blazinggames.events.handlers.containers.ContainerDropHandler;
-import de.blazemcworld.blazinggames.events.handlers.spawners.SpawnerDropHandler;
 import de.blazemcworld.blazinggames.events.handlers.spawners.SpawnerToolDamageHandler;
+import de.blazemcworld.blazinggames.warpstones.handlers.TeleportAnchorObstructHandler;
 import de.blazemcworld.blazinggames.warpstones.handlers.WarpstoneDisappearHandler;
 
 import org.bukkit.event.EventHandler;
@@ -35,7 +30,8 @@ public class BlazingBlockDisappearEventListener extends BlazingEventListener<Bla
         this.handlers.addAll(List.of(
                 new SpawnerToolDamageHandler(),
                 new WarpstoneDisappearHandler(),
-                new ComputerDisappearHandler()
+                new ComputerDisappearHandler(),
+                new TeleportAnchorObstructHandler.DisappearHandler()
         ));
     }
 
