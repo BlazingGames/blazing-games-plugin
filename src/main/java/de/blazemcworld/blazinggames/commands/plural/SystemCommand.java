@@ -22,6 +22,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelper;
+import de.blazemcworld.blazinggames.commands.finalizers.ShowNameplatesFinalizer;
+import de.blazemcworld.blazinggames.commands.middleware.EmptyMessageMiddleware;
 import de.blazemcworld.blazinggames.commands.middleware.RequireSystemMiddleware;
 import de.blazemcworld.blazinggames.players.FrontManager;
 import de.blazemcworld.blazinggames.players.PlayerConfig;
@@ -34,6 +36,8 @@ public class SystemCommand {
     public static final TextColor color = TextColor.color(0xEDC4DF);
     public static final CommandHelper configHelper = CommandHelper.builder()
         .middleware(new RequireSystemMiddleware(color))
+        .middleware(new EmptyMessageMiddleware())
+        .finalizer(new ShowNameplatesFinalizer(true, color))
         .ignoreExecutor(true)
         .build();
 
