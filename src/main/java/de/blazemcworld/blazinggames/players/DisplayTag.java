@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.utils;
+package de.blazemcworld.blazinggames.players;
 
 import java.util.UUID;
+
+import org.bukkit.entity.Player;
 
 import de.blazemcworld.blazinggames.discord.DiscordApp;
 import de.blazemcworld.blazinggames.discord.DiscordUser;
 import de.blazemcworld.blazinggames.discord.WhitelistManagement;
 import de.blazemcworld.blazinggames.discord.WhitelistedPlayer;
+import de.blazemcworld.blazinggames.utils.EmojiRegistry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -42,6 +45,18 @@ public record DisplayTag(
     String systemName,
     String systemTag
 ) {
+    public void sendPreviews(Player player, TextColor color) {
+        player.sendMessage(Component.text("Preview:", color));
+        player.sendMessage(Component.text("- Current nameplate: ").color(color)
+            .append(buildNameComponent()));
+        player.sendMessage(Component.text("- Current nameplate (short): ").color(color)
+            .append(buildNameComponentShort()));
+        player.sendMessage(Component.text("- Current discord name: ").color(color)
+            .append(Component.text(buildNameString()).color(NamedTextColor.WHITE)));
+        player.sendMessage(Component.text("- Current discord name (short): ").color(color)
+            .append(Component.text(buildNameStringShort()).color(NamedTextColor.WHITE)));
+    }
+
     public Component buildNameComponent() {
         String nameHoverString = "Real Name: " + username();
 

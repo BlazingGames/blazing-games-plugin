@@ -18,11 +18,11 @@ package de.blazemcworld.blazinggames.discord.eventhandlers;
 
 import de.blazemcworld.blazinggames.discord.DiscordApp;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
-import de.blazemcworld.blazinggames.utils.DisplayTag;
+import de.blazemcworld.blazinggames.players.DisplayTag;
+import de.blazemcworld.blazinggames.players.MemberData;
+import de.blazemcworld.blazinggames.players.PlayerConfig;
+import de.blazemcworld.blazinggames.players.PluralConfig;
 import de.blazemcworld.blazinggames.utils.EmojiRegistry;
-import de.blazemcworld.blazinggames.utils.MemberData;
-import de.blazemcworld.blazinggames.utils.PlayerConfig;
-import de.blazemcworld.blazinggames.utils.PluralConfig;
 import de.blazemcworld.blazinggames.utils.TextUtils;
 import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;

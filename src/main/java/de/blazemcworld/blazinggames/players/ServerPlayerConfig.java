@@ -13,21 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.events.handlers.plural;
+package de.blazemcworld.blazinggames.players;
 
-import org.bukkit.event.player.PlayerQuitEvent;
+public class ServerPlayerConfig {
+    public static boolean relaxed = false;
 
-import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
-import de.blazemcworld.blazinggames.players.FrontManager;
-
-public class PluralClearFrontQuitHandler extends BlazingEventHandler<PlayerQuitEvent> {
-    @Override
-    public boolean fitCriteria(PlayerQuitEvent event, boolean cancelled) {
-        return true;
+    public static int minLength() {
+        if (relaxed) return 1;
+        else return 3;
     }
 
-    @Override
-    public void execute(PlayerQuitEvent event) {
-        FrontManager.clearFront(event.getPlayer().getUniqueId());
+    public static int maxLength() {
+        if (relaxed) return 240;
+        else return 80;
+    }
+
+    public static boolean isLengthValid(String checkStr) {
+        return checkStr.length() >= minLength() && checkStr.length() <= maxLength();
+    }
+
+    //
+
+    public static void reset() {
+        relaxed = false;
     }
 }

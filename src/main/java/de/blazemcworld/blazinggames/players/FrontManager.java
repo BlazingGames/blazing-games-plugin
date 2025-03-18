@@ -13,21 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.events.handlers.plural;
+package de.blazemcworld.blazinggames.players;
 
-import org.bukkit.event.player.PlayerQuitEvent;
+import java.util.HashMap;
+import java.util.UUID;
 
-import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
-import de.blazemcworld.blazinggames.players.FrontManager;
+public class FrontManager {
+    private FrontManager() {}
+    private static final HashMap<UUID, String> frontMap = new HashMap<>();
 
-public class PluralClearFrontQuitHandler extends BlazingEventHandler<PlayerQuitEvent> {
-    @Override
-    public boolean fitCriteria(PlayerQuitEvent event, boolean cancelled) {
-        return true;
+    public static void updateFront(UUID uuid, String front) {
+        frontMap.put(uuid, front);
     }
 
-    @Override
-    public void execute(PlayerQuitEvent event) {
-        FrontManager.clearFront(event.getPlayer().getUniqueId());
+    public static String getFront(UUID uuid) {
+        return frontMap.get(uuid);
+    }
+
+    public static void clearFront(UUID uuid) {
+        frontMap.remove(uuid);
+    }
+
+    public static boolean hasFront(UUID uuid) {
+        return frontMap.containsKey(uuid);
     }
 }

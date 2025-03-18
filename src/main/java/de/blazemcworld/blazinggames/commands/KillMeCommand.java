@@ -16,45 +16,42 @@
 package de.blazemcworld.blazinggames.commands;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelper;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.mojang.brigadier.Command;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
 public class KillMeCommand {
     public static LiteralCommandNode<CommandSourceStack> command() {
         return Commands.literal("killme")
-            .executes(ctx -> {
-                if (ctx.getSource().getExecutor() == null || !(ctx.getSource().getExecutor() instanceof final Player player)) {
-                    ctx.getSource().getSender().sendRichMessage("<red>This command is only for players!");
-                    return Command.SINGLE_SUCCESS;
-                }
-
-                BukkitRunnable run = new BukkitRunnable() {
-                    int damage = 1;
-                    int damageTick = 0;
-        
-                    @Override
-                    public void run() {
-                        player.damage(damage);
-                        damageTick++;
-                        if (damageTick >= 10) {
-                            damageTick = 0;
-                            damage++;
-                        }
-                        if (!player.isValid() || player.isDead()) {
-                            cancel();
-                        }
-                    }
-                };
-        
-                run.runTaskTimer(BlazingGames.get(), 0, 10);
-                return Command.SINGLE_SUCCESS;
-            })
+            .executes(CommandHelper.getDefault().requirePlayer(KillMeCommand::handle))
             .build();
+    }
+
+    public static void handle(CommandContext<CommandSourceStack> ctx, Player player) {
+        BukkitRunnable run = new BukkitRunnable() {
+            int damage = 1;
+            int damageTick = 0;
+
+            @Override
+            public void run() {
+                player.damage(damage);
+                damageTick++;
+                if (damageTick >= 10) {
+                    damageTick = 0;
+                    damage++;
+                }
+                if (!player.isValid() || player.isDead()) {
+                    cancel();
+                }
+            }
+        };
+
+        run.runTaskTimer(BlazingGames.get(), 0, 10);
     }
 }

@@ -83,3 +83,6 @@ docs:
     description: Show important announcements or links here
     button-title: Customizable link button
     button-url: "#"
+
+players:
+  relaxed-name-length-limit: false

@@ -18,7 +18,7 @@ package de.blazemcworld.blazinggames.events.handlers.plural;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
-import de.blazemcworld.blazinggames.utils.PlayerConfig;
+import de.blazemcworld.blazinggames.players.PlayerConfig;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 

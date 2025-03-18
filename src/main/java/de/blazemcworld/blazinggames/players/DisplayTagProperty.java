@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.events.handlers.plural;
+package de.blazemcworld.blazinggames.players;
 
-import org.bukkit.event.player.PlayerQuitEvent;
+public enum DisplayTagProperty {
+    DISPLAY_NAME("display name", true),
+    PRONOUNS("pronouns", true),
+    NAME_COLOR("name color", false),
 
-import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
-import de.blazemcworld.blazinggames.players.FrontManager;
+    ;
 
-public class PluralClearFrontQuitHandler extends BlazingEventHandler<PlayerQuitEvent> {
-    @Override
-    public boolean fitCriteria(PlayerQuitEvent event, boolean cancelled) {
-        return true;
-    }
-
-    @Override
-    public void execute(PlayerQuitEvent event) {
-        FrontManager.clearFront(event.getPlayer().getUniqueId());
+    public final String pretty;
+    public final boolean lengthCheck;
+    DisplayTagProperty(String pretty, boolean lengthCheck) {
+        this.pretty = pretty;
+        this.lengthCheck = lengthCheck;
     }
 }

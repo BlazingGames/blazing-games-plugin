@@ -25,6 +25,7 @@ import dev.ivycollective.datastorage.name.ArbitraryNameProvider;
 import dev.ivycollective.datastorage.name.UUIDNameProvider;
 import dev.ivycollective.datastorage.storage.GsonStorageProvider;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -77,6 +78,8 @@ public class WarpstoneStorage {
             entity.setItemStack(CustomItems.WARPSTONE.create());
             entity.getPersistentDataContainer().set(metadataKey, PersistentDataType.BOOLEAN, true);
         });
+
+        reloadGuis(location);
     }
 
     public static boolean permissionCheck(Location warpstone, Player player) {
@@ -108,6 +111,8 @@ public class WarpstoneStorage {
                 }
             }
         }
+
+        reloadGuis(location);
     }
 
     public static void updateWarpstoneLock(Location location, boolean locked) {
@@ -116,6 +121,7 @@ public class WarpstoneStorage {
             WarpstoneDetails details = warpstoneStorage.getData(key);
             details.locked = locked;
             warpstoneStorage.storeData(key, details);
+            reloadGuis(location);
         }
     }
 
@@ -156,9 +162,9 @@ public class WarpstoneStorage {
         if (details == null) return true;
 
         if (!Material.BARRIER.equals(warpstone.getBlock().getType())) return true;
-        if (!Material.AIR.equals(warpstone.getBlock().getRelative(0, 1, 0).getType())) return true;
-        if (!Material.AIR.equals(warpstone.getBlock().getRelative(0, 2, 0).getType())) return true;
-
+        if (!warpstone.getBlock().getRelative(0, 1, 0).isPassable()) return true;
+        if (!warpstone.getBlock().getRelative(0, 2, 0).isPassable()) return true;
+        
         return false;
     }
 
@@ -179,5 +185,15 @@ public class WarpstoneStorage {
         
         map.put(TextLocation.serializeRounded(location), details);
         playerStorage.storeData(player.getUniqueId(), map);
+    }
+
+    public static void reloadGuis(Location warpstone) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getOpenInventory().getTopInventory().getHolder() instanceof TeleportAnchorInterface tpi) {
+                if (getOverrideDetails(player, warpstone) != null) {
+                    tpi.reload();
+                }
+            }
+        }
     }
 }

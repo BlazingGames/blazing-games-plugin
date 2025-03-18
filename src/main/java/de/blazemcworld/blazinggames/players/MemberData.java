@@ -1,4 +1,4 @@
-package de.blazemcworld.blazinggames.utils;
+package de.blazemcworld.blazinggames.players;
 
 public class MemberData {
     public MemberData(String name) {
@@ -6,6 +6,7 @@ public class MemberData {
     }
 
     public String name; // also acts as a unique identifier
+    public String displayName;
     public String pronouns;
     public Integer color;
     public String proxyStart;

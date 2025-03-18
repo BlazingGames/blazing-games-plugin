@@ -13,21 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.events.handlers.plural;
+package de.blazemcworld.blazinggames.commands.boilerplate;
 
-import org.bukkit.event.player.PlayerQuitEvent;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
-import de.blazemcworld.blazinggames.players.FrontManager;
-
-public class PluralClearFrontQuitHandler extends BlazingEventHandler<PlayerQuitEvent> {
-    @Override
-    public boolean fitCriteria(PlayerQuitEvent event, boolean cancelled) {
-        return true;
-    }
-
-    @Override
-    public void execute(PlayerQuitEvent event) {
-        FrontManager.clearFront(event.getPlayer().getUniqueId());
-    }
+public interface MiddlewareFunction {
+    boolean apply(CommandHelperContext ctx) throws CommandSyntaxException;
 }

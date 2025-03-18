@@ -35,6 +35,7 @@ public enum CommandList {
     CUSTOM_GIVE(CustomGiveCommand.command(), "Gives you a specific custom item with a specified count."),
     DISCORD_WHITELIST(DiscordWhitelistCommand.command(), "Modifies the discord whitelist at the admin level."),
     DISPLAY(DisplayCommand.command(), "Change nameplate display settings for your player.", "nick", "config"),
+    EMOJI_LIST(EmojiListCommand.command(), "View all available emojis, and their information.", "emojis", "emo"),
     KILLME(KillMeCommand.command(), "Kills you. Painfully.", "suicide"),
     PLAYTIME(PlaytimeCommand.command(), "See how much time you and your friends have wasted on this stupid server."),
     SET_ALTAR(SetAltarCommand.command(), "Set altar with specific level at current location."),

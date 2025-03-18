@@ -15,7 +15,7 @@
  */
 package de.blazemcworld.blazinggames.discord;
 
-import de.blazemcworld.blazinggames.utils.PlayerConfig;
+import de.blazemcworld.blazinggames.players.PlayerConfig;
 import de.blazemcworld.blazinggames.utils.TextUtils;
 import io.papermc.paper.advancement.AdvancementDisplay;
 import net.dv8tion.jda.api.EmbedBuilder;

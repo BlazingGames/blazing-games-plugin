@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.blazemcworld.blazinggames.utils;
+package de.blazemcworld.blazinggames.players;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import com.google.gson.reflect.TypeToken;
 
 import de.blazemcworld.blazinggames.BlazingGames;
+import de.blazemcworld.blazinggames.utils.Pair;
 import dev.ivycollective.datastorage.DataStorage;
 import dev.ivycollective.datastorage.name.UUIDNameProvider;
 import dev.ivycollective.datastorage.storage.GsonStorageProvider;
@@ -112,11 +113,15 @@ public class PluralConfig {
             player,
             config.playerInfo().getUsername(),
             config.playerInfo().isOperator(),
-            data.name,
+            data.displayName != null ? data.displayName : data.name,
             data.pronouns,
             data.color == null ? config.getNameColor() : TextColor.color(data.color),
             true, config.getSystemName(), config.getSystemTag()
         );
+    }
+
+    public DisplayConfigurationEditor toDisplayConfigurationEditor(String member) {
+        return new PluralConfigDisplayConfigurationEditor(member);
     }
 
 
@@ -136,15 +141,37 @@ public class PluralConfig {
         modifyMember(oldName, m -> m.name = newName);
     }
 
-    public void setPronouns(String name, String pronouns) {
+    public void setMemberDisplayName(String name, String displayName) {
+        modifyMember(name, m -> m.displayName = displayName);
+    }
+
+    public void setMemberPronouns(String name, String pronouns) {
         modifyMember(name, m -> m.pronouns = pronouns);
     }
 
-    public void setColor(String name, TextColor color) {
+    public void setMemberNameColor(String name, TextColor color) {
         modifyMember(name, m -> m.color = (color == null) ? null : color.value());
     }
 
-    public void setProxy(String name, String proxyStart, String proxyEnd) {
+    public void setMemberProxy(String name, String proxyStart, String proxyEnd) {
         modifyMember(name, m -> { m.proxyStart = proxyStart; m.proxyEnd = proxyEnd; });
+    }
+
+
+
+    public class PluralConfigDisplayConfigurationEditor implements DisplayConfigurationEditor {
+        private final String memberName;
+        private PluralConfigDisplayConfigurationEditor(String memberName) {
+            this.memberName = memberName;
+        }
+
+        public String getDisplayName() { return getMember(memberName).displayName; }
+        public void setDisplayName(String name) { setMemberDisplayName(memberName, name); }
+
+        public String getPronouns() { return getMember(memberName).pronouns; }
+        public void setPronouns(String pronouns) { setMemberPronouns(memberName, pronouns); }
+
+        public TextColor getNameColor() { return TextColor.color(getMember(memberName).color); }
+        public void setNameColor(TextColor color) { setMemberNameColor(memberName, color); }
     }
 }

@@ -33,6 +33,7 @@ import de.blazemcworld.blazinggames.events.*;
 import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
+import de.blazemcworld.blazinggames.players.ServerPlayerConfig;
 import de.blazemcworld.blazinggames.utils.KeyTypeAdapter;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.io.Decoders;
@@ -250,6 +251,9 @@ public class BlazingGames extends JavaPlugin {
         Bukkit.getScheduler().runTaskTimer(this, TickEventListener::onTick, 0, 1);
         Bukkit.getScheduler().runTaskTimer(this, DiscordWhitelistCommand::enforceWhitelist, 0, 600);
 
+        // Player Config
+        ServerPlayerConfig.relaxed = config.getBoolean("relaxed-name-length-limit", false);
+
         // Cooldowns
         interactCooldown = new Cooldown(this);
     }
@@ -266,6 +270,9 @@ public class BlazingGames extends JavaPlugin {
         // Computers
         BlazingAPI.stopAll();
         API_AVAILABLE = false; // reset value
+
+        // Player Config
+        ServerPlayerConfig.reset();
     }
 
     public static BlazingGames get()
