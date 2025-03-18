@@ -19,6 +19,7 @@ package de.blazemcworld.blazinggames.events.handlers.player;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
 import de.blazemcworld.blazinggames.items.recipes.RecipeProviders;
 import de.blazemcworld.blazinggames.players.PlayerConfig;
+import de.blazemcworld.blazinggames.utils.SkinRenderer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -40,5 +41,6 @@ public class PlayerJoinHandler extends BlazingEventHandler<PlayerJoinEvent> {
 
         Component name = config.toDisplayTag(false).buildNameComponent();
         event.joinMessage(Component.empty().append(name).append(Component.text(" joined the game").color(color)));
+        SkinRenderer.updateVanilla(event.getPlayer().getPlayerProfile());
     }
 }

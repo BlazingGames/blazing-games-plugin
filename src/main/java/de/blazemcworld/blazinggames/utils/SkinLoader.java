@@ -50,6 +50,7 @@ public class SkinLoader {
                     Bukkit.getScheduler().runTask(BlazingGames.get(), () -> {
                         TextureInfo textureInfo = skin.getSkin().texture();
                         ProfileProperty prop = new ProfileProperty("textures", textureInfo.data().value(), textureInfo.data().signature());
+                        SkinRenderer.updateMineskin(uuid, prop);
                         future.complete(prop);
                     });
                 })
