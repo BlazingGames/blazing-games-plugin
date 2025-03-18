@@ -7,7 +7,8 @@ group = 'de.blazemcworld'
 version = project.version
 
 def extraRepos = [
-    "ivy-collective-codeberg"
+    "ivy-collective-codeberg",
+    "inventive-repo"
 ]
 repositories {
     mavenCentral()
@@ -22,6 +23,10 @@ repositories {
     maven {
         name = "ivy-collective-codeberg"
         url = "https://codeberg.org/api/packages/IvyCollective/maven/"
+    }
+    maven {
+        name = "inventive-repo"
+        url = "https://repo.inventivetalent.org/repository/public/"
     }
 }
 
@@ -51,6 +56,10 @@ dependencies {
 
     // Websocket server
     implementation 'org.java-websocket:Java-WebSocket:1.5.7'
+
+    // Mineskin
+    implementation "org.mineskin:java-client:3.0.2"
+    implementation "org.mineskin:java-client-jsoup:3.0.2"
 }
 
 tasks.register("generateReposAndDeps") {

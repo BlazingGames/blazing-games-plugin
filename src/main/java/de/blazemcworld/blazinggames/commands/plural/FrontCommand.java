@@ -26,7 +26,6 @@ import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelper;
 import de.blazemcworld.blazinggames.commands.middleware.RequireMemberMiddleware;
 import de.blazemcworld.blazinggames.commands.middleware.RequireSystemMiddleware;
 import de.blazemcworld.blazinggames.players.FrontManager;
-import de.blazemcworld.blazinggames.players.PlayerConfig;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;
@@ -53,14 +52,12 @@ public class FrontCommand {
 
     public static void handleSet(CommandContext<CommandSourceStack> ctx, Player player) {
         String member = StringArgumentType.getString(ctx, "member");
-        FrontManager.updateFront(player.getUniqueId(), member);
-        PlayerConfig.forPlayer(player).updatePlayer();
+        FrontManager.updateFront(player, member);
         player.sendMessage(Component.text("Set front to \"" + member + "\" successfully.", color));
     }
 
     public static void handleClear(CommandContext<CommandSourceStack> ctx, Player player) {
-        FrontManager.clearFront(player.getUniqueId());
-        PlayerConfig.forPlayer(player).updatePlayer();
+        FrontManager.clearFront(player);
         player.sendMessage(Component.text("Cleared front successfully.", color));
     }
 }

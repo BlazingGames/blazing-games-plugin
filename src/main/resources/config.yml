@@ -32,6 +32,8 @@ authorization:
   jwt:
     secret-key: randomize-on-server-start
     secret-key-is-password: false
+  mineskin:
+    api-key: rawr
 
 services:
   blazing-api:
