@@ -104,7 +104,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 processResources {
-    dependsOn("generateReposAndDeps")
+    finalizedBy("generateReposAndDeps")
     def props = [
         version: version,
         launchClass: ("true".equals(project.test)) ? project.testClass : project.mainClass

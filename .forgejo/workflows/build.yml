@@ -24,7 +24,7 @@ jobs:
       - name: Setup Paper
         run: |
           mkdir testsrv
-          curl -o testsrv/server.jar https://api.papermc.io/v2/projects/paper/versions/1.21.4/builds/144/downloads/paper-1.21.4-144.jar
+          curl -o testsrv/server.jar https://api.papermc.io/v2/projects/paper/versions/1.21.4/builds/212/downloads/paper-1.21.4-212.jar
           echo "eula=true" > testsrv/eula.txt
 
       - name: Build test jar with Gradle
