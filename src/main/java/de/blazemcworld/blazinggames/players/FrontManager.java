@@ -37,7 +37,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 
 public class FrontManager {
     private FrontManager() {}
-    public static final HashMap<UUID, String> frontMap = new HashMap<>();
+    private static final HashMap<UUID, String> frontMap = new HashMap<>();
     private static final HashMap<UUID, UUID> currentSkinMap = new HashMap<>();
     private static final HashMap<UUID, ArrayList<ProfileProperty>> defaultProfileMap = new HashMap<>();
 

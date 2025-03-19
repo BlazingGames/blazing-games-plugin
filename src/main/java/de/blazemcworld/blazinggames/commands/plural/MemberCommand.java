@@ -88,7 +88,6 @@ public class MemberCommand {
                 PlayerConfig.forPlayer(player).getPluralConfig().removeMember(name);
                 if (name.equals(FrontManager.getFront(player.getUniqueId()))) {
                     FrontManager.clearFront(player);
-                    PlayerConfig.forPlayer(player).updatePlayer();
                 }
                 player.sendMessage(Component.text("Deleted the member with this name successfully.", color));
             })))
@@ -141,7 +140,7 @@ public class MemberCommand {
             .then(Commands.literal("skin").executes(configHelper.requirePlayer((ctx, player) -> {
                 String name = StringArgumentType.getString(ctx, "name");
                 PlayerConfig.forPlayer(player).getPluralConfig().setMemberSkin(name, null);
-                player.sendMessage(Component.text("Reset that member's proxy tags successfully.", color));
+                player.sendMessage(Component.text("Reset that member's skin successfully.", color));
                 FrontManager.updatePlayer(player);
             })).then(Commands.argument("mineskin", StringArgumentType.greedyString()).executes(configHelper.requirePlayer((ctx, player) -> {
                 String name = StringArgumentType.getString(ctx, "name");
