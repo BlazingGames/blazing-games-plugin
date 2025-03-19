@@ -44,10 +44,12 @@ public class SkinLoader {
         if (cache.hasData(uuid)) {
             return CompletableFuture.completedFuture(cache.getData(uuid));
         } else {
+            BlazingGames.get().log("Downloading new skin from Mineskin: " + uuid.toString());
             final CompletableFuture<ProfileProperty> future = new CompletableFuture<>();
             client.skins().get(uuid)
                 .thenAccept(skin -> {
                     Bukkit.getScheduler().runTask(BlazingGames.get(), () -> {
+                        BlazingGames.get().log("Finished fetching skin " + uuid.toString());
                         TextureInfo textureInfo = skin.getSkin().texture();
                         ProfileProperty prop = new ProfileProperty("textures", textureInfo.data().value(), textureInfo.data().signature());
                         SkinRenderer.updateMineskin(uuid, prop);
