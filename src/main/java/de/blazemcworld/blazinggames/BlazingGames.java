@@ -15,6 +15,7 @@
  */
 package de.blazemcworld.blazinggames;
 
+import com.destroystokyo.paper.profile.ProfileProperty;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -35,6 +36,8 @@ import de.blazemcworld.blazinggames.packs.ResourcePackManager;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
 import de.blazemcworld.blazinggames.players.ServerPlayerConfig;
 import de.blazemcworld.blazinggames.utils.KeyTypeAdapter;
+import de.blazemcworld.blazinggames.utils.ProfilePropertyTypeAdapter;
+import de.blazemcworld.blazinggames.utils.SkinLoader;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.DecodingException;
@@ -53,6 +56,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mineskin.JsoupRequestHandler;
+import org.mineskin.MineSkinClient;
 
 import javax.crypto.SecretKey;
 import java.io.File;
@@ -71,6 +76,7 @@ public class BlazingGames extends JavaPlugin {
         .registerTypeAdapter(Location.class, new TextLocation.LocationTypeAdapter())
         .registerTypeAdapter(Key.class, new KeyTypeAdapter())
         .registerTypeAdapter(NamespacedKey.class, new KeyTypeAdapter())
+        .registerTypeAdapter(ProfileProperty.class, new ProfilePropertyTypeAdapter())
         .create();
 
     // DataStorage
@@ -120,6 +126,17 @@ public class BlazingGames extends JavaPlugin {
             computerPrivileges = new ComputerPrivileges(
                     config.getBoolean("computing.privileges.chunkloading"),
                     config.getBoolean("computing.privileges.net")
+            );
+        }
+
+        // Mineskin
+        String mineskinApiKey = config.getString("authorization.mineskin.api-key", null);
+        if (mineskinApiKey != null) {
+            SkinLoader.init(MineSkinClient.builder()
+                .requestHandler(JsoupRequestHandler::new)
+                .userAgent("BlazingGamesPlugin/" + getPluginMeta().getVersion())
+                .apiKey(mineskinApiKey)
+                .build()
             );
         }
 
@@ -273,6 +290,9 @@ public class BlazingGames extends JavaPlugin {
 
         // Player Config
         ServerPlayerConfig.reset();
+
+        // Mineskin
+        SkinLoader.shutdown();
     }
 
     public static BlazingGames get()

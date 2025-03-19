@@ -157,6 +157,10 @@ public class PluralConfig {
         modifyMember(name, m -> { m.proxyStart = proxyStart; m.proxyEnd = proxyEnd; });
     }
 
+    public void setMemberSkin(String name, UUID skin) {
+        modifyMember(name, m -> m.skin = skin);
+    }
+
 
 
     public class PluralConfigDisplayConfigurationEditor implements DisplayConfigurationEditor {

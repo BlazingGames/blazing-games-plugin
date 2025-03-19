@@ -64,8 +64,7 @@ public class SystemCommand {
                 player.sendMessage(Component.text("Marked this account as a plural system.", color));
             } else {
                 config.setPlural(false);
-                FrontManager.clearFront(player.getUniqueId());
-                PlayerConfig.forPlayer(player).updatePlayer();
+                FrontManager.clearFront(player);
                 player.sendMessage(Component.text("Unmarked this account as a plural system.", color));
             }
         } else {

@@ -1,5 +1,7 @@
 package de.blazemcworld.blazinggames.players;
 
+import java.util.UUID;
+
 public class MemberData {
     public MemberData(String name) {
         this.name = name;
@@ -11,4 +13,5 @@ public class MemberData {
     public Integer color;
     public String proxyStart;
     public String proxyEnd;
+    public UUID skin;
 }

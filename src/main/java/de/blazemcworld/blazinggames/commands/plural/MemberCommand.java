@@ -15,7 +15,9 @@
  */
 package de.blazemcworld.blazinggames.commands.plural;
 
-import org.bukkit.entity.Player;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -25,7 +27,6 @@ import de.blazemcworld.blazinggames.commands.finalizers.ShowNameplatesFinalizer;
 import de.blazemcworld.blazinggames.commands.middleware.RequireMemberMiddleware;
 import de.blazemcworld.blazinggames.commands.middleware.RequireSystemMiddleware;
 import de.blazemcworld.blazinggames.commands.templates.DisplayCommandBuilder;
-import de.blazemcworld.blazinggames.players.DisplayTag;
 import de.blazemcworld.blazinggames.players.FrontManager;
 import de.blazemcworld.blazinggames.players.MemberData;
 import de.blazemcworld.blazinggames.players.PlayerConfig;
@@ -86,8 +87,7 @@ public class MemberCommand {
                 String name = StringArgumentType.getString(ctx, "name");
                 PlayerConfig.forPlayer(player).getPluralConfig().removeMember(name);
                 if (name.equals(FrontManager.getFront(player.getUniqueId()))) {
-                    FrontManager.clearFront(player.getUniqueId());
-                    PlayerConfig.forPlayer(player).updatePlayer();
+                    FrontManager.clearFront(player);
                 }
                 player.sendMessage(Component.text("Deleted the member with this name successfully.", color));
             })))
@@ -109,16 +109,19 @@ public class MemberCommand {
                 } else {
                     cfg.rename(name, newName);
                     if (name.equals(FrontManager.getFront(player.getUniqueId()))) {
-                        FrontManager.updateFront(player.getUniqueId(), newName);
+                        FrontManager.updateFront(player, newName);
                     }
-                    config.updatePlayer();
                     player.sendMessage(Component.text("Renamed that member successfully.", color));
                 }
             }))))
 
 
 
-            .then(Commands.literal("proxy").then(Commands.argument("tag", StringArgumentType.greedyString()).executes(configHelper.requirePlayer((ctx, player) -> {
+            .then(Commands.literal("proxy").executes(configHelper.requirePlayer((ctx, player) -> {
+                String name = StringArgumentType.getString(ctx, "name");
+                PlayerConfig.forPlayer(player).getPluralConfig().setMemberProxy(name, null, null);
+                player.sendMessage(Component.text("Cleared that member's proxy tags successfully.", color));
+            })).then(Commands.argument("tag", StringArgumentType.greedyString()).executes(configHelper.requirePlayer((ctx, player) -> {
                 String name = StringArgumentType.getString(ctx, "name");
                 String proxyTag = StringArgumentType.getString(ctx, "tag");
 
@@ -132,6 +135,28 @@ public class MemberCommand {
                 player.sendMessage(Component.text("Changed that member's proxy tags successfully.", color));
             }))))
 
+            
+
+            .then(Commands.literal("skin").executes(configHelper.requirePlayer((ctx, player) -> {
+                String name = StringArgumentType.getString(ctx, "name");
+                PlayerConfig.forPlayer(player).getPluralConfig().setMemberSkin(name, null);
+                player.sendMessage(Component.text("Reset that member's skin successfully.", color));
+                FrontManager.updatePlayer(player);
+            })).then(Commands.argument("mineskin", StringArgumentType.greedyString()).executes(configHelper.requirePlayer((ctx, player) -> {
+                String name = StringArgumentType.getString(ctx, "name");
+                String mineskin = StringArgumentType.getString(ctx, "mineskin");
+
+                UUID mineskinUUID = parseMineskin(mineskin);
+                if (mineskinUUID == null) {
+                    player.sendMessage(Component.text("Invalid Mineskin URL or UUID.", color));
+                    return;
+                }
+
+                PlayerConfig.forPlayer(player).getPluralConfig().setMemberSkin(name, mineskinUUID);
+                FrontManager.updatePlayer(player);
+                player.sendMessage(Component.text("Changed that member's skin successfully.", color));
+            }))))
+
 
             
             // display commands
@@ -142,9 +167,21 @@ public class MemberCommand {
         )).build();
     }
 
-    public static void renderNameplates(Player player, PluralConfig config, String name) {
-        DisplayTag tag = config.toDisplayTag(name, PlayerConfig.forPlayer(player));
-        if (tag == null) return;
-        tag.sendPreviews(player, color);
+    private static final String UUID_REGEX = "(?:(?<p1>[0-9a-fA-F]{8})-?(?<p2>[0-9a-fA-F]{4})-?(?<p3>[0-9a-f]{4})-?(?<p4>[0-9a-fA-F]{4})-?(?<p5>[0-9a-fA-F]{12}))";
+    private static final Pattern[] PATTERNS = new Pattern[]{
+        Pattern.compile("^" + UUID_REGEX + "$"),
+        Pattern.compile("^(?:https?:\\\\/\\\\/)?(?:classic\\.)?mineskin\\.org\\/(?:skins\\/)?" + UUID_REGEX + "\\/?$"),
+        Pattern.compile("^(?:https?:\\/\\/)?minesk\\.in\\/" + UUID_REGEX + "\\/?$")
+    };
+    public static UUID parseMineskin(String input) {
+        for (Pattern pattern : PATTERNS) {
+            Matcher matcher = pattern.matcher(input);
+            if (matcher.matches()) {
+                return UUID.fromString(
+                    matcher.group("p1") + "-" + matcher.group("p2") + "-" + matcher.group("p3") + "-" + matcher.group("p4") + "-" + matcher.group("p5")
+                );
+            }
+        }
+        return null;
     }
 }

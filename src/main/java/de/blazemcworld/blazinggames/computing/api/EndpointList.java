@@ -22,6 +22,7 @@ import de.blazemcworld.blazinggames.computing.api.impl.PackZipEndpoint;
 import de.blazemcworld.blazinggames.computing.api.impl.RootEndpoint;
 import de.blazemcworld.blazinggames.computing.api.impl.auth.*;
 import de.blazemcworld.blazinggames.computing.api.impl.computers.*;
+import de.blazemcworld.blazinggames.computing.api.impl.skins.SkinsEndpoint;
 import dev.ivycollective.ivyhttp.http.Endpoint;
 
 public enum EndpointList {
@@ -40,6 +41,7 @@ public enum EndpointList {
     COMPUTER_CODE_READ("Computers", new ViewCodeEndpoint(), List.of(RequiredFeature.COMPUTERS), Permission.COMPUTER_CODE_READ),
     COMPUTER_RENAME("Computers", new RenameEndpoint(), List.of(RequiredFeature.COMPUTERS), Permission.READ_COMPUTERS, Permission.WRITE_COMPUTERS),
 
+    SKINS(null, new SkinsEndpoint()),
     PACK_ZIP(null, new PackZipEndpoint(), List.of(RequiredFeature.RESOURCE_PACK)),
     ;
 

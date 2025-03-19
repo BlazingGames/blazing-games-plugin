@@ -28,6 +28,6 @@ public class PluralClearFrontQuitHandler extends BlazingEventHandler<PlayerQuitE
 
     @Override
     public void execute(PlayerQuitEvent event) {
-        FrontManager.clearFront(event.getPlayer().getUniqueId());
+        FrontManager.clearFrontLogout(event.getPlayer());
     }
 }
