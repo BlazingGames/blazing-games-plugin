@@ -161,7 +161,7 @@ public class MemberCommand {
 
             
             // display commands
-            .then(DisplayCommandBuilder.tree(color, color, (ctx, player) -> {
+            .then(DisplayCommandBuilder.tree("/member ... ", color, color, (ctx, player) -> {
                 String name = StringArgumentType.getString(ctx, "name");
                 return PlayerConfig.forPlayer(player).getPluralConfig().toDisplayConfigurationEditor(name);
             }, new ShowNameplatesFinalizer("name", color), new RequireSystemMiddleware(color), new RequireMemberMiddleware("name", color))

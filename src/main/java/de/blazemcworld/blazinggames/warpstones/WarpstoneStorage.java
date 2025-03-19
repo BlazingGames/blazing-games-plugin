@@ -189,7 +189,7 @@ public class WarpstoneStorage {
 
     public static void reloadGuis(Location warpstone) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getOpenInventory() instanceof TeleportAnchorInterface tpi) {
+            if (player.getOpenInventory().getTopInventory().getHolder() instanceof TeleportAnchorInterface tpi) {
                 if (getOverrideDetails(player, warpstone) != null) {
                     tpi.reload();
                 }

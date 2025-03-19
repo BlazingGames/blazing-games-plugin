@@ -35,6 +35,7 @@ import net.kyori.adventure.text.format.TextColor;
 
 public class DisplayCommandBuilder {
     public static LiteralArgumentBuilder<CommandSourceStack> tree(
+        final String relative,
         final TextColor colorSuccess,
         final TextColor colorFailure,
         final DisplayCommandBuilderFunction function,
@@ -58,7 +59,7 @@ public class DisplayCommandBuilder {
                 // reset help text
                 .executes(helper.requirePlayer((ctx, player) -> {
                     player.sendMessage(Component.text("To reset all display settings, run ").color(colorSuccess)
-                        .append(Component.text("/display reset confirm").color(colorFailure)));
+                        .append(Component.text(relative + "display reset confirm").color(colorFailure)));
                 }))
 
                 // reset confirmation

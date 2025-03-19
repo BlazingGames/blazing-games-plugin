@@ -40,6 +40,7 @@ public class DisplayCommand {
 
     public static LiteralCommandNode<CommandSourceStack> command() {
         return DisplayCommandBuilder.tree(
+            "/",
             colorSuccess,
             colorFailure,
             (ctx, player) -> PlayerConfig.forPlayer(player),
