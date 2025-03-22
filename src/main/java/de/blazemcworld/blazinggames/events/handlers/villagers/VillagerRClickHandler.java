@@ -29,7 +29,7 @@ public class VillagerRClickHandler extends BlazingEventHandler<PlayerInteractEnt
     public boolean fitCriteria(PlayerInteractEntityEvent event, boolean cancelled) {
         if (event.getRightClicked() instanceof Villager) {
             PlayerInventory inventory = event.getPlayer().getInventory();
-            return inventory.getItemInMainHand().getType() != Material.LEAD;
+            return inventory.getItemInMainHand().getType() == Material.LEAD;
         }
         return false;
     }
