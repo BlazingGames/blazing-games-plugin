@@ -22,6 +22,7 @@ import de.blazemcworld.blazinggames.utils.ItemUtils;
 import io.papermc.paper.block.TileStateInventoryHolder;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.inventory.ItemStack;
 
 public class ContainerDropHandler extends BlazingEventHandler<BlazingBlockDropEvent> {
@@ -36,6 +37,11 @@ public class ContainerDropHandler extends BlazingEventHandler<BlazingBlockDropEv
     @Override
     public void execute(BlazingBlockDropEvent event) {
         ItemStack[] contents = ((TileStateInventoryHolder) event.getBlock().getState()).getInventory().getContents();
+
+        if(event.getBlock().getState() instanceof Chest chest) {
+            contents = chest.getBlockInventory().getContents();
+        }
+
         for (ItemStack item : contents) {
             if (item != null && !item.isEmpty()) {
                 event.getDrops().add(item);
