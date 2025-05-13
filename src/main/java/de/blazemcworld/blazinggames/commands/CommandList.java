@@ -37,6 +37,7 @@ public enum CommandList {
     DISPLAY(DisplayCommand.command(), "Change nameplate display settings for your player.", "nick", "config"),
     EMOJI_LIST(EmojiListCommand.command(), "View all available emojis, and their information.", "emojis", "emo"),
     KILLME(KillMeCommand.command(), "Kills you. Painfully.", "suicide"),
+    LOCK(LockCommand.command(), "Locks a block at a specific location with a specific custom item."),
     PLAYTIME(PlaytimeCommand.command(), "See how much time you and your friends have wasted on this stupid server."),
     SET_ALTAR(SetAltarCommand.command(), "Set altar with specific level at current location."),
     UNLINK(UnlinkCommand.command(), "Unlinks your account from your discord account. This also removes you from the whitelist."),

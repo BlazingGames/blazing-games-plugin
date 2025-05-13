@@ -17,7 +17,7 @@ package de.blazemcworld.blazinggames.enchantments.sys;
 
 import de.blazemcworld.blazinggames.enchantments.sys.altar.AltarRecipe;
 import de.blazemcworld.blazinggames.userinterfaces.UserInterface;
-import de.blazemcworld.blazinggames.utils.NamespacedKeyDataType;
+import de.blazemcworld.blazinggames.utils.persistentDataTypes.NamespacedKeyDataType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;

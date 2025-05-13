@@ -16,7 +16,7 @@
 package de.blazemcworld.blazinggames.builderwand;
 
 import com.google.common.collect.ImmutableList;
-import de.blazemcworld.blazinggames.utils.EnumDataType;
+import de.blazemcworld.blazinggames.utils.persistentDataTypes.EnumDataType;
 import org.bukkit.block.BlockFace;
 
 import java.util.ArrayList;

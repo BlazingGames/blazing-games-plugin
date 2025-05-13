@@ -15,6 +15,7 @@
  */
 package de.blazemcworld.blazinggames.events;
 
+import de.blazemcworld.blazinggames.blocks.eventhandlers.CustomBlockInteractHandler;
 import de.blazemcworld.blazinggames.builderwand.eventhandlers.BuilderWandCycleHandler;
 import de.blazemcworld.blazinggames.builderwand.eventhandlers.BuilderWandPlaceHandler;
 import de.blazemcworld.blazinggames.crates.eventhandlers.CrateInteractHandler;
@@ -56,7 +57,8 @@ public class InteractEventListener extends BlazingEventListener<PlayerInteractEv
                 new VaultInteractHandler(),
                 new CustomSlabPlaceBlockHandler(),
                 new TeleportAnchorInteractionHandler(),
-                new WarpstoneInteractionHandler()
+                new WarpstoneInteractionHandler(),
+                new CustomBlockInteractHandler()
         ));
     }
 

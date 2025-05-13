@@ -20,7 +20,7 @@ import de.blazemcworld.blazinggames.items.change.ItemChangeProviders;
 import de.blazemcworld.blazinggames.items.contexts.ItemContext;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
 import de.blazemcworld.blazinggames.items.recipes.RecipeProvider;
-import de.blazemcworld.blazinggames.utils.NamespacedKeyDataType;
+import de.blazemcworld.blazinggames.utils.persistentDataTypes.NamespacedKeyDataType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Keyed;
 import org.bukkit.Material;

@@ -16,7 +16,7 @@
 package de.blazemcworld.blazinggames.userinterfaces;
 
 import de.blazemcworld.blazinggames.BlazingGames;
-import de.blazemcworld.blazinggames.utils.NamespacedKeyDataType;
+import de.blazemcworld.blazinggames.utils.persistentDataTypes.NamespacedKeyDataType;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;

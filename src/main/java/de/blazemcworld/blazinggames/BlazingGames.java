@@ -19,12 +19,11 @@ import com.destroystokyo.paper.profile.ProfileProperty;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import de.blazemcworld.blazinggames.blocks.wrappers.BlockWrapper;
 import de.blazemcworld.blazinggames.commands.DiscordWhitelistCommand;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry.ComputerPrivileges;
-import de.blazemcworld.blazinggames.utils.Cooldown;
-import de.blazemcworld.blazinggames.utils.ItemStackTypeAdapter;
-import de.blazemcworld.blazinggames.utils.TextLocation;
+import de.blazemcworld.blazinggames.utils.*;
 import dev.ivycollective.datastorage.DataStorageConfig;
 import dev.ivycollective.datastorage.compression.GZipCompressionProvider;
 import de.blazemcworld.blazinggames.discord.AppConfig;
@@ -35,9 +34,6 @@ import de.blazemcworld.blazinggames.items.recipes.CustomRecipes;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager;
 import de.blazemcworld.blazinggames.packs.ResourcePackManager.PackConfig;
 import de.blazemcworld.blazinggames.players.ServerPlayerConfig;
-import de.blazemcworld.blazinggames.utils.KeyTypeAdapter;
-import de.blazemcworld.blazinggames.utils.ProfilePropertyTypeAdapter;
-import de.blazemcworld.blazinggames.utils.SkinLoader;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.DecodingException;
@@ -75,8 +71,9 @@ public class BlazingGames extends JavaPlugin {
         .registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter())
         .registerTypeAdapter(Location.class, new TextLocation.LocationTypeAdapter())
         .registerTypeAdapter(Key.class, new KeyTypeAdapter())
-        .registerTypeAdapter(NamespacedKey.class, new KeyTypeAdapter())
+        .registerTypeAdapter(NamespacedKey.class, new NamespacedKeyTypeAdapter())
         .registerTypeAdapter(ProfileProperty.class, new ProfilePropertyTypeAdapter())
+        .registerTypeAdapter(BlockWrapper.class, new BlockWrapper.Serializer())
         .create();
 
     // DataStorage
