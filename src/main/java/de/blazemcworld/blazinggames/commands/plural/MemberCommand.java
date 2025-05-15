@@ -170,7 +170,7 @@ public class MemberCommand {
     private static final String UUID_REGEX = "(?:(?<p1>[0-9a-fA-F]{8})-?(?<p2>[0-9a-fA-F]{4})-?(?<p3>[0-9a-f]{4})-?(?<p4>[0-9a-fA-F]{4})-?(?<p5>[0-9a-fA-F]{12}))";
     private static final Pattern[] PATTERNS = new Pattern[]{
         Pattern.compile("^" + UUID_REGEX + "$"),
-        Pattern.compile("^(?:https?:\\\\/\\\\/)?(?:classic\\.)?mineskin\\.org\\/(?:skins\\/)?" + UUID_REGEX + "\\/?$"),
+        Pattern.compile("^(?:https?:\\/\\/)?(?:classic\\.)?mineskin\\.org\\/(?:skins\\/)?" + UUID_REGEX + "\\/?$"),
         Pattern.compile("^(?:https?:\\/\\/)?minesk\\.in\\/" + UUID_REGEX + "\\/?$")
     };
     public static UUID parseMineskin(String input) {
