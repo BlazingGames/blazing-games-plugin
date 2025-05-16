@@ -26,7 +26,7 @@ import com.google.gson.JsonObject;
 
 import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
 import de.blazemcworld.blazinggames.utils.GetGson;
-import de.blazemcworld.blazinggames.utils.TextLocation;
+import de.blazemcworld.blazinggames.utils.adapters.TextLocation;
 
 public class ComputerMetadata {
     public final String id;

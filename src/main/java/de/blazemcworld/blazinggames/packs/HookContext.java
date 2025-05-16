@@ -61,4 +61,8 @@ public class HookContext {
     public void installModel(NamespacedKey namespace, byte[] model) {
         writeFile("assets/" + namespace.getNamespace() + "/models/" + namespace.getKey() + ".json", model);
     }
+
+    public void installModel(NamespacedKey namespace, JsonObject model) {
+        writeFile("assets/" + namespace.getNamespace() + "/models/" + namespace.getKey() + ".json", model);
+    }
 }

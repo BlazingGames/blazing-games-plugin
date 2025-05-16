@@ -15,7 +15,7 @@
  */
 package de.blazemcworld.blazinggames.utils.persistentDataTypes;
 
-import de.blazemcworld.blazinggames.utils.TextLocation;
+import de.blazemcworld.blazinggames.utils.adapters.TextLocation;
 import org.bukkit.Location;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataType;

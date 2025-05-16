@@ -24,6 +24,7 @@ import de.blazemcworld.blazinggames.commands.DiscordWhitelistCommand;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry.ComputerPrivileges;
 import de.blazemcworld.blazinggames.utils.*;
+import de.blazemcworld.blazinggames.utils.adapters.*;
 import dev.ivycollective.datastorage.DataStorageConfig;
 import dev.ivycollective.datastorage.compression.GZipCompressionProvider;
 import de.blazemcworld.blazinggames.discord.AppConfig;
@@ -44,10 +45,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Server;
+import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
@@ -74,6 +72,7 @@ public class BlazingGames extends JavaPlugin {
         .registerTypeAdapter(NamespacedKey.class, new NamespacedKeyTypeAdapter())
         .registerTypeAdapter(ProfileProperty.class, new ProfilePropertyTypeAdapter())
         .registerTypeAdapter(BlockWrapper.class, new BlockWrapper.Serializer())
+        .registerTypeAdapter(Color.class, new ColorAdapter())
         .create();
 
     // DataStorage

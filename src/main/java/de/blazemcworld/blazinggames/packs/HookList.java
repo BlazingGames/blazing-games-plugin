@@ -22,6 +22,7 @@ public enum HookList {
     CUSTOM_ITEMS(ItemProviders.instance),
     GUI_ELEMENTS(new GuiElementsHook()),
     EMOJIS(new EmojisHook()),
+    LOCKED_BLOCK_STYLES(new LockedBlockStylesHook()),
 
     ;
 

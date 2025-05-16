@@ -19,7 +19,7 @@ import com.google.common.reflect.TypeToken;
 
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.items.CustomItems;
-import de.blazemcworld.blazinggames.utils.TextLocation;
+import de.blazemcworld.blazinggames.utils.adapters.TextLocation;
 import dev.ivycollective.datastorage.DataStorage;
 import dev.ivycollective.datastorage.name.ArbitraryNameProvider;
 import dev.ivycollective.datastorage.name.UUIDNameProvider;

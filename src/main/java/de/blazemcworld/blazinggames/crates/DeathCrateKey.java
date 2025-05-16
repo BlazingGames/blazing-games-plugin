@@ -20,7 +20,7 @@ import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.CustomItems;
 import de.blazemcworld.blazinggames.items.contexts.ItemContext;
-import de.blazemcworld.blazinggames.utils.TextLocation;
+import de.blazemcworld.blazinggames.utils.adapters.TextLocation;
 import io.azam.ulidj.ULID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

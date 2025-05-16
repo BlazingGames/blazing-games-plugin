@@ -22,16 +22,45 @@ import de.blazemcworld.blazinggames.blocks.data.LockedBlockData;
 import de.blazemcworld.blazinggames.blocks.wrappers.BlockWrapper;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
+import de.blazemcworld.blazinggames.packs.hooks.LockedBlockStylesHook;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.CustomModelData;
+import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
 
 public class LockedBlock extends CustomBlock<LockedBlockData> {
     @Override
     public void createDisplay(Location owningLocation, Location displayLocation, LockedBlockData data) {
         data.getWrapper().createDisplay(owningLocation, displayLocation);
+
+        displayLocation.getWorld().spawn(displayLocation.toCenterLocation(), ItemDisplay.class, entity -> {
+            ItemStack lockedBlockModel = new ItemStack(Material.ICE);
+            lockedBlockModel.setData(DataComponentTypes.ITEM_MODEL, data.getStyle().getKey());
+
+            CustomModelData customModelData = CustomModelData.customModelData().addColor(data.getColor()).build();
+
+            lockedBlockModel.setData(DataComponentTypes.CUSTOM_MODEL_DATA, customModelData);
+
+            entity.setItemStack(lockedBlockModel);
+
+            entity.setTransformation(new Transformation(
+                    new Vector3f(),
+                    new AxisAngle4f(),
+                    new Vector3f(1.001f, 1.001f, 1.001f),
+                    new AxisAngle4f()
+            ));
+
+            BlockWrapper.setupDisplayEntity(entity, owningLocation);
+        });
     }
 
     @Override
@@ -44,11 +73,11 @@ public class LockedBlock extends CustomBlock<LockedBlockData> {
         return BlazingGames.get().key("locked_block");
     }
 
-    public static boolean lock(Location location, CustomItem<?> key) {
+    public static boolean lock(Location location, CustomItem<?> key, LockedBlockStylesHook.LockedBlockStyle style, Color color) {
         BlockWrapper wrapper = BlockWrapper.fromLocation(location);
         if(wrapper == null || !wrapper.canBeLocked()) return false;
 
-        BlockWrapper newWrapper = CustomBlocks.LOCKED_BLOCK.createWrapper(new LockedBlockData(wrapper, key));
+        BlockWrapper newWrapper = CustomBlocks.LOCKED_BLOCK.createWrapper(new LockedBlockData(wrapper, key, style, color));
 
         return newWrapper.replace(location);
     }

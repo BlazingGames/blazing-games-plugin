@@ -24,6 +24,7 @@ import de.blazemcworld.blazinggames.blocks.LockedBlock;
 import de.blazemcworld.blazinggames.commands.boilerplate.CommandHelper;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.ItemProviders;
+import de.blazemcworld.blazinggames.packs.hooks.LockedBlockStylesHook;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
@@ -31,6 +32,8 @@ import io.papermc.paper.command.brigadier.argument.resolvers.BlockPositionResolv
 import io.papermc.paper.math.BlockPosition;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.Color;
 import org.bukkit.Location;
 
 public class LockCommand {
@@ -39,7 +42,11 @@ public class LockCommand {
             .requires(ctx -> ctx.getSender().isOp() || ctx.getSender().hasPermission("blazinggames.lock"))
             .then(Commands.argument("position", ArgumentTypes.blockPosition())
                 .then(Commands.argument("keyItem", StringArgumentType.word())
-                    .executes(CommandHelper.getDefault().wrap(LockCommand::handle))
+                    .then(Commands.argument("style", StringArgumentType.word())
+                        .then(Commands.argument("color", ArgumentTypes.namedColor())
+                            .executes(CommandHelper.getDefault().wrap(LockCommand::handle))
+                        )
+                    )
                 )
             ).build();
     }
@@ -54,6 +61,19 @@ public class LockCommand {
             return;
         }
 
+        final String styleId = ctx.getArgument("style", String.class);
+
+        LockedBlockStylesHook.LockedBlockStyle style = LockedBlockStylesHook.LockedBlockStyle.getByKey(BlazingGames.get().key(styleId));
+
+        if(style == null) {
+            ctx.getSource().getSender().sendMessage(Component.text("Unknown locked block style: " + styleId + "!").color(NamedTextColor.RED));
+            return;
+        }
+
+        TextColor argColor = ctx.getArgument("color", NamedTextColor.class);
+
+        Color color = Color.fromRGB(argColor.red(), argColor.green(), argColor.blue());
+
         final BlockPositionResolver resolver = ctx.getArgument("position", BlockPositionResolver.class);
         final BlockPosition blockPosition = resolver.resolve(ctx.getSource());
 
@@ -63,7 +83,7 @@ public class LockCommand {
                 + blockPosition.y() + ", "
                 + blockPosition.z();
 
-        if(!LockedBlock.lock(location, itemType)) {
+        if(!LockedBlock.lock(location, itemType, style, color)) {
             ctx.getSource().getSender().sendRichMessage("<red>Unable to lock block at " + locationString);
             return;
         }

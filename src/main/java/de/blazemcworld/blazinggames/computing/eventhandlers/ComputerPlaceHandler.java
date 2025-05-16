@@ -20,7 +20,7 @@ import de.blazemcworld.blazinggames.computing.BootedComputer;
 import de.blazemcworld.blazinggames.computing.ComputerRegistry;
 import de.blazemcworld.blazinggames.computing.types.ComputerTypes;
 import de.blazemcworld.blazinggames.events.base.BlazingEventHandler;
-import de.blazemcworld.blazinggames.utils.TextLocation;
+import de.blazemcworld.blazinggames.utils.adapters.TextLocation;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

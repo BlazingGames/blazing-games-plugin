@@ -23,15 +23,21 @@ import de.blazemcworld.blazinggames.blocks.wrappers.BlockWrapper;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.items.ItemProviders;
 import de.blazemcworld.blazinggames.items.predicates.ItemPredicate;
+import de.blazemcworld.blazinggames.packs.hooks.LockedBlockStylesHook;
+import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
 
 public class LockedBlockData extends CustomBlockData {
     BlockWrapper wrapper;
     CustomItem<?> key;
+    LockedBlockStylesHook.LockedBlockStyle style;
+    Color color;
 
-    public LockedBlockData(BlockWrapper wrapper, CustomItem<?> key) {
+    public LockedBlockData(BlockWrapper wrapper, CustomItem<?> key, LockedBlockStylesHook.LockedBlockStyle style, Color color) {
         this.wrapper = wrapper.clone();
         this.key = key;
+        this.style = style;
+        this.color = color;
     }
 
     public BlockWrapper getWrapper() {
@@ -44,7 +50,7 @@ public class LockedBlockData extends CustomBlockData {
 
     @Override
     public LockedBlockData clone() {
-        return new LockedBlockData(wrapper, key);
+        return new LockedBlockData(wrapper, key, style, color);
     }
 
     @Override
@@ -53,6 +59,8 @@ public class LockedBlockData extends CustomBlockData {
 
         obj.add("wrapper", BlazingGames.gson.toJsonTree(wrapper, BlockWrapper.class));
         obj.add("key", BlazingGames.gson.toJsonTree(key.getKey(), NamespacedKey.class));
+        obj.add("style", BlazingGames.gson.toJsonTree(style.getKey(), NamespacedKey.class));
+        obj.add("color", BlazingGames.gson.toJsonTree(color, Color.class));
 
         return obj;
     }
@@ -66,8 +74,26 @@ public class LockedBlockData extends CustomBlockData {
             throw new JsonParseException("Could not find a custom item type with id " + keyKey.toString());
         }
 
+        NamespacedKey styleKey = BlazingGames.gson.fromJson(data.get("style"), NamespacedKey.class);
+
+        LockedBlockStylesHook.LockedBlockStyle style = LockedBlockStylesHook.LockedBlockStyle.getByKey(styleKey);
+
+        if(style == null) {
+            throw new JsonParseException("Could not find a locked block style with id " + styleKey.toString());
+        }
+
+        Color color = BlazingGames.gson.fromJson(data.get("color"), Color.class);
+
         BlockWrapper wrapper = BlazingGames.gson.fromJson(data.get("wrapper"), BlockWrapper.class);
 
-        return new LockedBlockData(wrapper, key);
+        return new LockedBlockData(wrapper, key, style, color);
+    }
+
+    public LockedBlockStylesHook.LockedBlockStyle getStyle() {
+        return style;
+    }
+
+    public Color getColor() {
+        return color;
     }
 }

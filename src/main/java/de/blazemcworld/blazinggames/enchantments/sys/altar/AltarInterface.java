@@ -22,7 +22,7 @@ import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrapper;
 import de.blazemcworld.blazinggames.enchantments.sys.EnchantmentWrappers;
 import de.blazemcworld.blazinggames.items.CustomItem;
 import de.blazemcworld.blazinggames.userinterfaces.*;
-import de.blazemcworld.blazinggames.utils.TextLocation;
+import de.blazemcworld.blazinggames.utils.adapters.TextLocation;
 import de.blazemcworld.blazinggames.utils.TomeAltarStorage;
 
 import org.bukkit.Location;

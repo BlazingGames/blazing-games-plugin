@@ -22,7 +22,7 @@ import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.blocks.CustomBlock;
 import de.blazemcworld.blazinggames.blocks.CustomBlockProviders;
 import de.blazemcworld.blazinggames.blocks.data.CustomBlockData;
-import de.blazemcworld.blazinggames.utils.TextLocation;
+import de.blazemcworld.blazinggames.utils.adapters.TextLocation;
 import dev.ivycollective.datastorage.DataStorage;
 import dev.ivycollective.datastorage.name.ArbitraryNameProvider;
 import dev.ivycollective.datastorage.storage.GsonStorageProvider;

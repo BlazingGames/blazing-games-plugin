@@ -15,6 +15,7 @@
  */
 package de.blazemcworld.blazinggames.utils;
 
+import de.blazemcworld.blazinggames.utils.adapters.TextLocation;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 

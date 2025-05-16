@@ -113,7 +113,7 @@ public abstract class BlockWrapper implements Cloneable {
 
     public abstract void createDisplay(Location owningLocation, Location displayLocation);
 
-    protected void setupDisplayEntity(Entity entity, Location owningLocation) {
+    public static void setupDisplayEntity(Entity entity, Location owningLocation) {
         PersistentDataContainer container = entity.getPersistentDataContainer();
         container.set(BlockWrapper.owningLocation, BlockLocationDataType.instance, owningLocation);
     }
