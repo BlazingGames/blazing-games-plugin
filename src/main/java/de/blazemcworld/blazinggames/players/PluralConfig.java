@@ -109,14 +109,23 @@ public class PluralConfig {
         MemberData data = getMember(member);
         if (data == null) return null;
 
+        boolean hasSkin = data.skin != null;
         return new DisplayTag(
+            // player data
             player,
             config.playerInfo().getUsername(),
             config.playerInfo().isOperator(),
+
+            // display data
             data.displayName != null ? data.displayName : data.name,
             data.pronouns,
             data.color == null ? config.getNameColor() : TextColor.color(data.color),
-            true, config.getSystemName(), config.getSystemTag()
+
+            // plural data
+            true, config.getSystemName(), config.getSystemTag(),
+
+            // skin data
+            hasSkin ? data.skin : player, hasSkin
         );
     }
 
