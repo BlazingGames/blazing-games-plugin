@@ -30,7 +30,7 @@ public class WarpstonePlaceHandler extends BlazingEventHandler<BlockPlaceEvent> 
 
     @Override
     public void execute(BlockPlaceEvent event) {
-        String name = TextUtils.componentToString(event.getItemInHand().getItemMeta().displayName());
+        String name = TextUtils.minimessageToString(event.getItemInHand().getItemMeta().displayName());
         event.getItemInHand().subtract();
         WarpstoneStorage.placeWarpstone(event.getBlockPlaced().getLocation(), event.getPlayer(), name);
     }

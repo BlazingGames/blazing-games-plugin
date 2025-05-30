@@ -30,6 +30,6 @@ public class DiscordDeathEventHandler extends BlazingEventHandler<PlayerDeathEve
 
     @Override
     public void execute(PlayerDeathEvent event) {
-        DiscordApp.send(DiscordNotification.playerDeath(event.getPlayer(), TextUtils.componentToString(event.deathMessage())));
+        DiscordApp.send(DiscordNotification.playerDeath(event.getPlayer(), TextUtils.componentToPlainString(event.deathMessage())));
     }
 }
