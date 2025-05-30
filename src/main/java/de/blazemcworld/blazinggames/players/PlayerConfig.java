@@ -80,13 +80,21 @@ public class PlayerConfig implements DisplayConfigurationEditor {
     public DisplayTag toDisplayTag(boolean useMember) {
         if (!isPlural() || !useMember) {
             return new DisplayTag(
+                // player data
                 playerInfo.getUUID(),
                 playerInfo.getUsername(),
                 playerInfo.isOperator(),
+                
+                // display data
                 getDisplayName(),
                 getPronouns(),
                 getNameColor(),
-                false, getSystemName(), getSystemTag()
+                
+                // plural data
+                false, getSystemName(), getSystemTag(),
+
+                // skin data
+                playerInfo.getUUID(), false
             );
         }
 

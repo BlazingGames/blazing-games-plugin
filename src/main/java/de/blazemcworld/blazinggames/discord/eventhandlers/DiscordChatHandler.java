@@ -78,6 +78,6 @@ public class DiscordChatHandler extends BlazingEventHandler<AsyncChatEvent> {
     }
 
     public static Component parseGoodChat(String message) {
-        return EmojiRegistry.parseEmoji(TextUtils.parseMinimessage(message));
+        return EmojiRegistry.parseEmoji(TextUtils.stringToMinimessage(message));
     }
 }

@@ -125,9 +125,9 @@ public class PrepareAnvilHandler extends BlazingEventHandler<PrepareAnvilEvent> 
                 result.resetData(DataComponentTypes.CUSTOM_NAME);
             }
         } else {
-            if(!TextUtils.componentToString(result.displayName()).equals(renameText)) {
+            if(!TextUtils.componentToPlainString(result.displayName()).equals(renameText)) {
                 repairCost++;
-                result.setData(DataComponentTypes.CUSTOM_NAME, TextUtils.parseMinimessage(renameText));
+                result.setData(DataComponentTypes.CUSTOM_NAME, TextUtils.plainStringToComponent(renameText));
             }
         }
 

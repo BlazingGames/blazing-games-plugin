@@ -68,8 +68,8 @@ public record DiscordNotification(
 
     public static DiscordNotification playerAdvancement(Player player, AdvancementDisplay advancement) {
         return new DiscordNotification(
-                player, "Obtained " + TextUtils.componentToString(advancement.title()),
-                TextUtils.componentToString(advancement.description()), Color.YELLOW,
+                player, "Obtained " + TextUtils.componentToPlainString(advancement.title()),
+                TextUtils.componentToPlainString(advancement.description()), Color.YELLOW,
                 "https://raw.githubusercontent.com/Owen1212055/mc-assets/main/assets/"
                         + advancement.icon().getType() + ".png"
         );

@@ -35,23 +35,28 @@ public class TextUtils {
             .resolver(StandardTags.newline())
         .build()).build();
 
-    public static String componentToString(Component component) {
+    public static String minimessageToString(Component component) {
         if (component == null) return null;
-        return restrictedParser.serialize(component);
+
+        try {
+            return restrictedParser.serialize(component);
+        } catch (IllegalStateException e) { // Unclaimed component "bla bla bla"
+            return componentToPlainString(component);
+        }
     }
 
-    public static String stripStyles(Component component) {
+    public static Component stringToMinimessage(String message) {
+        if (message == null) return null;
+        return restrictedParser.deserialize(message);
+    }
+
+    public static String componentToPlainString(Component component) {
         if (component == null) return null;
         return PlainTextComponentSerializer.plainText().serialize(component);
     }
 
-    public static Component stringToComponent(String string) {
+    public static Component plainStringToComponent(String string) {
         if (string == null) return null;
-        return Component.text(string);
-    }
-
-    public static Component parseMinimessage(String message) {
-        if (message == null) return null;
-        return restrictedParser.deserialize(message);
+        return PlainTextComponentSerializer.plainText().deserialize(string);
     }
 }

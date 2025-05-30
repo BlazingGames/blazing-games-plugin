@@ -29,7 +29,6 @@ import java.util.UUID;
 import javax.imageio.ImageIO;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
@@ -38,9 +37,6 @@ import com.google.gson.JsonObject;
 import de.blazemcworld.blazinggames.BlazingAPI;
 import de.blazemcworld.blazinggames.BlazingGames;
 import de.blazemcworld.blazinggames.computing.api.EndpointList;
-import de.blazemcworld.blazinggames.players.FrontManager;
-import de.blazemcworld.blazinggames.players.MemberData;
-import de.blazemcworld.blazinggames.players.PlayerConfig;
 import dev.ivycollective.datastorage.DataStorage;
 import dev.ivycollective.datastorage.name.UUIDNameProvider;
 import dev.ivycollective.datastorage.storage.BinaryStorageProvider;
@@ -111,17 +107,6 @@ public class SkinRenderer {
 
     public static String generateURL(UUID uuid, boolean isMineskin) {
         return BlazingAPI.getConfig().apiConfig().findAt() + EndpointList.SKINS.endpoint.path() + "?uuid=" + uuid + "&mode=" + (isMineskin ? "mineskin" : "vanilla");
-    }
-
-    public static String autoGenerateURL(Player player) {
-        PlayerConfig config = PlayerConfig.forPlayer(player);
-        String front = FrontManager.getFront(player.getUniqueId());
-        if (config.isPlural() && front != null) {
-            MemberData data = config.getPluralConfig().getMember(front);
-            if (data.skin != null) return generateURL(data.skin, true);
-        }
-    
-        return generateURL(player.getUniqueId(), false);
     }
 
     public static boolean hasSkin(UUID uuid, boolean isMineskin) {
