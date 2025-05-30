@@ -1,3 +1,9 @@
+This repo is now [hosted on Codeberg](https://codeberg.org/BlazingGames/blazing-games-plugin). Further updates will be available there.
+
+The original `README.md` follows below:
+
+---
+
 # blazing-games-plugin
 
 ![Latest Release](https://git.ivycollective.dev/BlazingGames/blazing-games-plugin/badges/release.svg)
