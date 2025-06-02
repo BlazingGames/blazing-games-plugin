@@ -25,7 +25,6 @@ import de.blazemcworld.blazinggames.players.DisplayTag;
 import de.blazemcworld.blazinggames.players.PlayerConfig;
 import de.blazemcworld.blazinggames.players.PlayerInfo;
 import de.blazemcworld.blazinggames.utils.EmojiRegistry;
-import de.blazemcworld.blazinggames.utils.SkinRenderer;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -253,7 +252,7 @@ public class DiscordApp extends ListenerAdapter {
 
         WebhookMessage message = new WebhookMessageBuilder()
                 .setUsername(displayTag.buildNameString())
-                .setAvatarUrl(SkinRenderer.autoGenerateURL(player))
+                .setAvatarUrl(displayTag.buildAvatarUrl())
                 .setContent(out)
                 .build();
         this.client.send(message);

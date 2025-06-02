@@ -24,6 +24,7 @@ import de.blazemcworld.blazinggames.discord.DiscordUser;
 import de.blazemcworld.blazinggames.discord.WhitelistManagement;
 import de.blazemcworld.blazinggames.discord.WhitelistedPlayer;
 import de.blazemcworld.blazinggames.utils.EmojiRegistry;
+import de.blazemcworld.blazinggames.utils.SkinRenderer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -43,7 +44,11 @@ public record DisplayTag(
     // plural data
     boolean isPluralMember,
     String systemName,
-    String systemTag
+    String systemTag,
+
+    // skin data
+    UUID skinUUID,
+    boolean isMineskin
 ) {
     public void sendPreviews(Player player, TextColor color) {
         player.sendMessage(Component.text("Preview:", color));
@@ -181,5 +186,9 @@ public record DisplayTag(
         }
 
         return displayName() != null ? displayName() : username();
+    }
+
+    public String buildAvatarUrl() {
+        return SkinRenderer.generateURL(skinUUID(), isMineskin());
     }
 }
